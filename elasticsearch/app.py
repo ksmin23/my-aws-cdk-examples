@@ -14,7 +14,7 @@ class ElasticsearchStack(core.Stack):
 
     # The code that defines your stack goes here
     # The code that defines your stack goes here
-    vpc = aws_ec2.Vpc(self, "AnalyticsWorkshopVPC",
+    vpc = aws_ec2.Vpc(self, "ElasticsearchHolVPC",
       max_azs=2,
       gateway_endpoints={
         "S3": aws_ec2.GatewayVpcEndpointOptions(
@@ -119,7 +119,7 @@ class ElasticsearchStack(core.Stack):
 
 
 app = core.App()
-ElasticsearchStack(app, "elasticsearch")
+ElasticsearchStack(app, "amazon-es-hol")
 
 app.synth()
 
