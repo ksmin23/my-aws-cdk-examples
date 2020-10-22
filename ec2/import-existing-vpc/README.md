@@ -1,5 +1,5 @@
 
-# CDK Python project: Importing an existing VPC
+# Importing an existing VPC
 
 This is a sample project for Python development with CDK.
 
