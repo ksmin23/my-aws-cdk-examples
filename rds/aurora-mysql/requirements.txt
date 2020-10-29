@@ -1,0 +1,6 @@
+aws-cdk.aws-ec2==1.69.0
+aws-cdk.aws-iam==1.69.0
+aws-cdk.aws-logs==1.69.0
+aws-cdk.aws-rds==1.69.0
+aws-cdk.aws-secretsmanager==1.69.0
+aws-cdk.core==1.69.0
