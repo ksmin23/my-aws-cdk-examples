@@ -36,7 +36,7 @@ class RedisStack(core.Stack):
     core.Tags.of(sg_elasticache).add('Name', 'redis-server')
 
     sg_elasticache.add_ingress_rule(peer=sg_use_elasticache, connection=aws_ec2.Port.tcp(6379),
-      description='use-rss-feed-trans-bot-redis')
+      description='use-default-redis')
 
     elasticache_subnet_group = aws_elasticache.CfnSubnetGroup(self, 'RedisSubnetGroup',
       description='subnet group for redis',
