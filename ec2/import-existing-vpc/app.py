@@ -26,7 +26,7 @@ class EC2InstanceStack(core.Stack):
       description='security group for bastion host',
       security_group_name='bastion-host-sg'
     )
-    core.Tag.add(sg_ssh_access, 'Name', 'bastion-host')
+    core.Tag.of(sg_ssh_access).add('Name', 'bastion-host')
     sg_ssh_access.add_ingress_rule(peer=aws_ec2.Peer.any_ipv4(), connection=aws_ec2.Port.tcp(22), description='ssh access')
 
     bastion_host = aws_ec2.BastionHostLinux(self, "BastionHost",
