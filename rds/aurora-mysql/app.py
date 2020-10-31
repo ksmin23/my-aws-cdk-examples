@@ -102,7 +102,7 @@ class AuroraMysqlStack(core.Stack):
         'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
         'parameter_group': rds_db_param_group,
         'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PUBLIC
+          'subnet_type': aws_ec2.SubnetType.PRIVATE
         },
         'vpc': vpc,
         'auto_minor_version_upgrade': False,
