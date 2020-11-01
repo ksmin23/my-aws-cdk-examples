@@ -46,7 +46,7 @@ class AuroraMysqlStack(core.Stack):
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
       description='subnet group for mysql',
-      subnet_group_name='aurora-mysql', # Optional - name will be generated
+      subnet_group_name='aurora-mysql',
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE),
       vpc=vpc
     )
@@ -57,11 +57,14 @@ class AuroraMysqlStack(core.Stack):
       engine=rds_engine,
       description='Custom cluster parameter group for aurora-mysql5.7',
       parameters={
+        'innodb_flush_log_at_trx_commit': '2',
+        'slow_query_log': '1',
         'tx_isolation': 'READ-COMMITTED',
         'wait_timeout': '300',
-        'init_connect': 'SET collation_connection=utf8mb4_unicode_ci',
+        'character-set-client-handshake': '0',
+        'character_set_server': 'utf8mb4',
         'collation_server': 'utf8mb4_unicode_ci',
-        'character_set_server': 'utf8mb4'
+        'init_connect': 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci'
       }
     )
 
@@ -69,9 +72,10 @@ class AuroraMysqlStack(core.Stack):
       engine=rds_engine,
       description='Custom parameter group for aurora-mysql5.7',
       parameters={
+        'slow_query_log': '1',
         'tx_isolation': 'READ-COMMITTED',
         'wait_timeout': '300',
-        'init_connect': 'SET collation_connection=utf8mb4_unicode_ci'
+        'init_connect': 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci'
       }
     )
 
@@ -79,8 +83,9 @@ class AuroraMysqlStack(core.Stack):
     #XXX: aws_rds.Credentials.from_username(username, ...) can not be given user specific Secret name
     #XXX: therefore, first create Secret and then use it to create database
     db_secret_name = self.node.try_get_context('db_secret_name')
-    db_secret_arn = self.format_arn(region=core.Aws.REGION, resource='secret',
-      service='secretsmanager', resource_name=db_secret_name)
+    #XXX: arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+    db_secret_arn = 'arn:aws:secretsmanager:{region}:{account}:secret:{resource_name}'.format(
+      region=core.Aws.REGION, account=core.Aws.ACCOUNT_ID, resource_name=db_secret_name)
     db_secret = aws_secretsmanager.Secret.from_secret_arn(self, 'DBSecretFromArn', db_secret_arn)
     rds_credentials = aws_rds.Credentials.from_secret(db_secret)
 
@@ -119,6 +124,8 @@ class AuroraMysqlStack(core.Stack):
 
     #XXX: Datbase Proxy use only Secret Arn of target database or database cluster
     #XXX: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbproxy-authformat.html
+    #XXX: If new Secret for database user is created, it is necessary to update Resource of Proxy IAM Role to access new Secret.
+    #XXX: Otherwise, new database user can not connect to database by RDS Proxy.
     db_proxy = aws_rds.DatabaseProxy(self, 'DBProxy',
       proxy_target=aws_rds.ProxyTarget.from_cluster(db_cluster),
       secrets=[db_secret],
