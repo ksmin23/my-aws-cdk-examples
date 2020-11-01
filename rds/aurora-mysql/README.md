@@ -42,7 +42,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 ```
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk --profile=cdk_user synth -c vpc_name='[X]default' -c db_cluster_name=mydatabase
+$ cdk --profile=cdk_user -c vpc_name='[X]default' -c db_cluster_name=mydatabase -c db_secret_name=prod/mydatabase/AuroraMySQL-pPkV9w deploy
 ```
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -58,3 +58,113 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+# Example
+
+1. RDS Proxy를 이용해서 Aurora MySQL에 접속하기
+
+```
+$ mysql -h the-proxy.proxy-demo.us-east-1.rds.amazonaws.com -uadmin -p
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 947748268
+Server version: 5.7.12-log MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql>
+```
+
+2. MySQL 사용자 생성하기
+   
+```
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+mysql> CREATE USER 'guest'@'%' IDENTIFIED BY 'password';
+mysql> GRANT SELECT, PROCESS, SHOW DATABASES, CREATE VIEW, SHOW VIEW, SELECT INTO S3 ON *.* TO 'guest'@'%';
+mysql> FLUSH PRIVILEGES;
+mysql> SHOW GRANTS FOR 'guest'@'%';
++-----------------------------------------------------------------------------------------------------+
+| Grants for guest@%                                                                                  |
++-----------------------------------------------------------------------------------------------------+
+| GRANT SELECT, PROCESS, SHOW DATABASES, CREATE VIEW, SHOW VIEW, SELECT INTO S3 ON *.* TO 'guest'@'%' |
++-----------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+mysql>
+```
+
+3. 새로운 MySQL User를 위한 Secret 생성하기
+
+```
+aws secretsmanager create-secret \
+--name guest_secret_name --description "application user" \
+--secret-string '{"username":"guest","password":"choose_your_own_password"}'
+```
+
+4. RDS Proxy가 새로운 MySQL User의 Secret를 접근 할 수 있도록 IAM Role 수정하기
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:us-east-2:account_id:secret:secret_name_1",
+                "arn:aws:secretsmanager:us-east-2:account_id:secret:secret_name_2"
+            ],
+            "Effect": "Allow"
+        }
+    ]
+}
+```
+
+5. 새로운 MySQL User로 접속하기
+   
+```
+$ mysql -h the-proxy.proxy-demo.us-east-1.rds.amazonaws.com -uguest -p
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2444658406
+Server version: 5.7.12-log MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql>
+```
+
+## References
+- [Managing connections with Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
+- [Amazon Aurora MySQL reference](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html)
