@@ -1,5 +1,7 @@
 
-# RDS - Aurora MySQL
+# RDS Proxy + Aurora MySQL
+
+![rds_proxy-aurora_mysql-arch](./rds_proxy-aurora_mysql-arch.svg)
 
 This is a sample project for Python development with CDK.
 
@@ -61,7 +63,7 @@ Enjoy!
 
 # Example
 
-1. RDS Proxy를 이용해서 Aurora MySQL에 접속하기
+1. Connecting to Aurora MySQL using RDS Proxy
 
 ```
 $ mysql -h the-proxy.proxy-demo.us-east-1.rds.amazonaws.com -uadmin -p
@@ -80,7 +82,7 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 mysql>
 ```
 
-2. MySQL 사용자 생성하기
+2. Creating MySQL User
    
 ```
 mysql> SHOW DATABASES;
@@ -106,7 +108,7 @@ mysql> SHOW GRANTS FOR 'guest'@'%';
 mysql>
 ```
 
-3. 새로운 MySQL User를 위한 Secret 생성하기
+3. Creating AWS Secret for a new MySQL User 
 
 ```
 aws secretsmanager create-secret \
@@ -114,7 +116,7 @@ aws secretsmanager create-secret \
 --secret-string '{"username":"guest","password":"choose_your_own_password"}'
 ```
 
-4. RDS Proxy가 새로운 MySQL User의 Secret를 접근 할 수 있도록 IAM Role 수정하기
+4. Modifying IAM Role so that RDS Proxy can access the secret of new MySQL User
 
 ```
 {
@@ -135,7 +137,7 @@ aws secretsmanager create-secret \
 }
 ```
 
-5. 새로운 MySQL User로 접속하기
+5. Connecting to the database as a new MySQL user
    
 ```
 $ mysql -h the-proxy.proxy-demo.us-east-1.rds.amazonaws.com -uguest -p
