@@ -7,7 +7,7 @@ Kit](https://docs.aws.amazon.com/cdk/api/latest/)
 |---------|-------------|
 | dynamodb | ![dynamodb-arch](./dynamodb/dynamodb-arch.svg) |
 | ec2-vpc  | ![aws-vpc](./ec2/vpc/aws-vpc.svg) |
-| ec2-import-existing-vpc  | ![aws-vpc](./ec2/vpc/aws-vpc.svg) |
+| ec2-import-existing-vpc  | ![aws-existing-vpc](./ec2/import-existing-vpc/aws-existing-vpc.svg) |
 | elasticache for redis | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) |
 | elasticsearch | ![amazon-es-arch](./elasticsearch/amazon-es-arch.svg) |
 | neptune | ![neptune-arch](./neptune/neptune-arch.svg) |
