@@ -1,6 +1,6 @@
 # ElastiCache for Redis
 
-![elasticache-for-redis](./elasticache-for-redis.svg)
+![elasticache-for-redis-arch](./elasticache-for-redis-arch.svg)
 
 This is a collection of projects for Python development with CDK.
 

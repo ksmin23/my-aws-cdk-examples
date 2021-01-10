@@ -1,6 +1,6 @@
 # Amazon Elasticsearch Service
 
-![amazon-es](./amazon-es.svg)
+![amazon-es-arch](./amazon-es-arch.svg)
 
 This is a collection of projects for Python development with CDK.
 

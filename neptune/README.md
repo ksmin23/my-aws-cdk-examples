@@ -1,6 +1,6 @@
 # Amazon Neptune with Jupyter Notebooks
 
-![neptune](./neptune.svg)
+![neptune-arch](./neptune-arch.svg)
 
 This is a collection of projects for Python development with CDK.
 
