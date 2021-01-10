@@ -1,8 +1,8 @@
-# Importing an existing VPC
+# Amazon Elasticsearch Service
 
-![aws-existing-vpc](./aws-existing-vpc.svg)
+![amazon-es](./amazon-es.svg)
 
-This is a sample project for Python development with CDK.
+This is a collection of projects for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -42,23 +42,6 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 $ cdk synth
-```
-
-If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
-The CDK CLI will search for the specified VPC in the the stack’s region and account,
-and import the subnet configuration.
-
-To import an existing VPC, you should specify the following environment variables.
-
-```
-$ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-```
-
-If you pass context variable such as `vcp_name=<your vpc name>`, you can use the existing VPC.
-
-```
-$ cdk synth -c vpc_name='[X]default'
 ```
 
 To add additional dependencies, for example other CDK libraries, just add

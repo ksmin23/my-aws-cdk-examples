@@ -17,7 +17,7 @@ class EC2InstanceStack(core.Stack):
     # The code that defines your stack goes here
     vpc_name = self.node.try_get_context("vpc_name")
     vpc = aws_ec2.Vpc.from_lookup(self, "EC2InstanceVPC",
-      is_default=True,
+      is_default=True, # set is_default=False if you want to find your own VPC
       vpc_name=vpc_name)
 
     sg_ssh_access = aws_ec2.SecurityGroup(self, "BastionHostSG",

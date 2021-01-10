@@ -1,5 +1,6 @@
-
 # Creating a new VPC with more than 2 AZs
+
+![aws-vpc](./aws-vpc.svg)
 
 This is a sample project for Python development with CDK.
 
