@@ -68,7 +68,7 @@ Enjoy!
 
  When you run the [Jupyter notebook](https://github.com/aws-samples/documentdb-sagemaker-example/blob/main/script.ipynb) in your Sagemaker instance, you need to change some codes
  (1) You should assign `secret_name` variable to your AWS Secrets to access DocumentDB
-  ```
+  ```python
   # Get DocumentDB credentials stored in Secrets Manager
   def get_secret(stack_name):
 
@@ -87,7 +87,7 @@ Enjoy!
   ```
 
  You can find AWS Secrets as runing the following codes.
-  ```
+  ```python
   $ python
   Python 3.9.1 (default, Dec 17 2020, 03:41:37)
   [Clang 12.0.0 (clang-1200.0.32.27)] on darwin
@@ -107,7 +107,7 @@ Enjoy!
   ```
  (2) You should apply URL encoding for DocumentDB password. DocumentDB password has been genenerated by CloudFormation so that it may contain invalid characters in URL.
   + **As-Is**
-    ```
+    ```python
     # Sets up a connection to the Amazon DocumentDB database
     secret = get_secret(stack_name)
 
@@ -118,7 +118,7 @@ Enjoy!
     ```
 
   + **To-Be**
-    ```
+    ```python
     # Sets up a connection to the Amazon DocumentDB database
     secret = get_secret(stack_name)
 
