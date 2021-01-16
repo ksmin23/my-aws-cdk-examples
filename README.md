@@ -5,6 +5,7 @@ Kit](https://docs.aws.amazon.com/cdk/api/latest/)
 
 | Example | Description |
 |---------|-------------|
+| documentdb | ![documentdb-sagemaker-arch](./documentdb/documentdb-sagemaker-arch.svg) |
 | dynamodb | ![dynamodb-arch](./dynamodb/dynamodb-arch.svg) |
 | ec2/vpc  | ![aws-vpc](./ec2/vpc/aws-vpc.svg) |
 | ec2/import-existing-vpc  | ![aws-existing-vpc](./ec2/import-existing-vpc/aws-existing-vpc.svg) |
