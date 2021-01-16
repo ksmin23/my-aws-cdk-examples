@@ -79,7 +79,7 @@ Enjoy!
           region_name=session.region_name
       )
 
-      secret_name = f'{stack_name}-DocDBSecret'
+      secret_name = f'{stack_name}-DocDBSecret' #FIXME
       get_secret_value_response = client.get_secret_value(SecretId=secret_name)
       secret = get_secret_value_response['SecretString']
 
@@ -107,28 +107,28 @@ Enjoy!
   ```
  (2) You should apply URL encoding for DocumentDB password. DocumentDB password has been genenerated by CloudFormation so that it may contain invalid characters in URL.
   + **As-Is**
-  ```
-  # Sets up a connection to the Amazon DocumentDB database
-  secret = get_secret(stack_name)
+    ```
+    # Sets up a connection to the Amazon DocumentDB database
+    secret = get_secret(stack_name)
 
-  db_username = secret['username']
-  db_password = secret['password']
-  db_port = secret['port']
-  db_host = secret['host']
-  ```
+    db_username = secret['username']
+    db_password = secret['password']
+    db_port = secret['port']
+    db_host = secret['host']
+    ```
 
   + **To-Be**
-  ```
-  # Sets up a connection to the Amazon DocumentDB database
-  secret = get_secret(stack_name)
+    ```
+    # Sets up a connection to the Amazon DocumentDB database
+    secret = get_secret(stack_name)
 
-  import urllib
-  db_username = secret['username']
-  db_password = urllib.parse.quote_plus(secret['password'])
-  db_port = secret['port']
-  db_host = secret['host']
-  ```
+    import urllib
+    db_username = secret['username']
+    db_password = urllib.parse.quote_plus(secret['password'])
+    db_port = secret['port']
+    db_host = secret['host']
+    ```
 
 ## References
  - [Analyzing data stored in Amazon DocumentDB (with MongoDB compatibility) using Amazon Sagemaker](https://aws.amazon.com/blogs/machine-learning/analyzing-data-stored-in-amazon-documentdb-with-mongodb-compatibility-using-amazon-sagemaker/)
- - [documentdb-sagemaker-example](https://github.com/aws-samples/documentdb-sagemaker-example)
+ - [github.com/aws-samples/documentdb-sagemaker-example](https://github.com/aws-samples/documentdb-sagemaker-example)
