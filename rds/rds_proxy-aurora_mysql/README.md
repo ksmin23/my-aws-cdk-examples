@@ -44,12 +44,14 @@ At this point you can now synthesize the CloudFormation template for this code.
 ```
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk --profile=cdk_user -c vpc_name='[X]default' -c db_cluster_name=mydatabase -c db_secret_name=prod/mydatabase/AuroraMySQL-pPkV9w deploy
+$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' -c db_secret_name='<db-secret-name> synth
 ```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+Use `cdk deploy` command to create the stack shown above.
+
+```
+$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' -c db_secret_name='<db-secret-name> deploy
+```
 
 ## Useful commands
 
