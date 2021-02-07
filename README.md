@@ -12,6 +12,7 @@ Kit](https://docs.aws.amazon.com/cdk/api/latest/)
 | elasticache/redis | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) |
 | elasticsearch | ![amazon-es-arch](./elasticsearch/amazon-es-arch.svg) |
 | neptune | ![neptune-arch](./neptune/neptune-arch.svg) |
-| rds/rds_proxy-aurora_mysql | ![neptune-arch](./rds/rds_proxy-aurora_mysql/rds_proxy-aurora_mysql-arch.svg) |
+| rds/rds_proxy-aurora_mysql | ![rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/rds_proxy-aurora_mysql-arch.svg) |
+| rds/sagemaker-aurora_mysql | ![sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/mysql-sagemaker-arch.svg) |
 
 Enjoy!
