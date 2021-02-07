@@ -55,7 +55,7 @@ $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --out
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 ```
 
-If you pass context variable such as `vcp_name=<your vpc name>`, you can use the existing VPC.
+If you pass context variable such as `vcp_name=<your vpc name>` (e.g. `vpc_name='[X]default'`), you can use the existing VPC.
 
 ```
 $ cdk synth -c vpc_name='[X]default'
