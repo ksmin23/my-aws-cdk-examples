@@ -47,6 +47,14 @@ $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-id
 $ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' -c db_secret_name='<db-secret-name> synth
 ```
 
+:information_source: If you would like to create an AWS Secret for your RDS User, you can create an AWS Secret like this:
+
+```
+$ aws secretsmanager create-secret \
+--name your_db_secret_name --description "application user" \
+--secret-string '{"username":"your_user_name","password":"choose_your_own_password"}'
+```
+
 Use `cdk deploy` command to create the stack shown above.
 
 ```
