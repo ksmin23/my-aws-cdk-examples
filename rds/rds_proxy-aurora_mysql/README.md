@@ -105,6 +105,16 @@ mysql> SHOW DATABASES;
 | sys                |
 +--------------------+
 4 rows in set (0.00 sec)
+mysql> SELECT user FROM mysql.user;
++-----------+
+| user      |
++-----------+
+| admin     |
+| mysql.sys |
+| rdsadmin  |
++-----------+
+3 rows in set (0.00 sec)
+
 mysql> CREATE USER 'guest'@'%' IDENTIFIED BY 'password';
 mysql> GRANT SELECT, PROCESS, SHOW DATABASES, CREATE VIEW, SHOW VIEW, SELECT INTO S3 ON *.* TO 'guest'@'%';
 mysql> FLUSH PRIVILEGES;
@@ -115,6 +125,17 @@ mysql> SHOW GRANTS FOR 'guest'@'%';
 | GRANT SELECT, PROCESS, SHOW DATABASES, CREATE VIEW, SHOW VIEW, SELECT INTO S3 ON *.* TO 'guest'@'%' |
 +-----------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
+mysql> SELECT user FROM mysql.user;
++-----------+
+| user      |
++-----------+
+| admin     |
+| guest     |
+| mysql.sys |
+| rdsadmin  |
++-----------+
+4 rows in set (0.00 sec)
+
 mysql>
 ```
 
