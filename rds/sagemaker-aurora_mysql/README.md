@@ -47,7 +47,7 @@ $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-id
 $ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' synth
 ```
 
-Use `cdk deploy` command to create the stack shown above, then load and run the Jupyter notebook in your Sagemaker instance.
+Use `cdk deploy` command to create the stack shown above, then load and run the [Jupyter notebook](https://github.com/ksmin23/my-aws-cdk-examples/blob/main/rds/sagemaker-aurora_mysql/ipython-sql.ipynb) in your Sagemaker instance.
 
 ```
 $ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' deploy
