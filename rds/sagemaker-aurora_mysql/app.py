@@ -143,6 +143,7 @@ pip install --upgrade pretty_errors
 source /home/ec2-user/anaconda3/bin/deactivate
 cd /home/ec2-user/SageMaker
 wget -N https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
+wget -N https://raw.githubusercontent.com/ksmin23/my-aws-cdk-examples/main/rds/sagemaker-aurora_mysql/ipython-sql.ipynb
 EOF
 '''.format(AWS_Region=core.Aws.REGION)
 
@@ -150,8 +151,8 @@ EOF
       content=core.Fn.base64(rds_wb_lifecycle_content)
     )
 
-    rds_wb_lifecycle_config = aws_sagemaker.CfnNotebookInstanceLifecycleConfig(self, 'DocDBWorkbenchLifeCycleConfig',
-      notebook_instance_lifecycle_config_name='DocDBWorkbenchLifeCycleConfig',
+    rds_wb_lifecycle_config = aws_sagemaker.CfnNotebookInstanceLifecycleConfig(self, 'MySQLWorkbenchLifeCycleConfig',
+      notebook_instance_lifecycle_config_name='MySQLWorkbenchLifeCycleConfig',
       on_start=[rds_wb_lifecycle_config_prop]
     )
 
