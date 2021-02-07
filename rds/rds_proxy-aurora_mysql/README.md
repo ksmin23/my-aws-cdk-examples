@@ -105,6 +105,7 @@ mysql> SHOW DATABASES;
 | sys                |
 +--------------------+
 4 rows in set (0.00 sec)
+
 mysql> SELECT user FROM mysql.user;
 +-----------+
 | user      |
