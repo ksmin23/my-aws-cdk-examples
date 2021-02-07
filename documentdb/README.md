@@ -98,7 +98,7 @@ Enjoy!
   >>> response = cf_client.describe_stacks(StackName=cf_stackname)
   >>> outputs = response["Stacks"][0]["Outputs"]
   >>> secrets = [e for e in outputs if e['ExportName'] == 'DocDBSecret'][0]
-  >>> secret_name
+  >>> secrets
   {'OutputKey': 'DocDBSecret', 'OutputValue': 'DocDBSecret3B817195-ZPE9J6tmnLtd-dtaGCG', 'ExportName': 'DocDBSecret'}
   >>> secret_name = secrets['OutputValue'][:-7]
   >>> secret_name
