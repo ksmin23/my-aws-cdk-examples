@@ -53,6 +53,9 @@ Use `cdk deploy` command to create the stack shown above, then load and run the 
 $ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' deploy
 ```
 
+![ipython-sql-examle](./ipython-sql-examle.png)
+
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
