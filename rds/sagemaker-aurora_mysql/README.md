@@ -55,7 +55,7 @@ $ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-nam
 
  then load and run the [Jupyter notebook](https://github.com/ksmin23/my-aws-cdk-examples/blob/main/rds/sagemaker-aurora_mysql/ipython-sql.ipynb) in your Sagemaker instance.
 
-![ipython-sql-examle](./ipython-sql-examle.png)
+![ipython-sql-example](./ipython-sql-example.png)
 
 
 ## Useful commands
