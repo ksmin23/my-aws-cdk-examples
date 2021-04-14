@@ -1,0 +1,4 @@
+{
+  "vpc_name": "Your-VPC-Name",
+  "kafka_cluster_name": "Your-Kafka-Cluster-Name"
+}
