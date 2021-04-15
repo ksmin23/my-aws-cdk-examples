@@ -1,0 +1,5 @@
+{
+  "vpc_name": "Your-VPC-Name",
+  "s3_bucket_name": "Your-S3-KDA-App-Code-Location",
+  "s3_path_to_flink_app_code": "Your-KDA-App-Code-Path"
+}
