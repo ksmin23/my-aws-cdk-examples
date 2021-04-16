@@ -28,7 +28,6 @@ class MskReplicationStack(cdk.Stack):
     s3_bucket_name = self.node.try_get_context('s3_bucket_name')
     s3_bucket = s3.Bucket.from_bucket_name(self, 'S3KdaFlinkCodeLocation', s3_bucket_name)
     s3_path_to_flink_app_code = self.node.try_get_context('s3_path_to_flink_app_code')
-    #s3_path_to_flink_app_code = 'KafkaGettingStartedJob-1.0.jar' #TODO: cdk.context.json
 
     KDA_APP_NAME = 'KdaMskReplcation'
 
@@ -42,12 +41,22 @@ class MskReplicationStack(cdk.Stack):
     }))
 
     kda_exec_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "sid": "ListCloudwatchLogGroups",
+      "effect": aws_iam.Effect.ALLOW,
+      #XXX: The ARN will be formatted as follows:
+      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
+      "resources": [self.format_arn(service="logs", resource="log-group",
+       resource_name="/aws/kinesis-analytics/{}:log-stream:*".format(KDA_APP_NAME), sep=":")],
+      "actions": ["logs:DescribeLogGroups"]
+    }))
+
+    kda_exec_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "sid": "ListCloudwatchLogStreams",
       "effect": aws_iam.Effect.ALLOW,
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
       "resources": [self.format_arn(service="logs", resource="log-group",
-        resource_name="/aws/kinesis-analytics/{}:log-stream:*".format(KDA_APP_NAME), sep=":")],
+       resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")],
       "actions": ["logs:DescribeLogStreams"]
     }))
 
@@ -57,17 +66,7 @@ class MskReplicationStack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
       "resources": [self.format_arn(service="logs", resource="log-group",
-        resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")],
-      "actions": ["logs:PutLogEvents"]
-    }))
-
-    kda_exec_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "sid": "PutCloudwatchLogs",
-      "effect": aws_iam.Effect.ALLOW,
-      #XXX: The ARN will be formatted as follows:
-      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
-      "resources": [self.format_arn(service="logs", resource="log-group",
-        resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")],
+       resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")],
       "actions": ["logs:PutLogEvents"]
     }))
 
@@ -90,6 +89,7 @@ class MskReplicationStack(cdk.Stack):
       role_name='kinesis-analytics-{kda_app_name}-{region}'.format(region=cdk.Aws.REGION,
         kda_app_name=KDA_APP_NAME),
       assumed_by=aws_iam.ServicePrincipal('kinesisanalytics.amazonaws.com'),
+      path='/service-role/',
       inline_policies={
         'kinesis-analytics-service': kda_exec_role_policy_doc
       },
@@ -110,24 +110,11 @@ class MskReplicationStack(cdk.Stack):
       code_content_type='ZIPFILE'
     )
 
+    kda_flink_property_groups = self.node.try_get_context('kda_flink_property_groups')
+    _property_groups = [aws_kda_flink.CfnApplicationV2.PropertyGroupProperty(**elem)
+      for elem in kda_flink_property_groups]
     kda_flink_env_props = aws_kda_flink.CfnApplicationV2.EnvironmentPropertiesProperty(
-      property_groups = [
-        aws_kda_flink.CfnApplicationV2.PropertyGroupProperty(
-          property_group_id='KafkaSource',
-          property_map={
-            'topic': 'AWSMSKTutorial',
-            'bootstrap.servers': 'b-2.awskafkatutorialclust.4zlb5b.c12.kafka.us-east-1.amazonaws.com:9092,b-1.awskafkatutorialclust.4zlb5b.c12.kafka.us-east-1.amazonaws.com:9092,b-3.awskafkatutorialclust.4zlb5b.c12.kafka.us-east-1.amazonaws.com:9092'
-          }
-        ),
-        aws_kda_flink.CfnApplicationV2.PropertyGroupProperty(
-          property_group_id='KafkaSink',
-          property_map={
-            'topic': 'AWSMSKTutorial',
-            'bootstrap.servers': 'b-2.awskafkatutorialclust.4zlb5b.c12.kafka.us-east-1.amazonaws.com:9092,b-1.awskafkatutorialclust.4zlb5b.c12.kafka.us-east-1.amazonaws.com:9092,b-3.awskafkatutorialclust.4zlb5b.c12.kafka.us-east-1.amazonaws.com:9092',
-            'transaction.timeout.ms': '30000'
-          }
-        )
-      ]
+      property_groups = _property_groups
     )
 
     flink_app_config = aws_kda_flink.CfnApplicationV2.FlinkApplicationConfigurationProperty(
@@ -161,7 +148,7 @@ class MskReplicationStack(cdk.Stack):
 
     kda_app = aws_kda_flink.CfnApplicationV2(self, 'KdaMskReplication',
       runtime_environment='FLINK-1_11',
-      service_execution_role=kda_execution_role.role_name,
+      service_execution_role=kda_execution_role.role_arn,
       application_configuration=kda_flink_app_config,
       application_description='A Kinesis Data Analytics application that reads from one Amazon MSK topic and writes to another',
       application_name=KDA_APP_NAME
@@ -175,16 +162,21 @@ class MskReplicationStack(cdk.Stack):
 
     kda_app_log_stream = aws_logs.LogStream(self, 'KdaMskReplicationLogStream',
       log_group=kda_app_log_group,
-      log_stream_name='/aws/kinesis-analytics/{}'.format(KDA_APP_NAME),
+      log_stream_name='kinesis-analytics-log-stream',
       removal_policy=cdk.RemovalPolicy.DESTROY
     )
 
-    #const logStreamArn = `arn:${cdk.Aws.PARTITION}:logs:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:log-group:${logGroup.logGroupName}:log-stream:${logStream.logStreamName}`;
-    #kda_app_log_stream_arn = 
-#    aws_kda_flink.CfnApplicationCloudWatchLoggingOptionV2(self, 'KdaMskReplicationLog',
-#      application_name=kda_app.application_name,
-#      cloud_watch_logging_option=aws_kda_flink.CfnApplicationCloudWatchLoggingOptionV2.CloudWatchLoggingOptionProperty(log_stream_arn=kda_app_log_stream_arn)
-#    )
+    #XXX: The ARN will be formatted as follows:
+    # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
+    kda_app_log_stream_arn = self.format_arn(service="logs", resource="log-group",
+        resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")
+
+    kda_app_cw_log = aws_kda_flink.CfnApplicationCloudWatchLoggingOptionV2(self, 'KdaMskReplicationCWLog',
+      application_name=kda_app.application_name,
+      cloud_watch_logging_option=aws_kda_flink.CfnApplicationCloudWatchLoggingOptionV2.CloudWatchLoggingOptionProperty(log_stream_arn=kda_app_log_stream_arn)
+    )
+    kda_app_cw_log.add_depends_on(kda_app)
+
 
 app = cdk.App()
 MskReplicationStack(app, "MskReplicationStack",
