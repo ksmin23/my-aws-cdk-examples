@@ -137,6 +137,7 @@ class AuroraMysqlStack(core.Stack):
       security_groups=[sg_use_mysql, sg_mysql_public_proxy],
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC)
     )
+    db_proxy.node.add_dependency(db_cluster)
 
 
 app = core.App()
