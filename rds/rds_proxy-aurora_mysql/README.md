@@ -41,25 +41,41 @@ $ pip install -r requirements.txt
 
 At this point you can now synthesize the CloudFormation template for this code.
 
-```
+<pre>
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' -c db_secret_name='<db-secret-name> synth
-```
+$ cdk -c vpc_name='<i>your-existing-vpc-name</i>' \
+  -c db_cluster_name='<i>db-cluster-name</i>>' \
+  -c db_secret_name='<i>db-secret-name</i>' \
+  synth
+</pre>
 
-:information_source: Before you deploy this project, you should create an AWS Secret for your RDS User. You can create an AWS Secret like this:
+:information_source: Before you deploy this project, you should create an AWS Secret for your RDS Admin user. You can create an AWS Secret like this:
 
-```
+<pre>
 $ aws secretsmanager create-secret \
---name your_db_secret_name --description "application user" \
---secret-string '{"username":"your_user_name","password":"choose_your_own_password"}'
-```
+    --name <i>"your_db_secret_name"</i> \
+    --description "<i>(Optional) description of the secret</i>" \
+    --secret-string '{"username": "admin", "password": <i>"password_of_at_last_8_characters"</i>}'
+</pre>
+
+For example,
+
+<pre>
+$ aws secretsmanager create-secret \
+    --name "dev/rds/admin" \
+    --description "admin user for rds" \
+    --secret-string '{"username": "admin", "password": <i>"your admin password"</i>}'
+</pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
-```
-$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' -c db_secret_name='<db-secret-name> deploy
-```
+<pre>
+$ cdk -c vpc_name='<i>your-existing-vpc-name</i>' \
+  -c db_cluster_name='<i>db-cluster-name</i>' \
+  -c db_secret_name='<i>db-secret-name</i>' \
+  deploy
+</pre>
 
 ## Useful commands
 
@@ -144,8 +160,9 @@ mysql>
 
 ```
 aws secretsmanager create-secret \
---name guest_secret_name --description "application user" \
---secret-string '{"username":"guest","password":"choose_your_own_password"}'
+--name guest_secret_name \
+--description "application user" \
+--secret-string '{"username": "guest", "password": "choose_your_own_password"}'
 ```
 
 4. Modifying IAM Role so that RDS Proxy can access the secret of new MySQL User

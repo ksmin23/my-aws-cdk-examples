@@ -4,6 +4,7 @@
 
 import os
 import json
+import sys
 
 from aws_cdk import (
   core,
@@ -86,7 +87,7 @@ class AuroraMysqlStack(core.Stack):
     #XXX: arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
     db_secret_arn = 'arn:aws:secretsmanager:{region}:{account}:secret:{resource_name}'.format(
       region=core.Aws.REGION, account=core.Aws.ACCOUNT_ID, resource_name=db_secret_name)
-    db_secret = aws_secretsmanager.Secret.from_secret_arn(self, 'DBSecretFromArn', db_secret_arn)
+    db_secret = aws_secretsmanager.Secret.from_secret_partial_arn(self, 'DBSecretFromArn', db_secret_arn)
     rds_credentials = aws_rds.Credentials.from_secret(db_secret)
 
     db_cluster = aws_rds.DatabaseCluster(self, 'Database',
