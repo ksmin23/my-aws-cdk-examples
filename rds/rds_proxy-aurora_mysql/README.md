@@ -123,13 +123,14 @@ mysql> SHOW DATABASES;
 4 rows in set (0.00 sec)
 
 mysql> SELECT user FROM mysql.user;
-+-----------+
-| user      |
-+-----------+
-| admin     |
-| mysql.sys |
-| rdsadmin  |
-+-----------+
++---------------+
+| user          |
++---------------+
+| admin         |
+| rdsproxyadmin |
+| mysql.sys     |
+| rdsadmin      |
++---------------+
 3 rows in set (0.00 sec)
 
 mysql> CREATE USER 'guest'@'%' IDENTIFIED BY 'password';
@@ -143,14 +144,15 @@ mysql> SHOW GRANTS FOR 'guest'@'%';
 +-----------------------------------------------------------------------------------------------------+
 1 row in set (0.00 sec)
 mysql> SELECT user FROM mysql.user;
-+-----------+
-| user      |
-+-----------+
-| admin     |
-| guest     |
-| mysql.sys |
-| rdsadmin  |
-+-----------+
++---------------+
+| user          |
++---------------+
+| admin         |
+| guest         |
+| rdsproxyadmin |
+| mysql.sys     |
+| rdsadmin      |
++---------------+
 4 rows in set (0.00 sec)
 
 mysql>
@@ -158,16 +160,16 @@ mysql>
 
 3. Creating AWS Secret for a new MySQL User 
 
-```
+<pre>
 aws secretsmanager create-secret \
---name guest_secret_name \
---description "application user" \
---secret-string '{"username": "guest", "password": "choose_your_own_password"}'
-```
+    --name "<i>guest_secret_name</i>" \
+    --description "application user" \
+    --secret-string '{"username": "<i>guest</i>", "password": "<i>choose_your_own_password</i>"}'
+</pre>
 
 4. Modifying IAM Role so that RDS Proxy can access the secret of new MySQL User
 
-```
+<pre>
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -177,14 +179,14 @@ aws secretsmanager create-secret \
                 "secretsmanager:DescribeSecret"
             ],
             "Resource": [
-                "arn:aws:secretsmanager:us-east-2:account_id:secret:secret_name_1",
-                "arn:aws:secretsmanager:us-east-2:account_id:secret:secret_name_2"
+                "arn:aws:secretsmanager:<i>region_name</i>:<i>account_id:secret</i>:<i>secret_name_1-??????</i>",
+                "arn:aws:secretsmanager:<i>region_name</i>:<i>account_id:secret</i>:<i>secret_name_2-??????</i>",
             ],
             "Effect": "Allow"
         }
     ]
 }
-```
+</pre>
 
 5. Connecting to the database as a new MySQL user
    
