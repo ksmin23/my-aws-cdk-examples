@@ -44,6 +44,12 @@ At this point you can now synthesize the CloudFormation template for this code.
 $ cdk synth
 ```
 
+Use cdk deploy command to create the stack shown above.
+
+```
+$ cdk deploy
+```
+
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
@@ -57,3 +63,55 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## How to access Amazon Elasticsearch Service with web browser
+1. Generate the new private and public keys `mynew_key` and `mynew_key.pub`, respectively:
+
+   ```
+   $ ssh-keygen -t rsa -f mynew_key
+   ```
+
+2. To access the Elasticsearch Cluster, add the ssh tunnel configuration to the ssh config file of the personal local PC as follows
+
+    ```
+    # Elasticsearch Tunnel
+    Host estunnel
+        HostName <EC2 Public IP of Bastion Host>
+        User ec2-user
+        IdentitiesOnly yes
+        IdentityFile <Path to SSH Public Key>
+        LocalForward 9200 <Elasticsearch Endpoint>:443
+    ```
+
+    ex)
+
+    ```
+    ~$ ls -1 .ssh/
+    config
+    mynew_key
+    mynew_key.pub
+
+    ~$ tail .ssh/config
+    # Elasticsearch Tunnel
+    Host estunnel
+        HostName 214.132.71.219
+        User ubuntu
+        IdentitiesOnly yes
+        IdentityFile ~/.ssh/mynew_key.pub
+        LocalForward 9200 vpc-es-hol-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
+
+    ~$
+    ```
+
+3. Use the following AWS CLI command to authorize the user and push the public key to the instance using the send-ssh-public-key command. To support this, you need the latest version of the AWS CLI.
+
+   ```
+   $ aws ec2-instance-connect send-ssh-public-key --region us-east-1 --instance-id i-0989ec3292613a4f9 --availability-zone us-east-1a --instance-os-user ec2-user --ssh-public-key file://${HOME}/.ssh/mynew_key.pub
+   {
+     "RequestId": "505f8675-710a-11e9-9263-4d440e7745c6", 
+     "Success": true
+   } 
+   ```
+
+4. Run `ssh -N estunnel` in Terminal.
+5. Connect to `https://localhost:9200/_plugin/kibana/` in a web browser.

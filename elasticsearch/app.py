@@ -3,7 +3,7 @@
 from aws_cdk import (
   core,
   aws_ec2,
-  aws_iam, 
+  aws_iam,
   aws_elasticsearch
 )
 
@@ -12,7 +12,6 @@ class ElasticsearchStack(core.Stack):
   def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
-    # The code that defines your stack goes here
     # The code that defines your stack goes here
     vpc = aws_ec2.Vpc(self, "ElasticsearchHolVPC",
       max_azs=2,
