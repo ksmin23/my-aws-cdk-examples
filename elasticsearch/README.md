@@ -64,7 +64,7 @@ command.
 
 Enjoy!
 
-## How to access Amazon Elasticsearch Service with web browser
+## Remotely access your Amazon Elasticsearch Cluster using SSH tunnel from local machine
 1. Generate the new private and public keys `mynew_key` and `mynew_key.pub`, respectively:
 
    ```
@@ -105,13 +105,25 @@ Enjoy!
 
 3. Use the following AWS CLI command to authorize the user and push the public key to the instance using the send-ssh-public-key command. To support this, you need the latest version of the AWS CLI.
 
+   ex) Bastion Host's instance details
+   - Instance ID: `i-0989ec3292613a4f9`
+   - Availability Zone: `us-east-1a`
+   - Instance OS User: `ec2-user`
+
    ```
    $ aws ec2-instance-connect send-ssh-public-key --region us-east-1 --instance-id i-0989ec3292613a4f9 --availability-zone us-east-1a --instance-os-user ec2-user --ssh-public-key file://${HOME}/.ssh/mynew_key.pub
    {
-     "RequestId": "505f8675-710a-11e9-9263-4d440e7745c6", 
+     "RequestId": "505f8675-710a-11e9-9263-4d440e7745c6",
      "Success": true
    } 
    ```
 
 4. Run `ssh -N estunnel` in Terminal.
 5. Connect to `https://localhost:9200/_plugin/kibana/` in a web browser.
+6. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.
+   Since the log creation time of the test data is based on UTC, Kibana’s Timezone is also set to UTC.
+   ![kibana-management-advanced-setting](./resources/kibana-management-advanced-setting.png)
+
+#### References
+- [Windows SSH / Tunnel for Kibana Instructions - Amazon Elasticsearch Service](https://search-sa-log-solutions.s3-us-east-2.amazonaws.com/logstash/docs/Kibana_Proxy_SSH_Tunneling_Windows.pdf)
+- [Use an SSH Tunnel to access Kibana within an AWS VPC with PuTTy on Windows](https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/createesdashboard.html)
