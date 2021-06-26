@@ -70,7 +70,36 @@ command.
 
 Enjoy!
 
-## How to access Amazon Elasticsearch Service with web browser
+## Test
+1. Checkout the code to generate sample data into Kinesis Data Firehose.
+
+    ```
+    $ python3 -m venv .env
+    $ source .env/bin/activate
+    (.env) $ ls -1
+    README.md
+    amazon-ekk-stack-arch.svg
+    app.py
+    cdk.context.json
+    cdk.json
+    requirements.txt
+    resources
+    test
+    (.env) $ ls test
+    gen_firehose_data.py
+    (.env) $
+    ```
+
+2. Run the test code. For example,
+   - AWS Region: `us-east-1`
+   - Kinesis Data Fireshose Stream Name: `retail-trans`
+
+    ```
+    (.env) $ python test/gen_firehose_data.py --region-name us-east-1 --stream-name retail-trans --count 10
+    (.env) $
+    ```
+
+## Remotely access your Amazon Elasticsearch Cluster using SSH tunnel from local machine
 1. Generate the new private and public keys `mynew_key` and `mynew_key.pub`, respectively:
    
    ```
@@ -109,9 +138,12 @@ Enjoy!
     ~$
     ```
 
-3. Use the following AWS CLI command to authorize the user and push the public key to the instance using the send-ssh-public-key command. To support this, you need the latest version of the AWS CLI.
+3. Use the following AWS CLI command to authorize the user and push the public key to the instance using the `send-ssh-public-key` command. To support this, you need the latest version of the AWS CLI.
   
-   ex)
+   ex) Bastion Host's instance details
+   - Instance ID: `i-0989ec3292613a4f9`
+   - Availability Zone: `us-east-1a`
+   - Instance OS User: `ec2-user`
  
    ```
    $ aws ec2-instance-connect send-ssh-public-key \
@@ -129,3 +161,6 @@ Enjoy!
 
 4. Run `ssh -N estunnel` in Terminal.
 5. Connect to `https://localhost:9200/_plugin/kibana/` in a web browser.
+6. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.
+   Since the log creation time of the test data is based on UTC, Kibana’s Timezone is also set to UTC.
+   ![kibana-management-advanced-setting](./resources/kibana-management-advanced-setting.png)
