@@ -168,3 +168,9 @@ Enjoy!
 #### References
 - [Windows SSH / Tunnel for Kibana Instructions - Amazon Elasticsearch Service](https://search-sa-log-solutions.s3-us-east-2.amazonaws.com/logstash/docs/Kibana_Proxy_SSH_Tunneling_Windows.pdf)
 - [Use an SSH Tunnel to access Kibana within an AWS VPC with PuTTy on Windows](https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/createesdashboard.html)
+
+## Considerations
+Check the following questions before using Kinesis Data Firehose to ingest documents into Amazon Elasticsearch Service
+- [ ] Need to change `_type`?
+- [ ] Should update documents in Amazon Elasticsearch Service
+- [ ] Want to use custome `_id` instead of auto generated `_id` by Elasticsearch
