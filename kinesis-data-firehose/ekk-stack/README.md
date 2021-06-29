@@ -172,5 +172,5 @@ Enjoy!
 ## Considerations
 Check the following questions before using Kinesis Data Firehose to ingest documents into Amazon Elasticsearch Service
 - [ ] Need to change `_type`?
-- [ ] Should update documents in Amazon Elasticsearch Service
-- [ ] Want to use custome `_id` instead of auto generated `_id` by Elasticsearch
+- [ ] Should update documents in Amazon Elasticsearch Service?
+- [ ] Want to use custome `_id` instead of auto generated `_id` by Elasticsearch?
