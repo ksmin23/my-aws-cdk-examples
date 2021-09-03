@@ -1,0 +1,6 @@
+aws-cdk.aws-ec2==1.121.0
+aws-cdk.aws-iam==1.121.0
+aws-cdk.aws-logs==1.121.0
+aws-cdk.aws-mwaa==1.121.0
+aws-cdk.aws-s3==1.121.0
+aws-cdk.core==1.121.0
