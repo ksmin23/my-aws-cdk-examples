@@ -48,17 +48,17 @@ Check this [Create an Amazon S3 bucket for Amazon MWAA](https://docs.aws.amazon.
 ## Deploy
 At this point you can now synthesize the CloudFormation template for this code.
 
-```
+<pre>
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 $ cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' synth
-```
+</pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
-```
+<pre>
 cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' deploy
-```
+</pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
