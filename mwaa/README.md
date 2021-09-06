@@ -75,6 +75,7 @@ command.
 ## Learn more
 
  * [Orchestrate AWS Glue DataBrew jobs using Amazon Managed Workflows for Apache Airflow](https://aws.amazon.com/blogs/big-data/orchestrate-aws-glue-databrew-jobs-using-amazon-managed-workflows-for-apache-airflow/)
+   * Code Repository: [aws-mwaa-glue-databrew-nytaxi](https://github.com/ksmin23/aws-mwaa-glue-databrew-nytaxi)
  * [Amazon MWAA for Analytics Workshop](https://amazon-mwaa-for-analytics.workshop.aws/en/)
  * [Get started with Amazon Managed Workflows for Apache Airflow \(MWAA\)](https://docs.aws.amazon.com/mwaa/latest/userguide/get-started.html)
 
