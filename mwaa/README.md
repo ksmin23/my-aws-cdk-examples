@@ -1,5 +1,5 @@
 
-# Amazon Managed workflows for Apache Airflow (MWAA) CDK Python project!
+# Amazon Managed Workflows for Apache Airflow (MWAA) CDK Python project!
 
 ![amazon-mwaa](./mwaa-arch.svg)
 
