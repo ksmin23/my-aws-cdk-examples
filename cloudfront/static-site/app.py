@@ -15,12 +15,15 @@ class MyStaticSiteStack(cdk.Stack):
   def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    # The code that defines your stack goes here
-    s3_bucket_name = self.node.try_get_context('s3_bucket_for_static_contents')
-    site_bucket = s3.Bucket.from_bucket_name(self, "S3BucketForStaticContent", s3_bucket_name)
+    s3_bucket_name = cdk.CfnParameter(self, 'S3BucketForStaticContents',
+      type='String',
+      description='s3 bucket that the site contents are deployed to'
+    )
+
+    site_bucket = s3.Bucket.from_bucket_name(self, 'S3BucketForStaticSite', s3_bucket_name.value_as_string)
 
     cloudfrontOAI = cloudfront.OriginAccessIdentity(self, 'CloudFrontOAI',
-      comment="Allows CloudFront to reach the bucket: {name}".format(name=s3_bucket_name)
+      comment="Allows CloudFront to reach the bucket: {name}".format(name=s3_bucket_name.value_as_string)
     );
     cloudfrontOAI.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 

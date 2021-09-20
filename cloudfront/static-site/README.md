@@ -56,13 +56,22 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk -c s3_bucket_for_static_contents='<i>your-s3-bucket-for-static-contents</i>' synth
+$ cdk synth --parameters S3BucketForStaticContents='<i>your-s3-bucket-for-static-contents</i>'
+</pre>
+
+If you generate a CloudFormation template based on our current CDK app, you would see the plain CloudFormation Parameters section:
+
+<pre>
+Parameters:
+  S3BucketForStaticContents:
+    Type: String
+    Description: s3 bucket that the site contents are deployed to
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-cdk -c s3_bucket_for_static_contents='<i>your-s3-bucket-for-static-contents</i>' deploy
+cdk deploy --parameters S3BucketForStaticContents='<i>your-s3-bucket-for-static-contents</i>'
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
