@@ -49,7 +49,7 @@ class MyStaticSiteStack(cdk.Stack):
     cdk.CfnOutput(self, 'SiteBucket', value=site_bucket.bucket_name, export_name='SiteBucket')
     cdk.CfnOutput(self, 'DistributionId', value=distribution.distribution_id, export_name='DistributionId')
     cdk.CfnOutput(self, 'DistributionDomainName', value=distribution.distribution_domain_name, export_name='DistributionDomainName')
-    cdk.CfnOutput(self, 'CloudFrontOAI', value=cloudfrontOAI.cloud_front_origin_access_identity_s3_canonical_user_id, export_name='CloudFrontOAI')
+    cdk.CfnOutput(self, 'CloudFrontOriginAccessId', value=cloudfrontOAI.cloud_front_origin_access_identity_s3_canonical_user_id, export_name='CloudFrontOAI')
 
 
 app = cdk.App()
