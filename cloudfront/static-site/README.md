@@ -1,7 +1,9 @@
 
-# Welcome to your CDK Python project!
+# Amazon CloudFront CDK Python project!
 
-This is a blank project for Python development with CDK.
+![cloudfront-s3-static-site](./cloudfront-s3-static-site-arch.svg)
+
+This example creates the infrastructure for a static site, which uses an S3 bucket for storing the content.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -37,11 +39,31 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
+## Before you deploy
+Before you deploy this project, you should create an Amazon S3 bucket to store your site contents.
+The site contents (located in the 'site-contents' sub-directory) are deployed to the bucket.
+
+For example,
+
+<pre>
+$ aws s3 sync ./static-contents/ s3://<i>your-s3-bucket-for-static-content</i>/
+<pre>
+
+## Deploy
+
 At this point you can now synthesize the CloudFormation template for this code.
 
-```
-$ cdk synth
-```
+<pre>
+$ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+$ cdk -c s3_bucket_for_static_contents='<i>your-s3-bucket-for-static-contents</i>' synth
+</pre>
+
+Use `cdk deploy` command to create the stack shown above.
+
+<pre>
+cdk -c s3_bucket_for_static_contents='<i>your-s3-bucket-for-static-contents</i>' deploy
+</pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
@@ -54,5 +76,9 @@ command.
  * `cdk deploy`      deploy this stack to your default AWS account/region
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
+
+## Learn more
+ * [Static Site CDK Typescript example \(experimental\)](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/static-site)
+ * [Restricting access to Amazon S3 content by using an origin access identity \(OAI\)](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
 
 Enjoy!
