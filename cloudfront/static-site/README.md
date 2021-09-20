@@ -47,7 +47,7 @@ For example,
 
 <pre>
 $ aws s3 sync ./static-contents/ s3://<i>your-s3-bucket-for-static-content</i>/
-<pre>
+</pre>
 
 ## Deploy
 
