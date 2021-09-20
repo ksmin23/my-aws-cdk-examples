@@ -41,8 +41,16 @@ class MyStaticSiteStack(cdk.Stack):
       default_behavior=cloudfront.BehaviorOptions(
         origin=cf_origins.S3Origin(bucket=site_bucket, origin_access_identity=cloudfrontOAI)
       ),
-      error_responses=[cloudfront.ErrorResponse(http_status=403, response_http_status=200,
-        response_page_path='/index.html', ttl=cdk.Duration.seconds(10))]
+      error_responses=[
+        #XXX: If you have accessed root page of cloudfront url (i.e. https://your-domain.cloudfront.net/),
+        #XXX: 403:Forbidden error might occur. In order to prevent this error,
+        #XXX: configure 403:Forbidden error response page to be 'index.html'
+        cloudfront.ErrorResponse(http_status=403, response_http_status=200,
+          response_page_path='/index.html', ttl=cdk.Duration.seconds(10)),
+        #XXX: Configure 404:NotFound error response page to be 'error.html'
+        cloudfront.ErrorResponse(http_status=404, response_http_status=404,
+          response_page_path='/error.html', ttl=cdk.Duration.seconds(10))
+      ]
     )
 
     cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
