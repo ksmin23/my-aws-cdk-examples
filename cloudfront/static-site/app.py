@@ -16,7 +16,7 @@ class MyStaticSiteStack(cdk.Stack):
     super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
-    s3_bucket_name = self.node.try_get_context('s3_bucket_for_static_content')
+    s3_bucket_name = self.node.try_get_context('s3_bucket_for_static_contents')
     site_bucket = s3.Bucket.from_bucket_name(self, "S3BucketForStaticContent", s3_bucket_name)
 
     cloudfrontOAI = cloudfront.OriginAccessIdentity(self, 'CloudFrontOAI',
