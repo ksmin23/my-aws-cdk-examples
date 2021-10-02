@@ -43,6 +43,7 @@ class AWSRegionProvider(BaseProvider):
 
 if __name__ == '__main__':
   import argparse
+  import datetime
   import itertools
   import random
   import sys
@@ -66,6 +67,8 @@ if __name__ == '__main__':
   fake.add_provider(AWSRegionProvider)
   fake.set_arguments('customer_id_format', {'string_format': '%###########'})
   fake.set_arguments('devices', {'elements': ['pc', 'mobile', 'tablet']})
+  fake.set_arguments('event_start_datetime',
+    {'start_datetime': datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0)})
 
   DATA_COLUMNS = {
     'type': {
@@ -73,7 +76,7 @@ if __name__ == '__main__':
       'event': 'event_type'
     },
     'customer_id': 'pystr_format:customer_id_format',
-    'event_timestamp': 'unix_time',
+    'event_timestamp': 'unix_time:event_start_datetime',
     'region': 'aws_region'
   }
 
