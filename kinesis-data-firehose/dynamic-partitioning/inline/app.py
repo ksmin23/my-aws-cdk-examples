@@ -166,7 +166,7 @@ class FirehoseToS3Stack(cdk.Stack):
         metadata_extraction_proc
       ]
     )
-  
+
     ext_s3_dest_config = cfn.ExtendedS3DestinationConfigurationProperty(
       bucket_arn=s3_bucket.bucket_arn,
       role_arn=firehose_role.role_arn,
