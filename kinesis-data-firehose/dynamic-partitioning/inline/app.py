@@ -202,7 +202,6 @@ class FirehoseToS3Stack(cdk.Stack):
     )
 
     cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
-    stream_name = FIREHOSE_STREAM_NAME.value_as_string
     cdk.CfnOutput(self, '{}_S3DestBucket'.format(self.stack_name), value=s3_bucket.bucket_name, export_name='S3DestBucket')
 
 
