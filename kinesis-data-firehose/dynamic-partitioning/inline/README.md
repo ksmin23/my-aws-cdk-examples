@@ -1,6 +1,8 @@
 
 # Dynamic Partitioning in Kinesis Data Firehose: Creating partitioning keys with inline parsing
 
+![firehose_dynamic_partition_with_inline](./firehose_dynamic_partition_with_inline.svg)
+
 This is a kinesis data firehose dynamic partitioning project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
