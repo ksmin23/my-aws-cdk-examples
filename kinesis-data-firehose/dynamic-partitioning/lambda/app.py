@@ -23,18 +23,18 @@ class FirehoseToS3LambdaStack(cdk.Stack):
   def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    vpc_name = self.node.try_get_context("vpc_name")
-    vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
-      is_default=True,
-      vpc_name=vpc_name)
-    # vpc = aws_ec2.Vpc(self, "FirehoseToS3VPC",
-    #   max_azs=2,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
-    # )
+    # vpc_name = self.node.try_get_context("vpc_name")
+    # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
+    #   is_default=True,
+    #   vpc_name=vpc_name)
+    vpc = aws_ec2.Vpc(self, "FirehoseToS3VPC",
+      max_azs=2,
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     S3_BUCKET_SUFFIX = ''.join(random.sample((string.ascii_lowercase + string.digits), k=7))
     s3_bucket = s3.Bucket(self, "s3bucket",
@@ -48,7 +48,7 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       default='PUT-S3-{}'.format(''.join(random.sample((string.ascii_letters), k=5)))
     )
 
-    FIREHOSE_BUFFER_SIZE=cdk.CfnParameter(self, 'FirehoseBufferSize',
+    FIREHOSE_BUFFER_SIZE = cdk.CfnParameter(self, 'FirehoseBufferSize',
       type='Number',
       description='kinesis data firehose buffer size',
       min_value=1,
@@ -56,12 +56,36 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       default=128
     )
 
-    FIREHOSE_BUFFER_INTERVAL=cdk.CfnParameter(self, 'FirehoseBufferInterval',
+    FIREHOSE_BUFFER_INTERVAL = cdk.CfnParameter(self, 'FirehoseBufferInterval',
       type='Number',
       description='kinesis data firehose buffer interval',
       min_value=60,
       max_value=300,
       default=60
+    )
+
+    FIREHOSE_LAMBDA_BUFFER_SIZE = cdk.CfnParameter(self, 'FirehoseLambdaBufferSize',
+      type='Number',
+      description='kinesis data firehose buffer size for AWS Lambda to transform records',
+      min_value=1,
+      max_value=3,
+      default=3
+    )
+
+    FIREHOSE_LAMBDA_BUFFER_INTERVAL = cdk.CfnParameter(self, 'FirehoseLambdaBufferInterval',
+      type='Number',
+      description='kinesis data firehose buffer interval for AWS Lambda to transform records',
+      min_value=60,
+      max_value=900,
+      default=300
+    )
+
+    FIREHOSE_LAMBDA_NUMBER_OF_RETRIES = cdk.CfnParameter(self, 'FirehoseLambdaNumberOfRetries',
+      type='Number',
+      description='Number of retries for AWS Lambda to transform records in kinesis data firehose',
+      min_value=1,
+      max_value=5,
+      default=3
     )
 
     FIREHOSE_TO_S3_PREFIX = cdk.CfnParameter(self, 'FirehosePrefix',
@@ -75,6 +99,7 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       default='error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}'
     )
 
+    METADATA_EXTRACT_LAMBDA_FN_NAME = "MetadataExtractor"
     metadata_extract_lambda_fn = aws_lambda.Function(self, "MetadataExtractor",
       runtime=aws_lambda.Runtime.PYTHON_3_7,
       function_name="MetadataExtractor",
@@ -84,35 +109,18 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       timeout=cdk.Duration.minutes(5)
     )
 
-    metadata_extract_lambda_fn.add_to_role_policy(aws_iam.PolicyStatement(
-      effect=aws_iam.Effect.ALLOW,
-      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
-      resources=[self.format_arn(partition="aws", service="logs", region=cdk.Aws.REGION, 
-        account=cdk.Aws.ACCOUNT_ID,resource="*")],
-      actions=["logs:CreateLogGroup"]
-    ))
+    log_group = aws_logs.LogGroup(self, "MetadataExtractorLogGroup",
+      #XXX: Circular dependency between resources occurs
+      # if aws_lambda.Function.function_name is used
+      # instead of literal name of lambda function such as "MetadataExtractor"
+      log_group_name="/aws/lambda/{}".format(METADATA_EXTRACT_LAMBDA_FN_NAME),
+      retention=aws_logs.RetentionDays.THREE_DAYS,
+      removal_policy=cdk.RemovalPolicy.DESTROY
+    )
+    log_group.grant_write(metadata_extract_lambda_fn)
 
-    metadata_extract_lambda_fn.add_to_role_policy(aws_iam.PolicyStatement(
-      effect=aws_iam.Effect.ALLOW,
-      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
-      resources=[self.format_arn(partition="aws", service="logs", region=cdk.Aws.REGION, 
-        account=cdk.Aws.ACCOUNT_ID, resource="log-group",
-        resource_name="/aws/lambda/MetadataExtractor:*", sep=":")
-      ],
-      actions=[
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ]
-    ))
-  
-    # log_group = aws_logs.LogGroup(self, "MetadataExtractorLogGroup",
-    #   log_group_name="/aws/lambda/{}".format(metadata_extract_lambda_fn.function_name),
-    #   retention=aws_logs.RetentionDays.THREE_DAYS,
-    #   removal_policy=cdk.RemovalPolicy.DESTROY
-    # )
-    # log_group.grant_write(metadata_extract_lambda_fn)
-  
     firehose_role_policy_doc = aws_iam.PolicyDocument()
+
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
       "resources": [s3_bucket.bucket_arn, "{}/*".format(s3_bucket.bucket_arn)],
@@ -147,10 +155,22 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       actions=["logs:PutLogEvents"]
     ))
 
+    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      #XXX: The ARN will be formatted as follows:
+      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+      "resources": [self.format_arn(partition="aws", service="lambda",
+        region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, resource="function",
+        resource_name="{}:*".format(metadata_extract_lambda_fn.function_name), sep=":")],
+      "actions": ["lambda:InvokeFunction",
+        "lambda:GetFunctionConfiguration"]
+    }))
+
     firehose_role = aws_iam.Role(self, "KinesisFirehoseServiceRole",
       role_name="KinesisFirehoseServiceRole-{stream_name}-{region}".format(
         stream_name=FIREHOSE_STREAM_NAME.value_as_string, region=cdk.Aws.REGION),
       assumed_by=aws_iam.ServicePrincipal("firehose.amazonaws.com"),
+      path='/service-role/',
       #XXX: use inline_policies to work around https://github.com/aws/aws-cdk/issues/5221
       inline_policies={
         "firehose_role_policy": firehose_role_policy_doc
@@ -162,11 +182,11 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       parameters=[
         cfn.ProcessorParameterProperty(
           parameter_name="LambdaArn",
-          parameter_value=metadata_extract_lambda_fn.function_arn
+          parameter_value='{}:{}'.format(metadata_extract_lambda_fn.function_arn, metadata_extract_lambda_fn.current_version.version)
         ),
         cfn.ProcessorParameterProperty(
           parameter_name="NumberOfRetries",
-          parameter_value="3"
+          parameter_value=FIREHOSE_LAMBDA_NUMBER_OF_RETRIES.value_as_string
         ),
         cfn.ProcessorParameterProperty(
           parameter_name="RoleArn",
@@ -174,11 +194,11 @@ class FirehoseToS3LambdaStack(cdk.Stack):
         ),
         cfn.ProcessorParameterProperty(
           parameter_name="BufferSizeInMBs",
-          parameter_value="3" # 1~3MiBs
+          parameter_value=FIREHOSE_LAMBDA_BUFFER_SIZE.value_as_string
         ),
         cfn.ProcessorParameterProperty(
           parameter_name="BufferIntervalInSeconds",
-          parameter_value="300" # 60~900 sec
+          parameter_value=FIREHOSE_LAMBDA_BUFFER_INTERVAL.value_as_string
         )
       ]
     )
@@ -211,7 +231,7 @@ class FirehoseToS3LambdaStack(cdk.Stack):
         lambda_proc
       ]
     )
-  
+
     ext_s3_dest_config = cfn.ExtendedS3DestinationConfigurationProperty(
       bucket_arn=s3_bucket.bucket_arn,
       role_arn=firehose_role.role_arn,
@@ -246,8 +266,8 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       tags=[{"key": "Name", "value": FIREHOSE_STREAM_NAME.value_as_string}]
     )
 
-    #cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
-    #cdk.CfnOutput(self, '{}_S3DestBucket'.format(self.stack_name), value=s3_bucket.bucket_name, export_name='S3DestBucket')
+    cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
+    cdk.CfnOutput(self, '{}_S3DestBucket'.format(self.stack_name), value=s3_bucket.bucket_name, export_name='S3DestBucket')
 
 
 app = cdk.App()

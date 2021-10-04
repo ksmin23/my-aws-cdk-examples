@@ -17,7 +17,7 @@ if len(LOGGER.handlers) > 0:
 else:
   logging.basicConfig(level=logging.INFO)
 
- 
+
 # Signature for all Lambda functions that user must implement
 def lambda_handler(firehose_records_input, context):
   LOGGER.debug("Received records for processing from DeliveryStream: {deliveryStreamArn}, Region: {region}, and InvocationId: {invocationId}".format(
