@@ -9,7 +9,6 @@ from aws_cdk import (
   aws_ec2,
   aws_iam,
   aws_lambda,
-  aws_lambda_destinations,
   aws_logs,
   aws_s3 as s3,
   aws_kinesisfirehose
@@ -19,7 +18,7 @@ from aws_cdk.aws_kinesisfirehose import CfnDeliveryStream as cfn
 
 random.seed(31)
 
-class FirehoseLambdaAsyncInvokeStack(cdk.Stack):
+class FirehoseDataTransformStack(cdk.Stack):
 
   def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
@@ -70,8 +69,7 @@ class FirehoseLambdaAsyncInvokeStack(cdk.Stack):
       description='kinesis data firehose buffer size for AWS Lambda to transform records',
       min_value=1,
       max_value=3,
-      default=1
-      # default=3
+      default=3
     )
 
     FIREHOSE_LAMBDA_BUFFER_INTERVAL = cdk.CfnParameter(self, 'FirehoseLambdaBufferInterval',
@@ -79,8 +77,7 @@ class FirehoseLambdaAsyncInvokeStack(cdk.Stack):
       description='kinesis data firehose buffer interval for AWS Lambda to transform records',
       min_value=60,
       max_value=900,
-      default=60
-      # default=300
+      default=300
     )
 
     FIREHOSE_LAMBDA_NUMBER_OF_RETRIES = cdk.CfnParameter(self, 'FirehoseLambdaNumberOfRetries',
@@ -253,7 +250,7 @@ class FirehoseLambdaAsyncInvokeStack(cdk.Stack):
 
 
 app = cdk.App()
-FirehoseLambdaAsyncInvokeStack(app, "FirehoseLambdaAsyncInvokeStack",
+FirehoseDataTransformStack(app, "FirehoseDataTransformStack",
   env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
     region=os.getenv('CDK_DEFAULT_REGION')))
 

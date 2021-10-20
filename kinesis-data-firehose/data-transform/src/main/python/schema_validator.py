@@ -3,7 +3,6 @@
 #vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import base64
-import datetime
 import json
 import logging
 import collections
@@ -14,9 +13,9 @@ if len(LOGGER.handlers) > 0:
   # The Lambda environment pre-configures a handler logging to stderr.
   # If a handler is already configured, `.basicConfig` does not execute.
   # Thus we set the level directly.
-  LOGGER.setLevel(logging.DEBUG)
+  LOGGER.setLevel(logging.INFO)
 else:
-  logging.basicConfig(level=logging.DEBUG)
+  logging.basicConfig(level=logging.INFO)
 
 
 def check_schema(json_value):
