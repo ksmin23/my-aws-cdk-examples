@@ -1,6 +1,8 @@
 
 # AWS Lambda Asynchronous Invocation
 
+![aws-lambda-async-invocation](./aws-lambda-async-invocation.svg)
+
 This is a example of AWS Lambda Asynchronous Invocation with Python CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
