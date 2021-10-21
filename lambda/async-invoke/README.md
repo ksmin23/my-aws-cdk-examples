@@ -83,4 +83,23 @@ If you would like to know more about the usage of this command, you can type
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
 
+## Gotchas
+
+ * You *CANNOT* test destinations with the "Test" button in the AWS Web console, only CLI calls of the `Event` type.<br/>
+   For example,
+   ```
+   aws lambda invoke \
+      --function-name my-function \
+      --invocation-type Event \
+      --cli-binary-format raw-in-base64-out \
+      --payload '{ "key": "value" }' response.json
+   ```
+
+## Learn more
+
+ * [Introducing AWS Lambda Destinations](https://aws.amazon.com/blogs/compute/introducing-aws-lambda-destinations/)
+ * [Understanding the Different Ways to Invoke Lambda Functions](https://aws.amazon.com/blogs/architecture/understanding-the-different-ways-to-invoke-lambda-functions/)
+ * [Lambda Destinations: What We Learned the Hard Way](https://www.trek10.com/blog/lambda-destinations-what-we-learned-the-hard-way)
+ * [Using AWS Lambda with other services](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html)
+
 Enjoy!
