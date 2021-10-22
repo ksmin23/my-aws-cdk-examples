@@ -9,3 +9,8 @@ aws-cdk.core==1.125.0
 # For testing
 boto3==1.18.53
 Faker==8.14.1
+
+# packages for aws lambda layer
+# DO NOT REMOVE [[layers]] comment
+#[[layers]]
+fastavro==1.4.5

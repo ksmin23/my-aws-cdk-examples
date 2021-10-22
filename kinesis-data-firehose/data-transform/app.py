@@ -100,14 +100,32 @@ class FirehoseDataTransformStack(cdk.Stack):
       default='error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}'
     )
 
+    LAMBDA_LAYER_CODE_S3_BUCKET = cdk.CfnParameter(self, 'LambdaLayerCodeS3BucketName',
+      type='String',
+      description='S3 bucket for lambda layer codes'
+    )
+
+    LAMBDA_LAYER_CODE_S3_OBJ_KEY = cdk.CfnParameter(self, 'LambdaLayerCodeS3ObjectKey',
+      type='String',
+      description='S3 object key for lambda layer codes'
+    )
+
+    s3_lambda_layer_lib_bucket = s3.Bucket.from_bucket_name(self, "LambdaLayerS3Bucket", LAMBDA_LAYER_CODE_S3_BUCKET.value_as_string)
+    lambda_lib_layer = aws_lambda.LayerVersion(self, "SchemaValidatorLib",
+      layer_version_name="fastavro-lib",
+      compatible_runtimes=[aws_lambda.Runtime.PYTHON_3_9],
+      code=aws_lambda.Code.from_bucket(s3_lambda_layer_lib_bucket, LAMBDA_LAYER_CODE_S3_OBJ_KEY.value_as_string)
+    )
+
     SCHEMA_VALIDATOR_LAMBDA_FN_NAME = "SchemaValidator"
     schema_validator_lambda_fn = aws_lambda.Function(self, "SchemaValidator",
-      runtime=aws_lambda.Runtime.PYTHON_3_7,
+      runtime=aws_lambda.Runtime.PYTHON_3_9,
       function_name="SchemaValidator",
       handler="schema_validator.lambda_handler",
       description="Check if records have valid schema",
       code=aws_lambda.Code.asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
-      timeout=cdk.Duration.minutes(5)
+      timeout=cdk.Duration.minutes(5),
+      layers=[lambda_lib_layer]
     )
 
     log_group = aws_logs.LogGroup(self, "SchemaValidatorLogGroup",

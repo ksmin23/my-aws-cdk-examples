@@ -7,6 +7,7 @@ import json
 import logging
 import collections
 
+import fastavro
 
 LOGGER = logging.getLogger()
 if len(LOGGER.handlers) > 0:
@@ -18,16 +19,55 @@ else:
   logging.basicConfig(level=logging.INFO)
 
 
-def check_schema(json_value):
-  is_valid = True
-  for v in json_value.values():
-    if not v:
-       is_valid = False
-       break
-    elif type(v) == type({}):
-       is_valid = check_schema(v)
-  return is_valid
+ORIGINAL_SCHEMA = {
+  'name': 'Interactions',
+  'type': 'record',
+  'fields': [
+    {
+      'name': 'type',
+      'type': {
+        'name': 'EventType',
+        'type': 'record',
+        'fields':[
+          {
+            'name': 'device',
+            'type': {
+              'name': 'DeviceType',
+              'type': 'enum',
+              'symbols': ['pc', 'mobile', 'tablet']
+            }
+          },
+          {
+            'name': 'event',
+            'type': 'string'
+          }
+        ]
+      }
+    },
+    {
+      'name': 'customer_id',
+      'type': 'string'
+    },
+    {
+      'name': 'event_timestamp',
+      'type': 'long',
+      'logicalType': 'timestamp-millis'
+    },
+    {
+      'name': 'region',
+      'type': ['string', 'null']
+    }
+  ]
+}
 
+PARSED_SCHEMA = fastavro.parse_schema(ORIGINAL_SCHEMA)
+
+def check_schema(record):
+  try:
+    return fastavro.validation.validate(record, PARSED_SCHEMA, raise_errors=False)
+  except Exception as ex:
+    LOGGER.error(ex)
+    return False
 
 # Signature for all Lambda functions that user must implement
 def lambda_handler(firehose_records_input, context):
@@ -35,21 +75,21 @@ def lambda_handler(firehose_records_input, context):
     deliveryStreamArn=firehose_records_input['deliveryStreamArn'],
     region=firehose_records_input['region'],
     invocationId=firehose_records_input['invocationId']))
- 
+
   # Create return value.
   firehose_records_output = {'records': []}
 
   counter = collections.Counter(total=0, valid=0, invalid=0)
- 
+
   # Create result object.
   # Go through records and process them
   for firehose_record_input in firehose_records_input['records']:
     counter['total'] += 1
- 
+
     # Get user payload
     payload = base64.b64decode(firehose_record_input['data'])
     json_value = json.loads(payload)
- 
+
     LOGGER.debug("Record that was received: {}".format(json_value))
 
     #TODO: check if schema is valid
@@ -72,7 +112,7 @@ def lambda_handler(firehose_records_input, context):
       # 'ProcessFailed' record will be put into error bucket in S3
       'result': 'Ok' if is_valid else 'ProcessingFailed' # [Ok, Dropped, ProcessingFailed]
     }
- 
+
     # Must set proper record ID
     # Add the record to the list of output records.
     firehose_records_output['records'].append(firehose_record_output)
@@ -90,7 +130,7 @@ if __name__ == '__main__':
     {
       "type": {
         "device": "mobile",
-        "event": "list"
+        "event": "visit"
       },
       "customer_id": "123456789012",
       "event_timestamp": 1633268355,
@@ -98,8 +138,17 @@ if __name__ == '__main__':
     },
     {
       "type": {
-        "device": None,
-        "event": "list"
+        "device": "pc",
+        "event": "view"
+      },
+      "customer_id": "123456789012",
+      "event_timestamp": 1633268355,
+      "region": "ap-east-1"
+    },
+    {
+      "type": {
+        "device": "tablet",
+        "event": "purchase"
       },
       "customer_id": "123456789012",
       "event_timestamp": 1633268355,
@@ -108,11 +157,10 @@ if __name__ == '__main__':
     {
       "type": {
         "device": "mobile",
-        "event": None 
+        "event": "list"
       },
       "customer_id": "123456789012",
-      "event_timestamp": 1633268355,
-      "region": "ap-east-1"
+      "event_timestamp": 1633268355
     },
     {
       "type": {
@@ -122,6 +170,57 @@ if __name__ == '__main__':
       "customer_id": "123456789012",
       "event_timestamp": 1633268355,
       "region": None
+    },
+    {
+      "type": {
+        "device": "Andriod", # invalid 'device'
+        "event": "purchase"
+      },
+      "customer_id": "123456789012",
+      "event_timestamp": 1633268355,
+      "region": "ap-east-1"
+    },
+    {
+      "type": {
+        "device": "mobile"
+        # missing 'event'
+      },
+      "customer_id": "123456789012",
+      "event_timestamp": 1633268355,
+      "region": "ap-east-1"
+    },
+    {
+      "type": {
+        "device": "mobile",
+        "event": "cart"
+      },
+      "customer_id": "123456789012",
+      "event_timestamp": 1633268355.123, # invalid timestamp
+      "region": "ap-east-1"
+    },
+    {
+      # missing 'type'
+      "customer_id": "123456789012",
+      "event_timestamp": 1633268355,
+      "region": "ap-east-1"
+    },
+    {
+      "type": {
+        "device": "mobile",
+        "event": "list"
+      },
+      # missing 'customer_id'
+      "event_timestamp": 1633268355,
+      "region": "ap-east-1"
+    },
+    {
+      "type": {
+        "device": "mobile",
+        "event": "list"
+      },
+      "customer_id": "123456789012",
+      # missing 'event_timestamp'
+      "region": "ap-east-1"
     }
   ]
 
