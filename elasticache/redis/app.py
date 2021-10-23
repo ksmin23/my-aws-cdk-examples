@@ -14,7 +14,6 @@ class RedisStack(core.Stack):
   def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
-    # The code that defines your stack goes here
     vpc = aws_ec2.Vpc(self, 'RedisVPC',
       max_azs=2
     )
@@ -37,6 +36,8 @@ class RedisStack(core.Stack):
 
     sg_elasticache.add_ingress_rule(peer=sg_use_elasticache, connection=aws_ec2.Port.tcp(6379),
       description='use-default-redis')
+    sg_elasticache.add_ingress_rule(peer=sg_elasticache, connection=aws_ec2.Port.all_tcp(),
+      description='default-redis-server')
 
     elasticache_subnet_group = aws_elasticache.CfnSubnetGroup(self, 'RedisSubnetGroup',
       description='subnet group for redis',
@@ -86,7 +87,7 @@ class RedisStack(core.Stack):
       preferred_maintenance_window='mon:21:00-mon:22:30',
       automatic_failover_enabled=True,
       auto_minor_version_upgrade=False,
-      multi_az_enabled=True,      
+      multi_az_enabled=True,
       replication_group_description='redis with replicas',
       replicas_per_node_group=1,
       cache_parameter_group_name=redis_param_group.ref,
