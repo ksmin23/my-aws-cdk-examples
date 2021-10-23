@@ -21,7 +21,7 @@ class MemoryDBAclStack(cdk.Stack):
 
     MEMORYDB_USER_PASSWORD = cdk.CfnParameter(self, 'MemoryDBUserPassword',
       type='String',
-      description='memory db user password (16 ~ 128 characters)'
+      description='memory db user password (16~128 printable characters)'
     )
 
     memorydb_user = aws_memorydb.CfnUser(self, 'MemoryDBUser',
