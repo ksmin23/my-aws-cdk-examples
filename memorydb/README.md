@@ -113,6 +113,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 ...     print("Connected to Redis")
 ... 
 Connected to Redis
+>>>
 </pre>
 
 
