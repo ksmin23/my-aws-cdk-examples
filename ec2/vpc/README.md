@@ -38,12 +38,6 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
-At this point you can now synthesize the CloudFormation template for this code.
-
-```
-$ cdk synth
-```
-
 To use more than 2 AZs, be sure to specify the account and region on your stack.
 
 ```
