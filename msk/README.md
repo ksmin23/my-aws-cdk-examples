@@ -41,17 +41,17 @@ $ pip install -r requirements.txt
 
 At this point you can now synthesize the CloudFormation template for this code.
 
-```
+<pre>
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk -c vpc_name='<your-existing-vpc-name>' -c kafka_cluster_name='<kafka-cluster-name>' synth
-```
+$ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> -c kafka_cluster_name=<i>'kafka-cluster-name'</i> synth
+</pre>
 
 Use `cdk deploy` command to create the stack shown above,
 
-```
-$ cdk -c vpc_name='<your-existing-vpc-name>' -c kafka_cluster_name='<kafka-cluster-name>' deploy
-```
+<pre>
+$ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> -c kafka_cluster_name=<i>'kafka-cluster-name'</i> deploy
+</pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
@@ -70,10 +70,10 @@ Next, you send the ssh public key into your EC2 Host.
 
 ```
 $ aws ec2-instance-connect send-ssh-public-key \
---instance-id i-1234567890abcdef0 \
---instance-os-user ec2-user \
---availability-zone us-east-1a \
---ssh-public-key file://path/my-rsa-key.pub
+    --instance-id i-1234567890abcdef0 \
+    --instance-os-user ec2-user \
+    --availability-zone us-east-1a \
+    --ssh-public-key file://path/my-rsa-key.pub
 $ ssh -i /path/my-rsa-key ec2-user@10.0.0.0
 ```
 
@@ -83,10 +83,10 @@ After connect your EC2 Host, you can create a topic on the client host.
 $ cd opt/kafka
 $ export ZooKeeperConnectionString=Your-ZooKeeper-Servers
 $ bin/kafka-topics.sh --create \
---zookeeper $ZooKeeperConnectionString \
---replication-factor 3 \
---partitions 1 \
---topic AWSKafkaTutorialTopic
+    --zookeeper $ZooKeeperConnectionString \
+    --replication-factor 3 \
+    --partitions 1 \
+    --topic AWSKafkaTutorialTopic
 ```
 
 To produce data on the topic, run the following command.
@@ -94,23 +94,23 @@ To produce data on the topic, run the following command.
 ```
 $ export BootstrapBrokerString=Your-Broker-Servers
 $ bin/kafka-console-producer.sh \
---broker-list $BootstrapBrokerString \
---topic AWSKafkaTutorialTopic
+    --broker-list $BootstrapBrokerString \
+    --topic AWSKafkaTutorialTopic
 ```
 
 To consume data on the topic, open another terminal and connect the client host, and then run `kafka-console-consumer.sh` command.
 
 ```
 $ aws ec2-instance-connect send-ssh-public-key \
---instance-id i-1234567890abcdef0 \
---instance-os-user ec2-user \
---availability-zone us-east-1a \
---ssh-public-key file://path/my-rsa-key.pub
+    --instance-id i-1234567890abcdef0 \
+    --instance-os-user ec2-user \
+    --availability-zone us-east-1a \
+    --ssh-public-key file://path/my-rsa-key.pub
 $ ssh -i /path/my-rsa-key ec2-user@10.0.0.0
 $ bin/kafka-console-consumer.sh \
---bootstrap-server $BootstrapBrokerString \
---topic AWSKafkaTutorialTopic \
---from-beginning
+    --bootstrap-server $BootstrapBrokerString \
+    --topic AWSKafkaTutorialTopic \
+    --from-beginning
 ```
 
 ## Useful commands
