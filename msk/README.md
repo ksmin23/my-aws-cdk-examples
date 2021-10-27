@@ -83,24 +83,24 @@ $ ssh -i /path/my-rsa-key ec2-user@10.0.0.0
 
 After connect your EC2 Host, you can create a topic on the client host.
 
-```
+<pre>
 $ cd opt/kafka
-$ export ZooKeeperConnectionString=Your-ZooKeeper-Servers
+$ export ZooKeeperConnectionString=<i>Your-ZooKeeper-Servers</i>
 $ bin/kafka-topics.sh --create \
     --zookeeper $ZooKeeperConnectionString \
     --replication-factor 3 \
     --partitions 1 \
     --topic AWSKafkaTutorialTopic
-```
+</pre>
 
 To produce data on the topic, run the following command.
 
-```
-$ export BootstrapBrokerString=Your-Broker-Servers
+<pre>
+$ export BootstrapBrokerString=<i>Your-Broker-Servers</i>
 $ bin/kafka-console-producer.sh \
     --broker-list $BootstrapBrokerString \
     --topic AWSKafkaTutorialTopic
-```
+</pre>
 
 To consume data on the topic, open another terminal and connect the client host, and then run `kafka-console-consumer.sh` command.
 
