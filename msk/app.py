@@ -85,7 +85,7 @@ class MskStack(cdk.Stack):
       description='security group for Amazon MSK client',
       security_group_name=MSK_CLIENT_SG_NAME
     )
-    cdk.Tags.of(sg_use_msk).add('Name', 'use-msk-sg')
+    cdk.Tags.of(sg_use_msk).add('Name', MSK_CLIENT_SG_NAME)
 
     MSK_CLUSTER_SG_NAME = 'msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_msk_cluster = aws_ec2.SecurityGroup(self, 'MSKSecurityGroup',
@@ -141,13 +141,14 @@ class MskStack(cdk.Stack):
       cpu_type=aws_ec2.AmazonLinuxCpuType.X86_64
     )
 
+    KAFKA_CLIENT_EC2_SG_NAME = 'kafka-client-ec2-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_kafka_client_ec2_instance = aws_ec2.SecurityGroup(self, 'KafkaClientEC2InstanceSG',
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for Kafka Client EC2 Instance',
-      security_group_name='kafka-client-ec2-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+      security_group_name=KAFKA_CLIENT_EC2_SG_NAME
     )
-    cdk.Tags.of(sg_kafka_client_ec2_instance).add('Name', 'kafka-client-ec2-sg')
+    cdk.Tags.of(sg_kafka_client_ec2_instance).add('Name', KAFKA_CLIENT_EC2_SG_NAME)
     sg_kafka_client_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
       connection=aws_ec2.Port.tcp(22))
 
