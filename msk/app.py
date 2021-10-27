@@ -3,51 +3,106 @@
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import os
+import random
+import string
 
 from aws_cdk import (
   core as cdk,
   aws_ec2,
   aws_iam,
-  aws_logs,
   aws_msk
 )
 
+random.seed(47)
 
 class MskStack(cdk.Stack):
 
   def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    # The code that defines your stack goes here
     vpc_name = self.node.try_get_context('vpc_name')
     vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
       is_default=True,
       vpc_name=vpc_name)
 
+    #XXX: create new vpc for msk cluster
+    # vpc = aws_ec2.Vpc(self, 'VpcStack',
+    #   max_azs=3,
+    #   gateway_endpoints={
+    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
+    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
+    #     )
+    #   }
+    # )
+
+    MSK_CLUSTER_NAME = cdk.CfnParameter(self, 'KafkaClusterName',
+      type='String',
+      description='Managed Streaming for Apache Kafka cluster name',
+      default='MSK-{}'.format(''.join(random.sample((string.ascii_letters), k=5))),
+      allowed_pattern='[A-Za-z0-9\-]+'
+    )
+
+    KAFA_VERSION = cdk.CfnParameter(self, 'KafkaVersion',
+      type='String',
+      description='Apache Kafka version',
+      default='2.6.2',
+      # Supported Apache Kafka versions
+      # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
+      allowed_values=[
+        '2.8.1',
+        '2.8.0',
+        '2.7.1',
+        '2.6.2',
+        '2.6.1',
+        '2.6.0',
+        '2.5.1',
+        '2.4.1.1',
+        '2.3.1',
+        '2.2.1'
+      ]
+    )
+
+    #XXX: change broker instance type
+    KAFA_BROKER_INSTANCE_TYPE = cdk.CfnParameter(self, 'KafkaBrokerInstanceType',
+      type='String',
+      description='Apache Kafka Broker instance type',
+      default='kafka.m5.large'
+    )
+
+    #XXX: change volume size
+    KAFA_BROKER_EBS_VOLUME_SIZE = cdk.CfnParameter(self, 'KafkaBrokerEBSVolumeSize',
+      type='Number',
+      description='Apache Kafka Broker EBS Volume size (Minimum: 1 GiB, Maximum: 16384 GiB)',
+      default='100',
+      min_value=1,
+      max_value=16384
+    )
+
+    MSK_CLIENT_SG_NAME = 'use-msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_use_msk = aws_ec2.SecurityGroup(self, 'KafkaClientSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for Amazon MSK client',
-      security_group_name='use-msk-tutorial-sg'
+      security_group_name=MSK_CLIENT_SG_NAME
     )
-    cdk.Tags.of(sg_use_msk).add('Name', 'use-msk-tutorial-sg')
+    cdk.Tags.of(sg_use_msk).add('Name', 'use-msk-sg')
 
+    MSK_CLUSTER_SG_NAME = 'msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_msk_cluster = aws_ec2.SecurityGroup(self, 'MSKSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for Amazon MSK Cluster',
-      security_group_name='msk-tutorial-sg'
+      security_group_name=MSK_CLUSTER_SG_NAME
     )
     sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(2181),
-      description='use-msk-tutorial-sg')
+      description='msk client security group')
     sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9092),
-      description='use-msk-tutorial-sg')
+      description='msk client security group')
     sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9094),
-      description='use-msk-tutorial-sg')
-    cdk.Tags.of(sg_msk_cluster).add('Name', 'msk-tutorial-sg')
+      description='msk client security group')
+    cdk.Tags.of(sg_msk_cluster).add('Name', MSK_CLUSTER_SG_NAME)
 
-    #XXX: change volume size
-    msk_broker_ebs_storage_info = aws_msk.CfnCluster.EBSStorageInfoProperty(volume_size=100)
+    msk_broker_ebs_storage_info = aws_msk.CfnCluster.EBSStorageInfoProperty(volume_size=KAFA_BROKER_EBS_VOLUME_SIZE.value_as_number)
 
     msk_broker_storage_info = aws_msk.CfnCluster.StorageInfoProperty(
       ebs_storage_info=msk_broker_ebs_storage_info
@@ -55,7 +110,7 @@ class MskStack(cdk.Stack):
     
     msk_broker_node_group_info = aws_msk.CfnCluster.BrokerNodeGroupInfoProperty(
       client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids,
-      instance_type='kafka.m5.large', #XXX: change broker instance type 
+      instance_type=KAFA_BROKER_INSTANCE_TYPE.value_as_string,
       security_groups=[sg_use_msk.security_group_id, sg_msk_cluster.security_group_id],
       storage_info=msk_broker_storage_info
     )
@@ -67,11 +122,12 @@ class MskStack(cdk.Stack):
       )
     )
 
-    msk_cluster_name = self.node.try_get_context('kafka_cluster_name')
     msk_cluster = aws_msk.CfnCluster(self, 'AWSKafkaCluster',
       broker_node_group_info=msk_broker_node_group_info,
-      cluster_name=msk_cluster_name,
-      kafka_version='2.6.1',
+      cluster_name=MSK_CLUSTER_NAME.value_as_string,
+      #XXX: Supported Apache Kafka versions
+      # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
+      kafka_version=KAFA_VERSION.value_as_string,
       number_of_broker_nodes=3,
       encryption_info=msk_encryption_info, 
       enhanced_monitoring='PER_TOPIC_PER_BROKER'
@@ -89,7 +145,7 @@ class MskStack(cdk.Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for Kafka Client EC2 Instance',
-      security_group_name='kafka-client-ec2-sg'
+      security_group_name='kafka-client-ec2-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     )
     cdk.Tags.of(sg_kafka_client_ec2_instance).add('Name', 'kafka-client-ec2-sg')
     sg_kafka_client_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
@@ -111,7 +167,7 @@ class MskStack(cdk.Stack):
       vpc=vpc,
       availability_zone=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).availability_zones[0],
       instance_name='KafkaClientInstance',
-      role=kafka_client_ec2_instance_role, 
+      role=kafka_client_ec2_instance_role,
       security_group=sg_kafka_client_ec2_instance,
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC)
     )

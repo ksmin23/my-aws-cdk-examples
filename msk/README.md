@@ -36,21 +36,25 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-$ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> -c kafka_cluster_name=<i>'kafka-cluster-name'</i> synth
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> synth \
+    --parameters KafkaClusterName=<i>'your-kafka-cluster-name'</i> \
+    --parameters KafkaVersion=<i>'your-kafka-version'</i>
 </pre>
 
 Use `cdk deploy` command to create the stack shown above,
 
 <pre>
-$ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> -c kafka_cluster_name=<i>'kafka-cluster-name'</i> deploy
+(.venv) $ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> deploy
+    --parameters KafkaClusterName=<i>'your-kafka-cluster-name'</i> \
+    --parameters KafkaVersion=<i>'your-kafka-version'</i>
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -120,5 +124,12 @@ $ bin/kafka-console-consumer.sh \
  * `cdk deploy`      deploy this stack to your default AWS account/region
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
+
+
+## References
+
+ * [Amazon MSK - Supported Apache Kafka versions](https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html)
+ * [Getting Started Using Amazon MSK](https://docs.aws.amazon.com/msk/latest/developerguide/getting-started.html)
+ * [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
 
 Enjoy!
