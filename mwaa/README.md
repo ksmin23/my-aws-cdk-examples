@@ -102,7 +102,7 @@ command.
         --requirements-s3-object-version ${obj_version}
     ```
   * sample `requirements.txt`
-  - :information_source: **MUST CHECK** python package version at here: [https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.7.txt](https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.7.txt)
+    - :information_source: **MUST CHECK** python package version at here: [https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.7.txt](https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.7.txt)
     ```
     apache-airflow-providers-elasticsearch==1.0.3
     apache-airflow-providers-redis==1.0.1
