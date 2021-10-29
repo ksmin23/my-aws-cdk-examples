@@ -36,7 +36,7 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 ## Before you deploy
@@ -45,19 +45,31 @@ Apache Airflow Directed Acyclic Graphs (DAGs), custom plugins in a plugins.zip f
 and Python dependencies in a requirements.txt file.
 Check this [Create an Amazon S3 bucket for Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-s3-bucket.html)
 
+<pre>
+$ aws s3 mb s3://<i>your-s3-bucket-for-airflow-dag-code</i> --region <i>region-name</i>
+$ aws s3api put-public-access-block --bucket <i>your-s3-bucket-for-airflow-dag-code</i> --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+$ aws s3api put-bucket-versioning --bucket <i>your-s3-bucket-for-airflow-dag-code</i> --versioning-configuration Status=Enabled
+$ aws s3api put-object --bucket <i>your-s3-bucket-for-airflow-dag-code</i> --key dags/
+$ aws s3api put-object --bucket <i>your-s3-bucket-for-airflow-dag-code</i> --key requirements/requirements.txt
+</pre>
+
 ## Deploy
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-$ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' synth
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' \
+              -c airflow_env_name='<i>your-airflow-env-name</i>' \
+              synth
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' deploy
+(.venv) $ cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' \
+              -c airflow_env_name='<i>your-airflow-env-name</i>' \
+              deploy
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -78,6 +90,25 @@ command.
    * Code Repository: [aws-mwaa-glue-databrew-nytaxi](https://github.com/ksmin23/aws-mwaa-glue-databrew-nytaxi)
  * [Amazon MWAA for Analytics Workshop](https://amazon-mwaa-for-analytics.workshop.aws/en/)
  * [Get started with Amazon Managed Workflows for Apache Airflow \(MWAA\)](https://docs.aws.amazon.com/mwaa/latest/userguide/get-started.html)
+
+## Tips
+  * To update `requirements.txt`, run the commands like this:
+    ```
+    $ obj_version=$(aws s3api list-object-versions --bucket <i>your-s3-bucket-for-airflow-requirements</i> --prefix 'requirements/requirements.txt' | jq '.Versions[0].VersionId' | sed -e "s/\"//g")
+    $ echo ${obj_version}
+    $ aws mwaa update-environment \
+        --region <i>region-name</i> \
+        --name <i>your-airflow-environment</i> \
+        --requirements-s3-object-version ${obj_version}
+    ```
+  * sample `requirements.txt`
+  - :information_source: **MUST CHECK** python package version at here: [https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.7.txt](https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.7.txt)
+    ```
+    apache-airflow-providers-elasticsearch==1.0.3
+    apache-airflow-providers-redis==1.0.1
+    apache-airflow-providers-google==2.2.0
+    apache-airflow-providers-mysql==1.1.0
+    ```
 
 Enjoy!
 
