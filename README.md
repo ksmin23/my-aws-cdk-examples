@@ -38,3 +38,5 @@ Enjoy!
  * [Working with the AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/work-with.html)
  * [Your first AWS CDK app](https://docs.aws.amazon.com/cdk/latest/guide/hello_world.html)
  * [AWS CDK Reference Documentation](https://docs.aws.amazon.com/cdk/api/latest/)
+ * [aws-samples/aws-cdk-examples](https://github.com/aws-samples/aws-cdk-examples)
+
