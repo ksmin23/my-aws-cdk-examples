@@ -32,8 +32,8 @@ class SageMakerStudioStack(cdk.Stack):
       vpc_name=vpc_name
     )
 
-    # #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
-    # #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
+    #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
+    #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
     # vpc = aws_ec2.Vpc(self, 'SageMakerStudioVPC',
     #   max_azs=2,
     #   gateway_endpoints={
@@ -59,9 +59,7 @@ class SageMakerStudioStack(cdk.Stack):
       "actions": ["iam:PassRole"],
       "conditions": {
         "StringEquals": {
-          "iam:PassedToService": [
-            "sagemaker.amazonaws.com"
-          ]
+          "iam:PassedToService": "sagemaker.amazonaws.com"
         }
       },
       "sid": "AllowPassRoleSageMaker"
@@ -95,6 +93,8 @@ class SageMakerStudioStack(cdk.Stack):
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       path='/',
       inline_policies={
+        #XXX: add additional IAM Policy to use EMR in SageMaker Studio
+        # https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-studio-notebooks-backed-by-spark-in-amazon-emr/
         'sagemaker-emr': sagemaker_emr_execution_policy_doc
       },
       managed_policies=[
