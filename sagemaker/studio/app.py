@@ -18,7 +18,6 @@ class SageMakerStudioStack(cdk.Stack):
   def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    # The code that defines your stack goes here
     #XXX: For createing Amazon MWAA in the existing VPC,
     # remove comments from the below codes and
     # comments out vpc = aws_ec2.Vpc(..) codes,
