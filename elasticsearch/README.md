@@ -44,7 +44,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 $ cdk synth
 ```
 
-Use cdk deploy command to create the stack shown above.
+Use `cdk deploy` command to create the stack shown above.
 
 ```
 $ cdk deploy
