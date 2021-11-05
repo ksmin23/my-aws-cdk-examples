@@ -123,7 +123,7 @@ Enjoy!
     $ aws ec2 describe-instances --instance-ids ${BASTION_HOST_ID} | jq -r '.Reservations[0].Instances[0].PublicIpAddress'
     </pre>
 
-2. Run `ssh -N estunnel` in Terminal.
+2. Run `ssh -N osstunnel` in Terminal.
 3. Connect to `https://localhost:9200/_dashboards/` in a web browser.
 4. If you would like to access the OpenSearch Cluster in a termial, open another terminal window, and then run the following commands: (in here, <i>`your-cloudformation-stack-name`</i> is `OpensearchStack`)
 
