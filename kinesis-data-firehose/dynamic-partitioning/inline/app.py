@@ -103,7 +103,11 @@ class FirehoseToS3Stack(cdk.Stack):
         "ec2:DeleteNetworkInterface"]
     ))
 
-    firehose_log_group_name = "/aws/kinesisfirehose/{}".format(FIREHOSE_STREAM_NAME.value_as_string)
+    #XXX: https://docs.aws.amazon.com/ko_kr/cdk/latest/guide/tokens.html
+    # String-encoded tokens:
+    #  Avoid manipulating the string in other ways. For example,
+    #  taking a substring of a string is likely to break the string token.
+    firehose_log_group_name = "/aws/kinesisfirehose/" + FIREHOSE_STREAM_NAME.value_as_string
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
       effect=aws_iam.Effect.ALLOW,
       #XXX: The ARN will be formatted as follows:
