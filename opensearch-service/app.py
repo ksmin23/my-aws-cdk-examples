@@ -13,6 +13,7 @@ from aws_cdk import (
 
 random.seed(47)
 
+
 class OpensearchStack(cdk.Stack):
 
   def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
@@ -23,6 +24,11 @@ class OpensearchStack(cdk.Stack):
       description='Amazon OpenSearch Service domain name',
       default='opensearch-{}'.format(''.join(random.sample((string.ascii_letters), k=5))),
       allowed_pattern='[a-z]+[A-Za-z0-9\-]+'
+    )
+
+    EC2_KEY_PAIR_NAME = cdk.CfnParameter(self, 'EC2KeyPairName',
+      type='String',
+      description='Amazon EC2 Instance KeyPair name'
     )
 
     #XXX: For createing Amazon MWAA in the existing VPC,
@@ -59,19 +65,17 @@ class OpensearchStack(cdk.Stack):
     )
     cdk.Tags.of(sg_bastion_host).add('Name', 'bastion-host-sg')
 
-    #XXX: As there are no SSH public keys deployed on this machine,
-    # you need to use EC2 Instance Connect with the command
-    #  'aws ec2-instance-connect send-ssh-public-key' to provide your SSH public key.
-    # https://aws.amazon.com/de/blogs/compute/new-using-amazon-ec2-instance-connect-for-ssh-access-to-your-ec2-instances/
-    bastion_host = aws_ec2.BastionHostLinux(self, "BastionHost",
+    #TODO: SHOULD restrict IP range allowed to ssh acces
+    sg_bastion_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(22), description='SSH access')
+
+    bastion_host = aws_ec2.Instance(self, "BastionHost",
       vpc=vpc,
       instance_type=ec2_instance_type,
-      subnet_selection=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
-      security_group=sg_bastion_host
+      machine_image=aws_ec2.MachineImage.latest_amazon_linux(),
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
+      security_group=sg_bastion_host,
+      key_name=EC2_KEY_PAIR_NAME.value_as_string
     )
-
-    #TODO: SHOULD restrict IP range allowed to ssh acces
-    bastion_host.allow_ssh_access_from(aws_ec2.Peer.ipv4("0.0.0.0/0"))
 
     sg_use_opensearch = aws_ec2.SecurityGroup(self, "OpenSearchClientSG",
       vpc=vpc,
@@ -93,7 +97,7 @@ class OpensearchStack(cdk.Stack):
 
     sg_opensearch_cluster.add_ingress_rule(peer=sg_use_opensearch, connection=aws_ec2.Port.tcp(443), description='use-opensearch-cluster-sg')
     sg_opensearch_cluster.add_ingress_rule(peer=sg_use_opensearch, connection=aws_ec2.Port.tcp_range(9200, 9300), description='use-opensearch-cluster-sg')
-    
+
     sg_opensearch_cluster.add_ingress_rule(peer=sg_bastion_host, connection=aws_ec2.Port.tcp(443), description='bastion-host-sg')
     sg_opensearch_cluster.add_ingress_rule(peer=sg_bastion_host, connection=aws_ec2.Port.tcp_range(9200, 9300), description='bastion-host-sg')
 
@@ -152,7 +156,7 @@ class OpensearchStack(cdk.Stack):
     )
     cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
 
-    cdk.CfnOutput(self, 'BastionHostBastionHostId', value=bastion_host.instance_id, export_name='BastionHostBastionHostId')
+    cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id, export_name='BastionHostId')
     cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_domain.domain_endpoint, export_name='OpenSearchDomainEndpoint')
     cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"{opensearch_domain.domain_endpoint}/_dashboards/", export_name='OpenSearchDashboardsURL')
     cdk.CfnOutput(self, 'MasterUserSecretId', value=master_user_secret.secret_name, export_name='MasterUserSecretId')
