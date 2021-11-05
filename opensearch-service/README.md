@@ -43,14 +43,16 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
 (.venv) $ cdk synth \
-              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>"
+              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
+              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>"
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
 (.venv) $ cdk deploy \
-              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>"
+              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
+              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>"
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -60,7 +62,7 @@ command.
 ### A note about Service-Linked Role
 Some cluster configurations (e.g VPC access) require the existence of the `AWSServiceRoleForAmazonElasticsearchService` Service-Linked Role.
 
-When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn’t exist, you will encounter a failure message simlar to:
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR(Service-Linked Role) is needed, but doesn’t exist, you will encounter a failure message simlar to:
 
 <pre>
 Before you can proceed, you must enable a service-linked role to give Amazon OpenSearch Service...
@@ -83,13 +85,7 @@ aws iam create-service-linked-role --aws-service-name es.amazonaws.com
 Enjoy!
 
 ## Remotely access your Amazon OpenSearch Cluster using SSH tunnel from local machine
-1. Generate the new private and public keys `mynew_key` and `mynew_key.pub`, respectively:
-
-   ```
-   $ ssh-keygen -t rsa -f mynew_key
-   ```
-
-2. To access the OpenSearch Cluster, add the ssh tunnel configuration to the ssh config file of the personal local PC as follows
+1. To access the OpenSearch Cluster, add the ssh tunnel configuration to the ssh config file of the personal local PC as follows
 
     <pre>
     # OpenSearch Tunnel
@@ -106,8 +102,7 @@ Enjoy!
     ```
     ~$ ls -1 .ssh/
     config
-    mynew_key
-    mynew_key.pub
+    my-ec2-key-pair.pem
 
     ~$ tail .ssh/config
     # OpenSearch Tunnel
@@ -115,30 +110,22 @@ Enjoy!
         HostName 214.132.71.219
         User ec2-user
         IdentitiesOnly yes
-        IdentityFile ~/.ssh/mynew_key.pub
+        IdentityFile ~/.ssh/my-ec2-key-pair.pem
         LocalForward 9200 vpc-oss-hol-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
 
     ~$
     ```
 
-3. Use the following AWS CLI command to authorize the user and push the public key to the instance using the send-ssh-public-key command. To support this, you need the latest version of the AWS CLI.
+    You can find the bastion host's public ip address as running the commands like this:
 
-   ex) Bastion Host's instance details
-   - Instance ID: `i-0989ec3292613a4f9`
-   - Availability Zone: `us-east-1a`
-   - Instance OS User: `ec2-user`
+    <pre>
+    $ BASTION_HOST_ID=$(aws cloudformation describe-stacks --stack-name <i>your-clouformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "BastionHostBastionHostId")) | .[0].OutputValue')
+    $ aws ec2 describe-instances --instance-ids ${BASTION_HOST_ID} | jq -r '.Reservations[0].Instances[0].PublicIpAddress'
+    </pre>
 
-   ```
-   $ aws ec2-instance-connect send-ssh-public-key --region us-east-1 --instance-id i-0989ec3292613a4f9 --availability-zone us-east-1a --instance-os-user ec2-user --ssh-public-key file://${HOME}/.ssh/mynew_key.pub
-   {
-     "RequestId": "505f8675-710a-11e9-9263-4d440e7745c6",
-     "Success": true
-   } 
-   ```
-
-4. Run `ssh -N estunnel` in Terminal.
-5. Connect to `https://localhost:9200/_dashboards/` in a web browser.
-6. If you would like to access the OpenSearch Cluster in a termial, open another terminal window, and then run the following commands: (in here, <i>`your-cloudformation-stack-name`</i> is `OpensearchStack`)
+2. Run `ssh -N estunnel` in Terminal.
+3. Connect to `https://localhost:9200/_dashboards/` in a web browser.
+4. If you would like to access the OpenSearch Cluster in a termial, open another terminal window, and then run the following commands: (in here, <i>`your-cloudformation-stack-name`</i> is `OpensearchStack`)
 
     <pre>
     $ MASTER_USER_SECRET_ID=$(aws cloudformation describe-stacks --stack-name <i>your-clouformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "MasterUserSecretId")) | .[0].OutputValue')
