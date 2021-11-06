@@ -20,7 +20,6 @@ class EKKStack(core.Stack):
   def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
-    # The code that defines your stack goes here
     # vpc_name = self.node.try_get_context("vpc_name")
     # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
     #   is_default=True,
@@ -259,6 +258,6 @@ class EKKStack(core.Stack):
 app = core.App()
 EKKStack(app, "amazon-ekk-stack", env=core.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
-  region=os.environ["CDK_DEFAULT_REGION"]))  
+  region=os.environ["CDK_DEFAULT_REGION"]))
 
 app.synth()
