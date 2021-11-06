@@ -89,7 +89,7 @@ Enjoy!
 
     <pre>
     # OpenSearch Tunnel
-    Host osstunnel
+    Host opstunnel
         HostName <i>EC2-Public-IP-of-Bastion-Host</i>
         User ec2-user
         IdentitiesOnly yes
