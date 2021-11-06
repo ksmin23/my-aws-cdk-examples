@@ -171,16 +171,17 @@ Complete the following steps:
 2. Enter the master user and password that you set up when you created the Amazon OpenSearch Service endpoint.
 3. Under **Security**, choose **Roles**.
 4. Choose **Create role**.
-5. Name your role; for example, `firehose-role`.
+5. Name your role; for example, `firehose_role`.
 6. For cluster permissions, add `cluster_composite_ops` and `cluster_monitor`.
 7. Under **Index permissions**, choose **Index Patterns** and enter <i>index-name*</i>; for example, `retail-trans*`.
 8. Under **Permissions**, add three action groups: `crud`, `create_index`, and `manage`.
 9. Choose **Create**.
+   ![ops-create-firehose_role](./resources/ops-create-firehose_role.png)
 
 In the next step, you map the IAM role that Kinesis Data Firehose uses to the role you just created.
 
 10. Under **Security**, choose **Roles**.
-11. Choose the role you just created (`firehose-role`). You need to modify the Users associated with the `firehose-role` role.
+11. Choose the role you just created (`firehose_role`). You need to modify the Users associated with the `firehose_role` role.
     ![ops-security-roles](./resources/ops-security-roles.png)
 12. Choose the **Mapped users** tab.
     ![ops-role-mappings](./resources/ops-role-mappings.png)
