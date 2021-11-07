@@ -228,5 +228,6 @@ command.
 
  * [fastavro](https://fastavro.readthedocs.io/)
  * [Apache Avro Specification](https://avro.apache.org/docs/current/spec.html)
+ * [How do I create a Lambda layer using a simulated Lambda environment with Docker?](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
 
 Enjoy!
