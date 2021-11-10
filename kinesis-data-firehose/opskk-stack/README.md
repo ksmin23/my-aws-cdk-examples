@@ -1,4 +1,4 @@
-# OSKK (Amazon OpenSearch Service - Kinesis Data Firehose - Kibana) Stack
+# OPSKK (Amazon OpenSearch Service - Kinesis Data Firehose - Kibana) Stack
 
 ![amazon-opskk-stack-arch](./amazon-opskk-stack-arch.svg)
 
