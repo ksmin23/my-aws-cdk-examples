@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+import os
+import json
+import random
+import string
+
+from aws_cdk import (
+  core as cdk,
+  aws_ec2,
+  aws_dynamodb,
+  aws_iam,
+  aws_apigateway as apigw
+)
+
+random.seed(47)
+
+class ApiGatewayDynamoDBStack(cdk.Stack):
+
+  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
+
+    #XXX: For createing Amazon MWAA in the existing VPC,
+    # remove comments from the below codes and
+    # comments out vpc = aws_ec2.Vpc(..) codes,
+    # then pass -c vpc_name=your-existing-vpc to cdk command
+    # for example,
+    # cdk -c vpc_name=your-existing-vpc syth
+    #
+    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
+    #   is_default=True,
+    #   vpc_name=vpc_name
+    # )
+
+    vpc = aws_ec2.Vpc(self, "ApiGatewayDynamoDBVPC",
+      max_azs=2,
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        ),
+        "DynamoDB": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.DYNAMODB
+        )
+      }
+    )
+
+    DDB_TABLE_SUFFIX = ''.join(random.sample((string.ascii_lowercase + string.digits), k=7))
+    DDB_TABLE_NAME = "Comments-{}".format(DDB_TABLE_SUFFIX)
+
+    ddb_table = aws_dynamodb.Table(self, "DynamoDbTable",
+      table_name=DDB_TABLE_NAME,
+      removal_policy=cdk.RemovalPolicy.DESTROY,
+      partition_key=aws_dynamodb.Attribute(name="commentId",
+        type=aws_dynamodb.AttributeType.STRING),
+      time_to_live_attribute="ttl",
+      billing_mode=aws_dynamodb.BillingMode.PROVISIONED,
+      read_capacity=15,
+      write_capacity=5,
+    )
+
+    ddb_table.add_global_secondary_index(
+      read_capacity=15,
+      write_capacity=5,
+      index_name="pageId-index",
+      partition_key=aws_dynamodb.Attribute(name='pageId', type=aws_dynamodb.AttributeType.STRING),
+      projection_type=aws_dynamodb.ProjectionType.ALL
+    )
+
+    ddb_access_policy_doc = aws_iam.PolicyDocument()
+    ddb_access_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": [ddb_table.table_arn],
+      "actions": [
+        "dynamodb:DeleteItem",
+        "dynamodb:PartiQLInsert",
+        "dynamodb:UpdateTimeToLive",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:PartiQLUpdate",
+        "dynamodb:UpdateItem",
+        "dynamodb:PartiQLDelete"
+      ]
+    }))
+
+    apigw_dynamodb_role = aws_iam.Role(self, "ApiGatewayRoleForDynamoDB",
+      role_name='APIGatewayRoleForDynamoDB',
+      assumed_by=aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
+      inline_policies={
+        'DynamoDBAccessPolicy': ddb_access_policy_doc
+      },
+      managed_policies=[
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonDynamoDBReadOnlyAccess'),
+      ]
+    )
+
+    dynamodb_api = apigw.RestApi(self, "DynamoDBProxyAPI",
+      rest_api_name="comments-api",
+      description="An Amazon API Gateway REST API that integrated with an Amazon DynamoDB.",
+      endpoint_types=[apigw.EndpointType.REGIONAL],
+      default_cors_preflight_options={
+        "allow_origins": apigw.Cors.ALL_ORIGINS
+      },
+      deploy=True,
+      deploy_options=apigw.StageOptions(stage_name="v1"),
+      endpoint_export_name="DynamoDBProxyAPIEndpoint"
+    )
+
+    all_resources = dynamodb_api.root.add_resource("comments")
+    one_resource = all_resources.add_resource("{pageId}")
+
+    apigw_error_responses = [
+      apigw.IntegrationResponse(status_code="400", selection_pattern="4\d{2}"),
+      apigw.IntegrationResponse(status_code="500", selection_pattern="5\d{2}")
+    ]
+
+    apigw_ok_responses = [
+      apigw.IntegrationResponse(
+        status_code="200"
+      )
+    ]
+
+    ddb_put_item_options = apigw.IntegrationOptions(
+      credentials_role=apigw_dynamodb_role,
+      integration_responses=[*apigw_ok_responses, *apigw_error_responses],
+      request_templates={
+        'application/json': json.dumps({
+          "TableName": DDB_TABLE_NAME,
+          "Item": {
+            "commentId": {
+              "S": "$context.requestId"
+            },
+            "pageId": {
+              "S": "$input.path('$.pageId')"
+            },
+            "userName": {
+              "S": "$input.path('$.userName')"
+            },
+            "message": {
+              "S": "$input.path('$.message')"
+            }
+          }
+        }, indent=2)
+      },
+      passthrough_behavior=apigw.PassthroughBehavior.WHEN_NO_TEMPLATES
+    )
+
+    create_integration = apigw.AwsIntegration(
+      service='dynamodb',
+      action='PutItem',
+      integration_http_method='POST',
+      options=ddb_put_item_options
+    )
+
+    method_responses = [
+      apigw.MethodResponse(status_code='200'),
+      apigw.MethodResponse(status_code='400'),
+      apigw.MethodResponse(status_code='500')
+    ]
+
+    all_resources.add_method('POST', create_integration, method_responses=method_responses)
+
+    get_response_templates = '''
+#set($inputRoot = $input.path('$'))
+{
+  "comments": [
+    #foreach($elem in $inputRoot.Items) {
+       "commentId": "$elem.commentId.S",
+       "userName": "$elem.userName.S",
+       "message": "$elem.message.S"
+     }#if($foreach.hasNext),#end
+    #end
+  ]
+}'''
+
+    ddb_query_item_options = apigw.IntegrationOptions(
+      credentials_role=apigw_dynamodb_role,
+      integration_responses=[
+        apigw.IntegrationResponse(
+          status_code="200",
+          response_templates={
+            'application/json': get_response_templates
+          }
+        ),
+        *apigw_error_responses
+      ],
+      request_templates={
+        'application/json': json.dumps({
+          "TableName": DDB_TABLE_NAME,
+          "IndexName": "pageId-index",
+          "KeyConditionExpression": "pageId = :v1",
+          "ExpressionAttributeValues": {
+            ":v1": {
+              "S": "$input.params('pageId')"
+            }
+          }
+        }, indent=2)
+      },
+      passthrough_behavior=apigw.PassthroughBehavior.WHEN_NO_TEMPLATES
+    )
+
+    get_integration = apigw.AwsIntegration(
+      service='dynamodb',
+      action='Query',
+      integration_http_method='POST',
+      options=ddb_query_item_options
+    )
+
+    one_resource.add_method('GET', get_integration, method_responses=method_responses)
+
+    cdk.CfnOutput(self, "DynamoDBTableName", value=ddb_table.table_name)
+
+
+app = cdk.App()
+ApiGatewayDynamoDBStack(app, "ApiGatewayDynamoDBStack", env=cdk.Environment(
+    account=os.getenv('CDK_DEFAULT_ACCOUNT'),
+    region=os.getenv('CDK_DEFAULT_REGION')))
+
+app.synth()

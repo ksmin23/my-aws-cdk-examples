@@ -1,0 +1,6 @@
+aws-cdk.core>=1.132.0
+aws-cdk.assertions>=1.132.0
+aws-cdk.aws-ec2>=1.132.0
+aws-cdk.aws-dynamodb>=1.132.0
+aws-cdk.aws-iam>=1.132.0
+aws-cdk.aws-apigateway>=1.132.0
