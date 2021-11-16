@@ -104,9 +104,9 @@ command.
     HTTP Method: POST
     HTTP Request Body:
     {
-    "pageId":   "example-page-id",
-    "userName": "ExampleUserName",
-    "message":  "This is an example comment to be added."
+      "pageId":   "example-page-id",
+      "userName": "ExampleUserName",
+      "message":  "This is an example comment to be added."
     }
     </pre>
 
@@ -131,4 +131,4 @@ Enjoy!
 
  * [Using Amazon API Gateway as a proxy for DynamoDB](https://aws.amazon.com/blogs/compute/using-amazon-api-gateway-as-a-proxy-for-dynamodb/)
  * [Amazon API Gateway REST API to DynamoDB](https://serverlessland.com/patterns/apigw-dynamodb)
- * [API Gateway mapping template and access logging variable reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html)
+ * [Amazon API Gateway mapping template and access logging variable reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html)
