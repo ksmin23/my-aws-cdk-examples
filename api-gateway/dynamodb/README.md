@@ -1,6 +1,8 @@
 
 # Amazon API Gateway to DynamoDB integration
 
+![apigw-dynamodb-arch](./apigw-dynamodb-arch.svg)
+
 This is a Amazon API Gateway to DynamoDB integration project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
@@ -60,38 +62,37 @@ command.
  * Comments: store comments for each page of your website.
     <pre>
     {
-    "TableName": "Comments",
-    "KeySchema": [
+      "TableName": "Comments",
+      "KeySchema": [
         {
-        "AttributeName": "commentId",
-        "KeyType": "HASH"
+          "AttributeName": "commentId",
+          "KeyType": "HASH"
         }
-    ],
-    "AttributeDefinitions": [
+      ],
+      "AttributeDefinitions": [
         {
-        "AttributeName": "commentId",
-        "AttributeType": "S"
+          "AttributeName": "commentId",
+          "AttributeType": "S"
         },
         {
-        "AttributeName": "pageId",
-        "AttributeType": "S"
+          "AttributeName": "pageId",
+          "AttributeType": "S"
         }
-    ],
-    "GlobalSecondaryIndexes": [
+      ],
+      "GlobalSecondaryIndexes": [
         {
-        "IndexName": "pageId-index",
-        "KeySchema": [
+          "IndexName": "pageId-index",
+          "KeySchema": [
             {
-            "AttributeName": "pageId",
-            "KeyType": "HASH"
+              "AttributeName": "pageId",
+              "KeyType": "HASH"
             }
-        ],
-        "Projection": {
-            "ProjectionType": "ALL"
+          ],
+          "Projection": {
+              "ProjectionType": "ALL"
+          }
         }
-        }
-    ]
-
+      ]
     }
     </pre>
 
