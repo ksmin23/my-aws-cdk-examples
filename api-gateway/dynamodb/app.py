@@ -9,7 +9,7 @@ from aws_cdk import (
   aws_ec2,
   aws_dynamodb,
   aws_iam,
-  aws_apigateway as apigw
+  aws_apigateway
 )
 
 random.seed(47)
@@ -93,15 +93,15 @@ class ApiGatewayDynamoDBStack(cdk.Stack):
       ]
     )
 
-    dynamodb_api = apigw.RestApi(self, "DynamoDBProxyAPI",
+    dynamodb_api = aws_apigateway.RestApi(self, "DynamoDBProxyAPI",
       rest_api_name="comments-api",
       description="An Amazon API Gateway REST API that integrated with an Amazon DynamoDB.",
-      endpoint_types=[apigw.EndpointType.REGIONAL],
+      endpoint_types=[aws_apigateway.EndpointType.REGIONAL],
       default_cors_preflight_options={
-        "allow_origins": apigw.Cors.ALL_ORIGINS
+        "allow_origins": aws_apigateway.Cors.ALL_ORIGINS
       },
       deploy=True,
-      deploy_options=apigw.StageOptions(stage_name="v1"),
+      deploy_options=aws_apigateway.StageOptions(stage_name="v1"),
       endpoint_export_name="DynamoDBProxyAPIEndpoint"
     )
 
@@ -109,17 +109,17 @@ class ApiGatewayDynamoDBStack(cdk.Stack):
     one_resource = all_resources.add_resource("{pageId}")
 
     apigw_error_responses = [
-      apigw.IntegrationResponse(status_code="400", selection_pattern="4\d{2}"),
-      apigw.IntegrationResponse(status_code="500", selection_pattern="5\d{2}")
+      aws_apigateway.IntegrationResponse(status_code="400", selection_pattern="4\d{2}"),
+      aws_apigateway.IntegrationResponse(status_code="500", selection_pattern="5\d{2}")
     ]
 
     apigw_ok_responses = [
-      apigw.IntegrationResponse(
+      aws_apigateway.IntegrationResponse(
         status_code="200"
       )
     ]
 
-    ddb_put_item_options = apigw.IntegrationOptions(
+    ddb_put_item_options = aws_apigateway.IntegrationOptions(
       credentials_role=apigw_dynamodb_role,
       integration_responses=[*apigw_ok_responses, *apigw_error_responses],
       request_templates={
@@ -141,10 +141,10 @@ class ApiGatewayDynamoDBStack(cdk.Stack):
           }
         }, indent=2)
       },
-      passthrough_behavior=apigw.PassthroughBehavior.WHEN_NO_TEMPLATES
+      passthrough_behavior=aws_apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES
     )
 
-    create_integration = apigw.AwsIntegration(
+    create_integration = aws_apigateway.AwsIntegration(
       service='dynamodb',
       action='PutItem',
       integration_http_method='POST',
@@ -152,9 +152,9 @@ class ApiGatewayDynamoDBStack(cdk.Stack):
     )
 
     method_responses = [
-      apigw.MethodResponse(status_code='200'),
-      apigw.MethodResponse(status_code='400'),
-      apigw.MethodResponse(status_code='500')
+      aws_apigateway.MethodResponse(status_code='200'),
+      aws_apigateway.MethodResponse(status_code='400'),
+      aws_apigateway.MethodResponse(status_code='500')
     ]
 
     all_resources.add_method('POST', create_integration, method_responses=method_responses)
@@ -172,10 +172,10 @@ class ApiGatewayDynamoDBStack(cdk.Stack):
   ]
 }'''
 
-    ddb_query_item_options = apigw.IntegrationOptions(
+    ddb_query_item_options = aws_apigateway.IntegrationOptions(
       credentials_role=apigw_dynamodb_role,
       integration_responses=[
-        apigw.IntegrationResponse(
+        aws_apigateway.IntegrationResponse(
           status_code="200",
           response_templates={
             'application/json': get_response_templates
@@ -195,10 +195,10 @@ class ApiGatewayDynamoDBStack(cdk.Stack):
           }
         }, indent=2)
       },
-      passthrough_behavior=apigw.PassthroughBehavior.WHEN_NO_TEMPLATES
+      passthrough_behavior=aws_apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES
     )
 
-    get_integration = apigw.AwsIntegration(
+    get_integration = aws_apigateway.AwsIntegration(
       service='dynamodb',
       action='Query',
       integration_http_method='POST',
