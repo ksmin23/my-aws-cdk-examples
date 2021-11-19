@@ -71,7 +71,7 @@ In order to test the flow we have to:
    </pre>
    Note: You can find `UserPoolClientId` with the following command:
    <pre>
-   aws cloudformation describe-stacks --stack-name <i>your-clouformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "UserPoolClientId")) | .[0].OutputValue'
+   aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "UserPoolClientId")) | .[0].OutputValue'
    </pre>
 
 2. Confirm the user, so they can log in:
@@ -85,7 +85,7 @@ In order to test the flow we have to:
 
    Note: You can find `UserPoolId` with the following command:
    <pre>
-   aws cloudformation describe-stacks --stack-name <i>your-clouformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "UserPoolId")) | .[0].OutputValue'
+   aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "UserPoolId")) | .[0].OutputValue'
    </pre>
 
 3. Log the user in to get an identity JWT token
@@ -118,7 +118,7 @@ In order to test the flow we have to:
 
   * Note: You can find <i>your-api-url</i> with the following command:
     <pre>
-    aws cloudformation describe-stacks --stack-name <i>your-clouformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.ExportName == "ApiGatewayRestApiEndpoint")) | .[0].OutputValue'
+    aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.ExportName == "ApiGatewayRestApiEndpoint")) | .[0].OutputValue'
     </pre>
 
 ## Useful commands
