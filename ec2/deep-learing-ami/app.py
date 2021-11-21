@@ -19,6 +19,12 @@ class DeepLearningAMIStack(cdk.Stack):
       description='Amazon EC2 Instance KeyPair name'
     )
 
+    JUPYTER_NOTEBOOK_INSTANCE_TYPE = cdk.CfnParameter(self, 'JupyterNotebookInstanceType',
+      type='String',
+      description='Amazon EC2 instance type',
+      default='t3.large'
+    )
+
     #XXX: For createing Amazon MWAA in the existing VPC,
     # remove comments from the below codes and
     # comments out vpc = aws_ec2.Vpc(..) codes,
@@ -57,13 +63,11 @@ class DeepLearningAMIStack(cdk.Stack):
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceSize.html#aws_cdk.aws_ec2.InstanceSize
-    ec2_instance_type = aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM)
+    # ec2_instance_type = aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM)
+    ec2_instance_type = aws_ec2.InstanceType(JUPYTER_NOTEBOOK_INSTANCE_TYPE.value_as_string)
 
     #XXX: Release Notes for DLAMI
     # https://docs.aws.amazon.com/dlami/latest/devguide/appendix-ami-release-notes.html
-    # aws ec2 describe-images --filters Name=name,Values="Deep Learning AMI (Ubuntu 18.04) Version 52.0"
-    # aws ec2 describe-images --filters Name=name,Values="Deep Learning AMI (Amazon Linux 2) Version 53.0"
-    # aws ec2 describe-images --filters Name=name,Values="Deep Learning AMI (Amazon Linux 2) Version 36.0"
     ec2_machine_image = aws_ec2.MachineImage.lookup(
       name=dlami_name,
       owners=["amazon"]
@@ -86,15 +90,15 @@ class DeepLearningAMIStack(cdk.Stack):
       key_name=EC2_KEY_PAIR_NAME.value_as_string
     )
 
-    dirname = os.path.dirname(__file__)
-    asset = Asset(self, "Asset", path=os.path.join(dirname, "ec2user-jupyter-config.sh"))
+    work_dirname = os.path.dirname(__file__)
+    cdk_asset = Asset(self, "Asset", path=os.path.join(work_dirname, "user-data/ec2user-jupyter-config.sh"))
     local_path = dl_nb_instance.user_data.add_s3_download_command(
-      bucket=asset.bucket,
-      bucket_key=asset.s3_object_key,
+      bucket=cdk_asset.bucket,
+      bucket_key=cdk_asset.s3_object_key,
       local_file='/tmp/ec2user-jupyter-config.sh'
     )
 
-    asset.grant_read(dl_nb_instance.role)
+    cdk_asset.grant_read(dl_nb_instance.role)
 
     commands = '''
 set -x
@@ -102,12 +106,13 @@ set -x
 exec > >(tee /var/log/bootstrap.log|logger -t user-data ) 2>&1
 chmod +x {file_path}
 sudo su - ec2-user bash -c '{file_path} $@' {AWS_Region}
-'''.format(AWS_Region=cdk.Aws.REGION, file_path=local_path)
+/opt/aws/bin/cfn-signal -e $? --stack {cfn_stack} --resource {cfn_resource} --region {AWS_Region}
+'''.format(AWS_Region=cdk.Aws.REGION, file_path=local_path, cfn_stack=self.stack_name, cfn_resource=self.get_logical_id(dl_nb_instance.instance))
 
     dl_nb_instance.user_data.add_commands(commands)
 
-    cdk.CfnOutput(self, 'CDKAssetS3BucketName', value=asset.s3_bucket_name)
-    cdk.CfnOutput(self, 'CDKAssetS3ObjectKey', value=asset.s3_object_key)
+    cdk.CfnOutput(self, 'CDKAssetS3BucketName', value=cdk_asset.s3_bucket_name)
+    cdk.CfnOutput(self, 'CDKAssetS3ObjectKey', value=cdk_asset.s3_object_key)
     cdk.CfnOutput(self, 'DLNotebookInstanceId', value=dl_nb_instance.instance_id)
     cdk.CfnOutput(self, 'DLNotebookInstancePublicDnsName', value=dl_nb_instance.instance_public_dns_name)
     cdk.CfnOutput(self, 'DLNotebookInstancePublicIP', value=dl_nb_instance.instance_public_ip)
