@@ -74,7 +74,7 @@ command.
    ![macos_keychain_access_import_items01](./resources/macos_keychain_access_import_items01.png)
 
 3. Navigate to the location of your saved certificate file and click **Open**.
-4. Enter the key pair's password and click **OK**.
+4. Enter the key pair's password and click **OK**.<br/>
    **Note**: If prompted to trust certificates issued by your CA automatically, select the **Always Trust** option to trust and install your certificate.
    The certificate will be installed and can be viewed by clicking **Category > My Certificates** in the Keychain Access utility.
 
