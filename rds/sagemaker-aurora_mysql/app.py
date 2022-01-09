@@ -2,22 +2,20 @@
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import os
-import json
 
 from aws_cdk import (
-  core,
+  core as cdk,
   aws_ec2,
   aws_iam,
   aws_logs,
   aws_rds,
-  aws_sagemaker,
-  aws_secretsmanager
+  aws_sagemaker
 )
 
 
-class SagemakerAuroraMysqlStack(core.Stack):
+class SagemakerAuroraMysqlStack(cdk.Stack):
 
-  def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
@@ -32,7 +30,7 @@ class SagemakerAuroraMysqlStack(core.Stack):
       description='security group for mysql client',
       security_group_name='use-mysql-sg'
     )
-    core.Tags.of(sg_use_mysql).add('Name', 'mysql-client-sg')
+    cdk.Tags.of(sg_use_mysql).add('Name', 'mysql-client-sg')
 
     sg_mysql_server = aws_ec2.SecurityGroup(self, 'MySQLServerSG',
       vpc=vpc,
@@ -42,7 +40,7 @@ class SagemakerAuroraMysqlStack(core.Stack):
     )
     sg_mysql_server.add_ingress_rule(peer=sg_use_mysql, connection=aws_ec2.Port.tcp(3306),
       description='use-mysql-sg')
-    core.Tags.of(sg_mysql_server).add('Name', 'mysql-server-sg')
+    cdk.Tags.of(sg_mysql_server).add('Name', 'mysql-server-sg')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
       description='subnet group for mysql',
@@ -108,7 +106,7 @@ class SagemakerAuroraMysqlStack(core.Stack):
       cluster_identifier=db_cluster_name,
       subnet_group=rds_subnet_group,
       backup=aws_rds.BackupProps(
-        retention=core.Duration.days(3),
+        retention=cdk.Duration.days(3),
         preferred_window="03:00-04:00"
       )
     )
@@ -145,10 +143,10 @@ cd /home/ec2-user/SageMaker
 wget -N https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
 wget -N https://raw.githubusercontent.com/ksmin23/my-aws-cdk-examples/main/rds/sagemaker-aurora_mysql/ipython-sql.ipynb
 EOF
-'''.format(AWS_Region=core.Aws.REGION)
+'''.format(AWS_Region=cdk.Aws.REGION)
 
     rds_wb_lifecycle_config_prop = aws_sagemaker.CfnNotebookInstanceLifecycleConfig.NotebookInstanceLifecycleHookProperty(
-      content=core.Fn.base64(rds_wb_lifecycle_content)
+      content=cdk.Fn.base64(rds_wb_lifecycle_content)
     )
 
     rds_wb_lifecycle_config = aws_sagemaker.CfnNotebookInstanceLifecycleConfig(self, 'MySQLWorkbenchLifeCycleConfig',
@@ -166,21 +164,21 @@ EOF
       subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids[0]
     )
 
-    core.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
-    core.CfnOutput(self, 'VpcId', value=vpc.vpc_id, export_name='VpcId')
+    cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
+    cdk.CfnOutput(self, 'VpcId', value=vpc.vpc_id, export_name='VpcId')
 
-    core.CfnOutput(self, 'DBClusterName', value=db_cluster.cluster_identifier, export_name='DBClusterName')
-    core.CfnOutput(self, 'DBCluster', value=db_cluster.cluster_endpoint.socket_address, export_name='DBCluster')
+    cdk.CfnOutput(self, 'DBClusterName', value=db_cluster.cluster_identifier, export_name='DBClusterName')
+    cdk.CfnOutput(self, 'DBCluster', value=db_cluster.cluster_endpoint.socket_address, export_name='DBCluster')
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_secretsmanager/README.html
     # secret_arn="arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>",
-    core.CfnOutput(self, 'DBSecret', value=db_cluster.secret.secret_name, export_name='DBSecret')
+    cdk.CfnOutput(self, 'DBSecret', value=db_cluster.secret.secret_name, export_name='DBSecret')
 
-    core.CfnOutput(self, 'SageMakerRole', value=sagemaker_notebook_role.role_name, export_name='SageMakerRole')
-    core.CfnOutput(self, 'SageMakerNotebookInstance', value=rds_workbench.notebook_instance_name, export_name='SageMakerNotebookInstance')
-    core.CfnOutput(self, 'SageMakerNotebookInstanceLifecycleConfig', value=rds_workbench.lifecycle_config_name, export_name='SageMakerNotebookInstanceLifecycleConfig')
+    cdk.CfnOutput(self, 'SageMakerRole', value=sagemaker_notebook_role.role_name, export_name='SageMakerRole')
+    cdk.CfnOutput(self, 'SageMakerNotebookInstance', value=rds_workbench.notebook_instance_name, export_name='SageMakerNotebookInstance')
+    cdk.CfnOutput(self, 'SageMakerNotebookInstanceLifecycleConfig', value=rds_workbench.lifecycle_config_name, export_name='SageMakerNotebookInstanceLifecycleConfig')
 
-app = core.App()
-SagemakerAuroraMysqlStack(app, "sagemaker-aurora-mysql", env=core.Environment(
+app = cdk.App()
+SagemakerAuroraMysqlStack(app, "sagemaker-aurora-mysql", env=cdk.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]))
 
