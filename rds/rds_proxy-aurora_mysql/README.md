@@ -307,6 +307,6 @@ Enjoy!
 - [Amazon Aurora MySQL reference](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html)
 - [Troubleshooting for RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.troubleshooting.html)
   - ```ERROR 3159 (HY000): This RDS Proxy requires TLS connections.```
-- [Use Amazon RDS Proxy with read-only endpoints](https://aws.amazon.com/ko/blogs/database/use-amazon-rds-proxy-with-read-only-endpoints/)
+- [Use Amazon RDS Proxy with read-only endpoints (by Peter Celentano, on 04 JAN 2022)](https://aws.amazon.com/ko/blogs/database/use-amazon-rds-proxy-with-read-only-endpoints/)
 - [aws rds create-db-proxy-endpoint](https://docs.aws.amazon.com/cli/latest/reference/rds/create-db-proxy-endpoint.html)
 
