@@ -1,5 +1,5 @@
 
-# Welcome to your CDK Python project!
+# Creating EC2 Instance with a given .pem keyfile
 
 This is a blank project for Python development with CDK.
 
@@ -34,14 +34,39 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synth
+(.venv) $ cdk synth
 ```
+
+If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
+The CDK CLI will search for the specified VPC in the the stack’s region and account,
+and import the subnet configuration.
+
+To import an existing VPC, you should specify the following environment variables.
+
+```
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+```
+
+If you pass context variable such as `vcp_name=<your vpc name>` (e.g. `vpc_name='[X]default'`), you can use the existing VPC.
+
+<pre>
+(.venv) $ cdk synth -c vpc_name='[X]default' \
+                    --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>"
+</pre>
+
+Use `cdk deploy` command to create the stack shown above.
+
+<pre>
+(.venv) $ cdk deploy \
+              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>"
+</pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
