@@ -34,13 +34,13 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synth 
+(.venv) $ cdk synth 
 ```
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
@@ -71,6 +71,40 @@ Use `cdk deploy` command to create the stack shown above.
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Configure Jenkins
+
+This project installs Jenkins on an Amazon EC2 instance with the following Amazon Linux
+<pre>
+[ec2-user ~]$ cat /etc/*release
+NAME="Amazon Linux"
+VERSION="2"
+ID="amzn"
+ID_LIKE="centos rhel fedora"
+VERSION_ID="2"
+PRETTY_NAME="Amazon Linux 2"
+ANSI_COLOR="0;33"
+CPE_NAME="cpe:2.3:o:amazon:amazon_linux:2"
+HOME_URL="https://amazonlinux.com/"
+Amazon Linux release 2 (Karoo)
+</pre>
+
+Jenkins is now installed and running on your EC2 instance. To configure Jenkins:
+ * Connect to http://<your_server_public_DNS>:80 from your favorite browser. You will be able to access Jenkins through its management interface:
+   <div>
+     <img src="./unlock_jenkins.png", alt with="800" height="465" />
+   </div>
+ * For more details, see [Tutorial for installing Jenkins on AWS](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#configure-jenkins)
+
+## Recommended Jenkins Plugins
+
+| Plugin name | Version |
+|-------------|---------|
+| git | 4.10.2 |
+| job-dsl | 1.78.3 |
+| pipeline | 2.6 |
+| pipeline-aws | 1.43 |
+| CloudBees AWS Credentials for the Jenkins plugin | 1.33 |
 
 ## Useful commands
 
