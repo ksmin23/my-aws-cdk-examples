@@ -21,7 +21,7 @@ class Ec2WithPemKeyStack(cdk.Stack):
       is_default=True,
       vpc_name=vpc_name)
 
-    # vpc = aws_ec2.Vpc(self, "EKKStackVPC",
+    # vpc = aws_ec2.Vpc(self, "Ec2WithPemKeyStackVPC",
     #   max_azs=2,
     #   gateway_endpoints={
     #     "S3": aws_ec2.GatewayVpcEndpointOptions(
