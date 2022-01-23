@@ -3,15 +3,15 @@
 import os
 
 from aws_cdk import (
-  core,
+  core as cdk,
   aws_ec2,
   aws_iam
 )
 
 
-class EC2InstanceStack(core.Stack):
+class EC2InstanceStack(cdk.Stack):
 
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+  def __init__(self, scope: cdk.Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
     # The code that defines your stack goes here
@@ -26,7 +26,7 @@ class EC2InstanceStack(core.Stack):
       description='security group for bastion host',
       security_group_name='bastion-host-sg'
     )
-    core.Tag.of(sg_ssh_access).add('Name', 'bastion-host')
+    cdk.Tags.of(sg_ssh_access).add('Name', 'bastion-host')
     sg_ssh_access.add_ingress_rule(peer=aws_ec2.Peer.any_ipv4(), connection=aws_ec2.Port.tcp(22), description='ssh access')
 
     bastion_host = aws_ec2.BastionHostLinux(self, "BastionHost",
@@ -36,10 +36,13 @@ class EC2InstanceStack(core.Stack):
       subnet_selection=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC)
     )
 
+    cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id, export_name='BastionHostId')
+    cdk.CfnOutput(self, 'BastionHostPublicDNSName', value=bastion_host.instance_public_dns_name, export_name='BastionHostPublicDNSName')
 
-app = core.App()
 
-EC2InstanceStack(app, "EC2Instance", env=core.Environment(
+app = cdk.App()
+
+EC2InstanceStack(app, "EC2Instance", env=cdk.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]))
 
