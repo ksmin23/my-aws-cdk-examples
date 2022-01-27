@@ -8,7 +8,6 @@ from aws_cdk import (
   aws_events_targets,
   aws_iam,
   aws_lambda,
-  aws_logs,
   aws_secretsmanager
 )
 
@@ -38,14 +37,15 @@ class SageMakerLambdaJenkinsTriggerStack(cdk.Stack):
       json.dumps({JENKINS_USER.value_as_string: JENKINS_API_TOKEN.value_as_string}))
 
     jenkins_api_user_token_secret = aws_secretsmanager.Secret(self, "JenkinsAPIUserTokenSecret",
-      secret_string_beta1=secret_value
+      secret_string_beta1=secret_value,
+      description="Secret to store jenkins username and personal access token"
     )
 
     jenkins_trigger_lambda_fn = aws_lambda.Function(self, "LambdaJenkinsTrigger",
       runtime=aws_lambda.Runtime.PYTHON_3_8,
       function_name="SageMakerJenkins-LambdaJenkinsTrigger",
       handler="lambda_jenkins_trigger.lambda_handler",
-      # description="Lambda function asynchrously invoked by LambdaAsyncCaller",
+      description="Lambda function invoked by SageMaker Model Package State change",
       code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       environment={
         "JenkinsAPIUserTokenSecret": jenkins_api_user_token_secret.secret_name,
@@ -76,13 +76,17 @@ class SageMakerLambdaJenkinsTriggerStack(cdk.Stack):
              "Rejected"
            ]
         }
-      }
+      },
+      description='''Rule to trigger a deployment when SageMaker Model registry is updated with a new model package.
+For example, a new model package is registered with Registry'''
     )
     event_rule.add_target(aws_events_targets.LambdaFunction(jenkins_trigger_lambda_fn))
     event_rule.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
-    cdk.CfnOutput(self, 'JenkinsAPIUserTokenSecretName', 
+    cdk.CfnOutput(self, 'JenkinsAPIUserTokenSecretName',
       value=jenkins_api_user_token_secret.secret_name, export_name='JenkinsAPIUserTokenSecret')
+    cdk.CfnOutput(self, 'JenkinsTriggerLambdaFunctionName',
+      value=jenkins_trigger_lambda_fn.function_name, export_name='LambdaJenkinsTrigger')
 
 
 app = cdk.App()
