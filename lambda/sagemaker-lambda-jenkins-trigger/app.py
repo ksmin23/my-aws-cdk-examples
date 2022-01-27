@@ -65,7 +65,7 @@ class SageMakerLambdaJenkinsTriggerStack(cdk.Stack):
       actions=["logs:*"]))
 
     event_rule = aws_events.Rule(self, "JenkinsTriggerRule",
-      rule_name="JenkinsTriggerRule",
+      rule_name="SageMakerJenkinsTriggerRule",
       event_pattern={
         "account": [self.account],
         "source": ["aws.sagemaker"],
