@@ -1,5 +1,5 @@
 
-# Lambda for Jenkins Trigger
+# Amazon Lambda for Jenkins Trigger
 
 This CDK project creates Amazon Lambda function to trigger Jenkins job 
 when Amazon SageMaker Model package status changes.
