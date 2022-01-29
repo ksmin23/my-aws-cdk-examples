@@ -4,18 +4,21 @@
 
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_logs,
   aws_rds,
   aws_secretsmanager
 )
+from constructs import Construct
 
 
-class AuroraMysqlStack(cdk.Stack):
+class AuroraMysqlStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
     # The code that defines your stack goes here
@@ -45,7 +48,7 @@ class AuroraMysqlStack(cdk.Stack):
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
       description='subnet group for mysql',
       subnet_group_name='aurora-mysql',
-      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE),
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
       vpc=vpc
     )
 
@@ -94,7 +97,7 @@ class AuroraMysqlStack(cdk.Stack):
         'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
         'parameter_group': rds_db_param_group,
         'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PRIVATE
+          'subnet_type': aws_ec2.SubnetType.PRIVATE_WITH_NAT
         },
         'vpc': vpc,
         'auto_minor_version_upgrade': False,
