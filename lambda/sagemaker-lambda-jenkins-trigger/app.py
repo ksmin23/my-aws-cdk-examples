@@ -2,19 +2,21 @@
 import os
 import json
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_events,
   aws_events_targets,
   aws_iam,
   aws_lambda,
   aws_secretsmanager
 )
+from constructs import Construct
 
+class SageMakerLambdaJenkinsTriggerStack(Stack):
 
-class SageMakerLambdaJenkinsTriggerStack(cdk.Stack):
-
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     JENKINS_USER = cdk.CfnParameter(self, 'JenkinsUser',
