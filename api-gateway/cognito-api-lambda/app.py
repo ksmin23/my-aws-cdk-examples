@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_apigateway,
   aws_cognito,
   aws_lambda
 )
+from constructs import Construct
 
-class CognitoProtectedApiStack(cdk.Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+class CognitoProtectedApiStack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     user_pool = aws_cognito.UserPool(self, 'UserPool',
@@ -49,7 +53,7 @@ class CognitoProtectedApiStack(cdk.Stack):
       function_name="HelloWorldApi",
       handler="helloworld.lambda_handler",
       description='Function that returns 200 with "Hello world!"',
-      code=aws_lambda.Code.asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
+      code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       timeout=cdk.Duration.minutes(5)
     )
 

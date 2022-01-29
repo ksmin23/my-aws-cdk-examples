@@ -1,5 +1,1 @@
-aws-cdk.core>=1.132.0
-aws-cdk.assertions>=1.132.0
-aws-cdk.aws-apigateway>=1.132.0
-aws-cdk.aws-cognito>=1.132.0
-aws-cdk.aws-lambda>=1.132.0
+aws-cdk-lib==2.10.0
