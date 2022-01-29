@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
-  aws_ec2,
-  aws_iam
+  Stack,
+  aws_ec2
 )
+from constructs import Construct
 
 
-class EC2InstanceStack(cdk.Stack):
+class EC2InstanceStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, id: str, **kwargs) -> None:
-    super().__init__(scope, id, **kwargs)
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
     vpc_name = self.node.try_get_context("vpc_name")
