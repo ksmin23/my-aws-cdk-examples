@@ -4,19 +4,22 @@ import json
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_opensearchservice,
   aws_secretsmanager
 )
+from constructs import Construct
 
 random.seed(47)
 
 
-class OpensearchStack(cdk.Stack):
+class OpensearchStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     OPENSEARCH_DOMAIN_NAME = cdk.CfnParameter(self, 'OpenSearchDomainName',
@@ -151,7 +154,7 @@ class OpensearchStack(cdk.Stack):
       security_groups=[sg_opensearch_cluster],
       automated_snapshot_start_hour=17, # 2 AM (GTM+9)
       vpc=vpc,
-      vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE)],
+      vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT)],
       removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
     )
     cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
