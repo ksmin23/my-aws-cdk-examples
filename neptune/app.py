@@ -2,19 +2,22 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core,
+  Stack,
   aws_ec2,
   aws_s3 as s3,
   aws_neptune,
   aws_iam,
   aws_sagemaker
 )
+from constructs import Construct
 
 
-class NeptuneStack(core.Stack):
+class NeptuneStack(Stack):
 
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
     # The code that defines your stack goes here
@@ -31,24 +34,24 @@ class NeptuneStack(core.Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for neptune client',
-      security_group_name='use-neptune-hol'
+      security_group_name='use-neptune-client'
     )
-    core.Tags.of(sg_use_graph_db).add('Name', 'use-neptune-hol')
+    cdk.Tags.of(sg_use_graph_db).add('Name', 'use-neptune-client')
 
     sg_graph_db = aws_ec2.SecurityGroup(self, "NeptuneSG",
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for neptune',
-      security_group_name='neptune-hol'
+      security_group_name='neptune-server'
     )
-    core.Tags.of(sg_graph_db).add('Name', 'neptune-hol')
+    cdk.Tags.of(sg_graph_db).add('Name', 'neptune-server')
 
-    sg_graph_db.add_ingress_rule(peer=sg_graph_db, connection=aws_ec2.Port.tcp(8182), description='neptune-hol')
-    sg_graph_db.add_ingress_rule(peer=sg_use_graph_db, connection=aws_ec2.Port.tcp(8182), description='use-neptune-hol')
+    sg_graph_db.add_ingress_rule(peer=sg_graph_db, connection=aws_ec2.Port.tcp(8182), description='neptune-server')
+    sg_graph_db.add_ingress_rule(peer=sg_use_graph_db, connection=aws_ec2.Port.tcp(8182), description='use-neptune-client')
 
     graph_db_subnet_group = aws_neptune.CfnDBSubnetGroup(self, 'NeptuneHolSubnetGroup',
       db_subnet_group_description='subnet group for neptune hol',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids,
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
       db_subnet_group_name='neptune-hol'
     )
 
@@ -98,7 +101,7 @@ class NeptuneStack(core.Stack):
     sagemaker_notebook_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
       "resources": ["arn:aws:neptune-db:{region}:{account}:{cluster_id}/*".format(
-        region=core.Aws.REGION, account=core.Aws.ACCOUNT_ID, cluster_id=graph_db.attr_cluster_resource_id)],
+        region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, cluster_id=graph_db.attr_cluster_resource_id)],
       "actions": ["neptune-db:connect"]
     }))
 
@@ -127,10 +130,10 @@ tar -zxvf /tmp/graph_notebook.tar.gz -C /tmp
 EOF
 '''.format(NeptuneClusterEndpoint=graph_db.attr_endpoint,
     NeptuneClusterPort=graph_db.attr_port,
-    AWS_Region=core.Aws.REGION)
+    AWS_Region=cdk.Aws.REGION)
 
     neptune_wb_lifecycle_config_prop = aws_sagemaker.CfnNotebookInstanceLifecycleConfig.NotebookInstanceLifecycleHookProperty(
-      content=core.Fn.base64(neptune_wb_lifecycle_content)
+      content=cdk.Fn.base64(neptune_wb_lifecycle_content)
     )
 
     neptune_wb_lifecycle_config = aws_sagemaker.CfnNotebookInstanceLifecycleConfig(self, 'NpetuneWorkbenchLifeCycleConfig',
@@ -144,12 +147,12 @@ EOF
       lifecycle_config_name=neptune_wb_lifecycle_config.notebook_instance_lifecycle_config_name,
       notebook_instance_name='NeptuneHolWorkbench',
       root_access='Disabled',
-      security_group_ids=[sg_use_graph_db.security_group_name],
+      security_group_ids=[sg_use_graph_db.security_group_id],
       subnet_id=graph_db_subnet_group.subnet_ids[0]
     )
 
 
-app = core.App()
-NeptuneStack(app, "neptune-hol")
+app = cdk.App()
+NeptuneStack(app, "AmazonNeptuneWithNotebook")
 
 app.synth()

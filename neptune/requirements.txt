@@ -1,12 +1,1 @@
-# pip install aws-cdk
-aws-cdk.core==1.67.0
-aws-cdk.aws-ec2==1.67.0
-aws-cdk.aws-s3==1.67.0
-aws-cdk.aws-neptune==1.67.0
-aws-cdk.aws-sagemaker==1.67.0
-
-# pip install gremlinpython
-aenum==2.2.2
-gremlinpython==3.4.4
-isodate==0.6.0
-tornado==4.5.3
+aws-cdk-lib==2.10.0
