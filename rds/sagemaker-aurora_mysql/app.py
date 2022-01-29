@@ -3,19 +3,22 @@
 
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_logs,
   aws_rds,
   aws_sagemaker
 )
+from constructs import Construct
 
 
-class SagemakerAuroraMysqlStack(cdk.Stack):
+class SagemakerAuroraMysqlStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
@@ -45,7 +48,7 @@ class SagemakerAuroraMysqlStack(cdk.Stack):
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
       description='subnet group for mysql',
       subnet_group_name='aurora-mysql',
-      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE),
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
       vpc=vpc
     )
 
@@ -94,7 +97,7 @@ class SagemakerAuroraMysqlStack(cdk.Stack):
         'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
         'parameter_group': rds_db_param_group,
         'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PRIVATE
+          'subnet_type': aws_ec2.SubnetType.PRIVATE_WITH_NAT
         },
         'vpc': vpc,
         'auto_minor_version_upgrade': False,
@@ -160,8 +163,8 @@ EOF
       lifecycle_config_name=rds_wb_lifecycle_config.notebook_instance_lifecycle_config_name,
       notebook_instance_name='AuroraMySQLWorkbench',
       root_access='Disabled',
-      security_group_ids=[sg_use_mysql.security_group_name],
-      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids[0]
+      security_group_ids=[sg_use_mysql.security_group_id],
+      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[0]
     )
 
     cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
@@ -176,6 +179,7 @@ EOF
     cdk.CfnOutput(self, 'SageMakerRole', value=sagemaker_notebook_role.role_name, export_name='SageMakerRole')
     cdk.CfnOutput(self, 'SageMakerNotebookInstance', value=rds_workbench.notebook_instance_name, export_name='SageMakerNotebookInstance')
     cdk.CfnOutput(self, 'SageMakerNotebookInstanceLifecycleConfig', value=rds_workbench.lifecycle_config_name, export_name='SageMakerNotebookInstanceLifecycleConfig')
+
 
 app = cdk.App()
 SagemakerAuroraMysqlStack(app, "sagemaker-aurora-mysql", env=cdk.Environment(
