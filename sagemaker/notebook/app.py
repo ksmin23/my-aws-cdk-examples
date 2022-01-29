@@ -3,19 +3,22 @@ import os
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_s3 as s3,
   aws_sagemaker
 )
+from constructs import Construct
 
 random.seed(47)
 
-class SageMakerNotebookStack(cdk.Stack):
+class SageMakerNotebookStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     SAGEMAKER_NOTEBOOK_INSTANCE_TYPE = cdk.CfnParameter(self, 'SageMakerNotebookInstanceType',
@@ -142,7 +145,7 @@ EOF
       notebook_instance_name='MySageMakerWorkbook',
       root_access='Disabled',
       security_group_ids=[sg_sagemaker_notebook_instance.security_group_id],
-      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids[0]
+      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[0]
     )
 
 
