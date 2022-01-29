@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_s3_assets
 )
+from constructs import Construct
 
 
-class JenkinsOnEC2Stack(cdk.Stack):
+class JenkinsOnEC2Stack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     EC2_KEY_PAIR_NAME = cdk.CfnParameter(self, 'EC2KeyPairName',
