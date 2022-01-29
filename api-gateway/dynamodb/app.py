@@ -4,19 +4,23 @@ import json
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_dynamodb,
   aws_iam,
   aws_apigateway
 )
+from constructs import Construct
 
 random.seed(47)
 
-class ApiGatewayDynamoDBStack(cdk.Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+class ApiGatewayDynamoDBStack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     #XXX: For createing Amazon MWAA in the existing VPC,
