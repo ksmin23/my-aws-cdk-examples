@@ -4,8 +4,10 @@
 
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_events,
   aws_events_targets,
@@ -17,10 +19,12 @@ from aws_cdk import (
   aws_s3 as s3,
   aws_sns
 )
+from constructs import Construct
 
-class LambdaAsyncInvokeStack(cdk.Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+class LambdaAsyncInvokeStack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # vpc_name = self.node.try_get_context("vpc_name")
@@ -42,7 +46,7 @@ class LambdaAsyncInvokeStack(cdk.Stack):
       function_name="LambdaAsyncCallee",
       handler="lambda_aync_callee.lambda_handler",
       description="Lambda function asynchrously invoked by LambdaAsyncCaller",
-      code=aws_lambda.Code.asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
+      code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       timeout=cdk.Duration.minutes(5)
     )
 
@@ -83,7 +87,7 @@ class LambdaAsyncInvokeStack(cdk.Stack):
       function_name="LambdaAsyncCaller",
       handler="lambda_caller.lambda_handler",
       description="Asynchronusly call lambda function",
-      code=aws_lambda.Code.asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
+      code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       timeout=cdk.Duration.minutes(5),
       #XXX: Uncomments out if you want to use different lambda function version
       # current_version_options=aws_lambda.VersionOptions(
@@ -111,7 +115,7 @@ class LambdaAsyncInvokeStack(cdk.Stack):
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       resources=[self.format_arn(partition="aws", service="lambda",
         region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, resource="function",
-        resource_name="{}*".format(async_callee_lambda_fn.function_name), sep=":")],
+        resource_name="{}*".format(async_callee_lambda_fn.function_name), arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       actions=["lambda:InvokeFunction"]))
 
     caller_lambda_fn.add_to_role_policy(aws_iam.PolicyStatement(
