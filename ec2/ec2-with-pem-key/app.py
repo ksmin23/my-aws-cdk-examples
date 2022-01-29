@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2
 )
+from constructs import Construct
 
-class Ec2WithPemKeyStack(cdk.Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+class Ec2WithPemKeyStack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     EC2_KEY_PAIR_NAME = cdk.CfnParameter(self, 'EC2KeyPairName',
