@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
-  aws_cloud9
+  aws_cloud9_alpha as cloud9
 )
+from constructs import Construct
 
-class Cloud9Stack(cdk.Stack):
+class Cloud9Stack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     #XXX: For createing Amazon MWAA in the existing VPC,
@@ -33,7 +36,7 @@ class Cloud9Stack(cdk.Stack):
     #     )
     #   }
     # )
-    c9env = aws_cloud9.Ec2Environment(self, "Cloud9Env",
+    c9env = cloud9.Ec2Environment(self, "Cloud9Env",
       vpc=vpc,
       subnet_selection=aws_ec2.SubnetSelection(
         subnet_type=aws_ec2.SubnetType.PUBLIC
