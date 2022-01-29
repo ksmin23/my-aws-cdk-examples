@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import os
-import json
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_lambda,
@@ -13,14 +14,16 @@ from aws_cdk import (
   aws_s3 as s3,
   aws_kinesisfirehose
 )
+from constructs import Construct
 
 from aws_cdk.aws_kinesisfirehose import CfnDeliveryStream as cfn
 
 random.seed(31)
 
-class FirehoseToS3LambdaStack(cdk.Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+class FirehoseToS3LambdaStack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # vpc_name = self.node.try_get_context("vpc_name")
@@ -38,7 +41,7 @@ class FirehoseToS3LambdaStack(cdk.Stack):
 
     S3_BUCKET_SUFFIX = ''.join(random.sample((string.ascii_lowercase + string.digits), k=7))
     s3_bucket = s3.Bucket(self, "s3bucket",
-      removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: core.RemovalPolicy.RETAIN - The bucket will be orphaned
+      removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: cdk.RemovalPolicy.RETAIN - The bucket will be orphaned
       bucket_name="firehose-to-s3-{region}-{suffix}".format(
         region=cdk.Aws.REGION, suffix=S3_BUCKET_SUFFIX))
 
@@ -105,7 +108,7 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       function_name="MetadataExtractor",
       handler="metadata_extractor.lambda_handler",
       description="Extract partition keys from records",
-      code=aws_lambda.Code.asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
+      code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       timeout=cdk.Duration.minutes(5)
     )
 
@@ -155,7 +158,8 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       resources=[self.format_arn(service="logs", resource="log-group",
-        resource_name="{}:log-stream:*".format(firehose_log_group_name), sep=":")],
+        resource_name="{}:log-stream:*".format(firehose_log_group_name),
+        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       actions=["logs:PutLogEvents"]
     ))
 
@@ -165,7 +169,8 @@ class FirehoseToS3LambdaStack(cdk.Stack):
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       "resources": [self.format_arn(partition="aws", service="lambda",
         region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, resource="function",
-        resource_name="{}:*".format(metadata_extract_lambda_fn.function_name), sep=":")],
+        resource_name="{}:*".format(metadata_extract_lambda_fn.function_name),
+        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       "actions": ["lambda:InvokeFunction",
         "lambda:GetFunctionConfiguration"]
     }))
