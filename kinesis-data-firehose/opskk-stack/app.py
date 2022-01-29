@@ -5,8 +5,10 @@ import json
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_s3 as s3,
@@ -14,13 +16,15 @@ from aws_cdk import (
   aws_opensearchservice,
   aws_secretsmanager
 )
+from constructs import Construct
 
 random.seed(47)
 
-class OPSKKStack(cdk.Stack):
 
-  def __init__(self, scope: cdk.Construct, id: str, **kwargs) -> None:
-    super().__init__(scope, id, **kwargs)
+class OPSKKStack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
 
     OPENSEARCH_DOMAIN_NAME = cdk.CfnParameter(self, 'OpenSearchDomainName',
       type='String',
@@ -45,7 +49,7 @@ class OPSKKStack(cdk.Stack):
     #   vpc_name=vpc_name)
     #
     vpc = aws_ec2.Vpc(self, "EKKStackVPC",
-      max_azs=2,
+      max_azs=3,
       gateway_endpoints={
         "S3": aws_ec2.GatewayVpcEndpointOptions(
           service=aws_ec2.GatewayVpcEndpointAwsService.S3
@@ -153,7 +157,7 @@ class OPSKKStack(cdk.Stack):
       security_groups=[sg_opensearch_cluster],
       automated_snapshot_start_hour=17, # 2 AM (GTM+9)
       vpc=vpc,
-      vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE)],
+      vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT)],
       removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
     )
     cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
@@ -222,7 +226,7 @@ class OPSKKStack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       resources=[self.format_arn(service="logs", resource="log-group",
-        resource_name="{}:log-stream:*".format(firehose_log_group_name), sep=":")],
+        resource_name="{}:log-stream:*".format(firehose_log_group_name), arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       actions=["logs:PutLogEvents"]
     ))
 
@@ -238,7 +242,7 @@ class OPSKKStack(cdk.Stack):
     opensearch_dest_vpc_config = aws_kinesisfirehose.CfnDeliveryStream.VpcConfigurationProperty(
       role_arn=firehose_role.role_arn,
       security_group_ids=[sg_use_opensearch.security_group_id],
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
     )
 
     opensearch_dest_config = aws_kinesisfirehose.CfnDeliveryStream.ElasticsearchDestinationConfigurationProperty(
