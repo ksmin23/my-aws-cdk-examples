@@ -1,24 +1,27 @@
 #!/usr/bin/env python3
 import os
-import json
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_s3 as s3,
   aws_kinesisfirehose
 )
+from constructs import Construct
 
 from aws_cdk.aws_kinesisfirehose import CfnDeliveryStream as cfn
 
 random.seed(47)
 
-class FirehoseToS3Stack(cdk.Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+class FirehoseToS3Stack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # vpc_name = self.node.try_get_context("vpc_name")
@@ -36,7 +39,7 @@ class FirehoseToS3Stack(cdk.Stack):
 
     S3_BUCKET_SUFFIX = ''.join(random.sample((string.ascii_lowercase + string.digits), k=7))
     s3_bucket = s3.Bucket(self, "s3bucket",
-      removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: core.RemovalPolicy.RETAIN - The bucket will be orphaned
+      removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: cdk.RemovalPolicy.RETAIN - The bucket will be orphaned
       bucket_name="firehose-to-s3-{region}-{suffix}".format(
         region=cdk.Aws.REGION, suffix=S3_BUCKET_SUFFIX))
 
@@ -113,7 +116,8 @@ class FirehoseToS3Stack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       resources=[self.format_arn(service="logs", resource="log-group",
-        resource_name="{}:log-stream:*".format(firehose_log_group_name), sep=":")],
+        resource_name="{}:log-stream:*".format(firehose_log_group_name),
+        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       actions=["logs:PutLogEvents"]
     ))
 
