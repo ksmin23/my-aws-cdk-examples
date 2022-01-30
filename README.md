@@ -14,6 +14,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [dynamodb](./dynamodb/) | ![dynamodb-arch](./dynamodb/dynamodb-arch.svg) | dynamodb |
 | [ec2/vpc](./ec2/vpc/) | ![aws-vpc](./ec2/vpc/aws-vpc.svg) | vpc |
 | [ec2/import-existing-vpc](./ec2/import-existing-vpc/) | ![aws-existing-vpc](./ec2/import-existing-vpc/aws-existing-vpc.svg) | vpc |
+| [ec2/jenkins-on-ec2](./ec2/jenkins-on-ec2/) | ![jenkins-on-ec2](./ec2/jenkins-on-ec2/jenkins-on-ec2.svg) | jenkins, ec2 |
 | [elasticache/redis](./elasticache/redis/) | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) | redis, redis-cluster |
 | [elasticsearch](./elasticsearch/) | ![amazon-es-arch](./elasticsearch/amazon-es-arch.svg) | elasticsearch |
 | [opensearch](./opensearch-service/) | ![amazon-es-arch](./opensearch-service/amazon-opensearch-arch.svg) | opensearch |

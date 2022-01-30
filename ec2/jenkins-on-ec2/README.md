@@ -1,6 +1,8 @@
 
 # Jenkins on Amazon EC2
 
+![](./jenkins-on-ec2.svg)
+
 This is a project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
