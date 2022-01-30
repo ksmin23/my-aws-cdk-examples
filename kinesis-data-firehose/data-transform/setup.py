@@ -19,7 +19,8 @@ setuptools.setup(
     packages=setuptools.find_packages(where="lambda_async_invoke"),
 
     install_requires=[
-        "aws-cdk.core==1.125.0",
+        "aws-cdk-lib",
+        "constructs"
     ],
 
     python_requires=">=3.6",
