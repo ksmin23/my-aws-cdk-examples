@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core,
+  Stack,
   aws_ec2,
-  aws_iam,
   aws_elasticsearch
 )
+from constructs import Construct
 
-class ElasticsearchStack(core.Stack):
+class ElasticsearchStack(Stack):
 
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-    super().__init__(scope, id, **kwargs)
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
 
-    # The code that defines your stack goes here
     vpc = aws_ec2.Vpc(self, "ElasticsearchHolVPC",
       max_azs=2,
       gateway_endpoints={
@@ -32,7 +33,7 @@ class ElasticsearchStack(core.Stack):
       description='security group for an bastion host',
       security_group_name='bastion-host-sg'
     )
-    core.Tags.of(sg_bastion_host).add('Name', 'bastion-host-sg')
+    cdk.Tags.of(sg_bastion_host).add('Name', 'bastion-host-sg')
 
     #XXX: As there are no SSH public keys deployed on this machine,
     # you need to use EC2 Instance Connect with the command
@@ -54,7 +55,7 @@ class ElasticsearchStack(core.Stack):
       description='security group for an elasticsearch client',
       security_group_name='use-es-cluster-sg'
     )
-    core.Tags.of(sg_use_es).add('Name', 'use-es-cluster-sg')
+    cdk.Tags.of(sg_use_es).add('Name', 'use-es-cluster-sg')
 
     sg_es = aws_ec2.SecurityGroup(self, "ElasticSearchSG",
       vpc=vpc,
@@ -62,7 +63,7 @@ class ElasticsearchStack(core.Stack):
       description='security group for an elasticsearch cluster',
       security_group_name='es-cluster-sg'
     )
-    core.Tags.of(sg_es).add('Name', 'es-cluster-sg')
+    cdk.Tags.of(sg_es).add('Name', 'es-cluster-sg')
 
     sg_es.add_ingress_rule(peer=sg_es, connection=aws_ec2.Port.all_tcp(), description='es-cluster-sg')
     sg_es.add_ingress_rule(peer=sg_use_es, connection=aws_ec2.Port.all_tcp(), description='use-es-cluster-sg')
@@ -111,14 +112,19 @@ class ElasticsearchStack(core.Stack):
       },
       vpc_options={
         "securityGroupIds": [sg_es.security_group_id],
-        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids
+        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
       }
     )
-    core.Tags.of(es_cfn_domain).add('Name', 'es-hol')
+    cdk.Tags.of(es_cfn_domain).add('Name', 'es-hol')
+
+    cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id, export_name='BastionHostId')
+    cdk.CfnOutput(self, 'BastionHostPublicDNSName', value=bastion_host.instance_public_dns_name, export_name='BastionHostPublicDNSName')
+    cdk.CfnOutput(self, 'ESDomainEndpoint', value=es_cfn_domain.attr_domain_endpoint, export_name='ESDomainEndpoint')
+    cdk.CfnOutput(self, 'ESDashboardsURL', value=f"{es_cfn_domain.attr_domain_endpoint}/_dashboards/", export_name='ESDashboardsURL')
 
 
-app = core.App()
-ElasticsearchStack(app, "amazon-es-hol")
+app = cdk.App()
+ElasticsearchStack(app, "AmazonElasticsearchStack")
 
 app.synth()
 

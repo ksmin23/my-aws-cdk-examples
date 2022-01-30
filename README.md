@@ -36,11 +36,15 @@ Enjoy!
  * `npm install -g aws-cdk`          Install the AWS CDK Toolkit (the `cdk` command).
  * `npm install -g aws-cdk@latest`   Install the latest AWS CDK Toolkit (the `cdk`command).
  * `cdk init app --language python`  Create a new, empty CDK Python project.
+ * `cdk bootstrap --profile <AWS Profile>` Deploys the CDK Toolkit staging stack; see [Bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
 
 ## References
 
  * [Working with the AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/work-with.html)
  * [Your first AWS CDK app](https://docs.aws.amazon.com/cdk/latest/guide/hello_world.html)
- * [AWS CDK Reference Documentation](https://docs.aws.amazon.com/cdk/api/latest/)
+ * [AWS CDK v1 Reference Documentation](https://docs.aws.amazon.com/cdk/api/v1/)
+ * [AWS CDK v2 Reference Documentation](https://docs.aws.amazon.com/cdk/api/v2/)
+ * [Migrating to AWS CDK v2](https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html)
+ * [AWS CDK Toolkit (cdk command)](https://docs.aws.amazon.com/cdk/v2/guide/cli.html)
  * [aws-samples/aws-cdk-examples](https://github.com/aws-samples/aws-cdk-examples)
 
