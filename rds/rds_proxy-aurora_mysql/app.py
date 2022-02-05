@@ -16,7 +16,7 @@ from aws_cdk import (
 from constructs import Construct
 
 
-class AuroraMysqlStack(Stack):
+class RdsProyAuroraMysqlStack(Stack):
 
   def __init__(self, scope: Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
@@ -148,7 +148,7 @@ class AuroraMysqlStack(Stack):
 
 
 app = cdk.App()
-AuroraMysqlStack(app, "aurora-mysql", env=cdk.Environment(
+RdsProyAuroraMysqlStack(app, "RDSProyAuroraMySQLStack", env=cdk.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]))
 
