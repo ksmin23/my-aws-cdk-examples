@@ -67,7 +67,7 @@ command.
 Before cleaning up the emr cluster, you need to tunrn off EMR `Termination protection`.
 
 <pre>
-(.venv) $ aws modify-cluster-attributes --cluster-id <i>your-emr-cluster-id</i> --no-termination-protected
+(.venv) $ aws emr modify-cluster-attributes --cluster-id <i>your-emr-cluster-id</i> --no-termination-protected
 (.venv) $ cdk destroy --force
 </pre>
 
