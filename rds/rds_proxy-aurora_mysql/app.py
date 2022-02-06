@@ -43,6 +43,8 @@ class RdsProyAuroraMysqlStack(Stack):
     )
     sg_mysql_server.add_ingress_rule(peer=sg_use_mysql, connection=aws_ec2.Port.tcp(3306),
       description='use-default-mysql')
+    sg_mysql_server.add_ingress_rule(peer=sg_mysql_server, connection=aws_ec2.Port.all_tcp(),
+      description='default-mysql-server')
     cdk.Tags.of(sg_mysql_server).add('Name', 'mysql-server')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',

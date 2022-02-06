@@ -43,6 +43,8 @@ class SagemakerAuroraMysqlStack(Stack):
     )
     sg_mysql_server.add_ingress_rule(peer=sg_use_mysql, connection=aws_ec2.Port.tcp(3306),
       description='use-mysql-sg')
+    sg_mysql_server.add_ingress_rule(peer=sg_mysql_server, connection=aws_ec2.Port.all_tcp(),
+      description='mysql-server-sg')
     cdk.Tags.of(sg_mysql_server).add('Name', 'mysql-server-sg')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
