@@ -123,4 +123,7 @@ Enjoy!
  * [Tutorial for installing Jenkins on AWS](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#configure-jenkins)
  * [AWS EC2에 Jenkins 설치하기 (2021-01-12)](https://velog.io/@yundleyundle/AWS-EC2%EC%97%90-Jenkins-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0)
  * [Create Amazon SageMaker projects using third-party source control and Jenkins (2021-08-17)](https://aws.amazon.com/blogs/machine-learning/create-amazon-sagemaker-projects-using-third-party-source-control-and-jenkins/)
+ * [Amazon Corretto 8 Installation Instructions for Amazon Linux 2](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/amazon-linux-install.html)
+ * [Amazon Corretto 11 Installation Instructions for Amazon Linux 2](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/amazon-linux-install.html)
+ * [Amazon Corretto Documentation](https://docs.aws.amazon.com/corretto/index.html)
 
