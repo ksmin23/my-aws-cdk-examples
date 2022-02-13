@@ -1,0 +1,5 @@
+{
+  "vpc_name": "Your-Existing-VPC-Name",
+  "db_cluster_name": "Your-DB-Cluster-Name",
+  "db_secret_name": "Your-DB-Secret-Name"
+}
