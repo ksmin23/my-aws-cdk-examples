@@ -89,7 +89,7 @@ Enjoy!
 
 # Example
 
-1. Connecting to Aurora MySQL using RDS Proxy
+1. Connecting to Aurora MySQL
 
     <pre>
     $ mysql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
