@@ -43,10 +43,10 @@ class AuroraMysqlStack(Stack):
     sg_mysql_server.add_ingress_rule(peer=sg_use_mysql, connection=aws_ec2.Port.tcp(3306),
       description='default-mysql-client-sg')
     sg_mysql_server.add_ingress_rule(peer=sg_mysql_server, connection=aws_ec2.Port.all_tcp(),
-      description='default-mysql-client-sg')
+      description='default-mysql-server-sg')
     cdk.Tags.of(sg_mysql_server).add('Name', 'default-mysql-server-sg')
 
-    rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
+    rds_subnet_group = aws_rds.SubnetGroup(self, 'MySQLSubnetGroup',
       description='subnet group for mysql',
       subnet_group_name='aurora-mysql',
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
@@ -98,7 +98,7 @@ class AuroraMysqlStack(Stack):
 
     db_cluster = aws_rds.DatabaseCluster(self, 'Database',
       engine=rds_engine,
-      credentials=rds_credentials,
+      credentials=rds_credentials, # A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
       instance_props={
         'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
         'parameter_group': rds_db_param_group,
