@@ -21,25 +21,25 @@ class AuroraPostgresqlStack(Stack):
       is_default=True,
       vpc_name=vpc_name)
 
-    sg_use_mysql = aws_ec2.SecurityGroup(self, 'PostgreSQLClientSG',
+    sg_postgresql_client = aws_ec2.SecurityGroup(self, 'PostgreSQLClientSG',
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for postgresql client',
       security_group_name='default-postgresql-client-sg'
     )
-    cdk.Tags.of(sg_use_mysql).add('Name', 'default-postgresql-client-sg')
+    cdk.Tags.of(sg_postgresql_client).add('Name', 'default-postgresql-client-sg')
 
-    sg_mysql_server = aws_ec2.SecurityGroup(self, 'PostgreSQLServerSG',
+    sg_postgresql_server = aws_ec2.SecurityGroup(self, 'PostgreSQLServerSG',
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for postgresql',
       security_group_name='default-postgresql-server-sg'
     )
-    sg_mysql_server.add_ingress_rule(peer=sg_use_mysql, connection=aws_ec2.Port.tcp(5432),
+    sg_postgresql_server.add_ingress_rule(peer=sg_postgresql_client, connection=aws_ec2.Port.tcp(5432),
       description='default-postgresql-client-sg')
-    sg_mysql_server.add_ingress_rule(peer=sg_mysql_server, connection=aws_ec2.Port.all_tcp(),
+    sg_postgresql_server.add_ingress_rule(peer=sg_postgresql_server, connection=aws_ec2.Port.all_tcp(),
       description='default-postgresql-server-sg')
-    cdk.Tags.of(sg_mysql_server).add('Name', 'default-postgresql-server-sg')
+    cdk.Tags.of(sg_postgresql_server).add('Name', 'default-postgresql-server-sg')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'PostgreSQLSubnetGroup',
       description='subnet group for postgresql',
@@ -83,7 +83,7 @@ class AuroraPostgresqlStack(Stack):
 
     db_cluster = aws_rds.DatabaseCluster(self, 'Database',
       engine=rds_engine,
-      credentials=rds_credentials,
+      credentials=rds_credentials, # A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
       instance_props={
         'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
         'parameter_group': rds_db_param_group,
@@ -92,7 +92,7 @@ class AuroraPostgresqlStack(Stack):
         },
         'vpc': vpc,
         'auto_minor_version_upgrade': False,
-        'security_groups': [sg_mysql_server]
+        'security_groups': [sg_postgresql_server]
       },
       instances=2,
       parameter_group=rds_cluster_param_group,
