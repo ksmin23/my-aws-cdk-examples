@@ -1,6 +1,8 @@
 
 # Aurora PostgreSQL
 
+![aurora_postgresql-arch](./aurora_postgresql-arch.svg)
+
 This is a sample project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
@@ -94,7 +96,7 @@ Enjoy!
    $ sudo amazon-linux-extras | grep postgres
    $ sudo amazon-linux-extras enable postgresql13
    $ sudo yum clean metadata
-   $ $ sudo yum install -y postgresql
+   $ sudo yum install -y postgresql
    </pre>
 
 2. Connect to Aurora PostgreSQL
@@ -106,6 +108,25 @@ Enjoy!
     Type "help" for help.
 
     postgres=>
+    postgres=> \l
+                                  List of databases
+    Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+    -----------+----------+----------+-------------+-------------+-----------------------
+    postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+    rdsadmin  | rdsadmin | UTF8     | en_US.UTF-8 | en_US.UTF-8 | rdsadmin=CTc/rdsadmin
+    template0 | rdsadmin | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/rdsadmin          +
+              |          |          |             |             | rdsadmin=CTc/rdsadmin
+    template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+              |          |          |             |             | postgres=CTc/postgres
+    (4 rows)
+
+    postgres=> SELECT version();
+                                                version
+    -------------------------------------------------------------------------------------------------
+    PostgreSQL 13.4 on x86_64-pc-linux-gnu, compiled by x86_64-pc-linux-gnu-gcc (GCC) 7.4.0, 64-bit
+    (1 row)
+
+    postgres=>
     </pre>
 
 # References
@@ -113,3 +134,4 @@ Enjoy!
  * [PostgreSQL Cheat Sheet](https://postgrescheatsheet.com/#/connections)
  * [Postgresql Manuals](https://www.postgresql.org/docs/)
  * [Best practices with Amazon Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.BestPractices.html)
+ * [Managing PostgreSQL users and roles (2019-03-04)](https://aws.amazon.com/ko/blogs/database/managing-postgresql-users-and-roles/)
