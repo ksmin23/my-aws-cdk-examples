@@ -56,3 +56,10 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## References
+
+ * [Getting Started with AWS Batch](https://docs.aws.amazon.com/batch/latest/userguide/Batch_GetStarted.html)
+ * [Creating a Simple “Fetch & Run” AWS Batch Job](https://aws.amazon.com/ko/blogs/compute/creating-a-simple-fetch-and-run-aws-batch-job/)
+ * [Orchestrating an application process with AWS Batch using AWS CDK](https://aws.amazon.com/ko/blogs/developer/orchestrating-an-application-process-with-aws-batch-using-aws-cdk/)
+
