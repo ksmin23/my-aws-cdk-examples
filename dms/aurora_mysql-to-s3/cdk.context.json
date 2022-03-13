@@ -1,0 +1,5 @@
+{
+  "vpc_name": "default",
+  "mysql_client_security_group_name": "mysql-client-security-group-name",
+  "aws_secret_name": "secret-full-name"
+}
