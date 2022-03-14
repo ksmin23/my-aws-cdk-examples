@@ -1,7 +1,9 @@
 
-# Data migration from Aurora MySQL to S3 with AWS DMS
+# Migrating Data from Aurora MySQL to S3 with AWS DMS
 
-This is a blank project for Python development with CDK.
+![dms-mysql-to-s3-arch](./dms-mysql-to-s3-arch.svg)
+
+This is a data pipeline project using AWS DMS for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
