@@ -78,3 +78,8 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## References
+
+ * [aws-dms-deployment-using-aws-cdk](https://github.com/aws-samples/aws-dms-deployment-using-aws-cdk) - AWS DMS deployment using AWS CDK (Python)
+ * [aws-dms-msk-demo](https://github.com/aws-samples/aws-dms-msk-demo) - Streaming Data to Amazon MSK via AWS DMS
