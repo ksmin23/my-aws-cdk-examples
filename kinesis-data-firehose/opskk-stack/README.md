@@ -187,7 +187,7 @@ In the next step, you map the IAM role that Kinesis Data Firehose uses to the ro
     ![ops-role-mappings](./resources/ops-role-mappings.png)
 13. Choose **Manage mapping** and under **Backend roles**,
 14. For **Backend Roles**, enter the IAM ARN of the role Kinesis Data Firehose uses:
-    `arn:aws:iam::123456789012:role/firehose_stream_role_name`.
+    `arn:aws:iam::123456789012:role/service-role/firehose_stream_role_name`.
     ![ops-entries-for-firehose_role](./resources/ops-entries-for-firehose_role.png)
 15. Choose **Map**.
 
