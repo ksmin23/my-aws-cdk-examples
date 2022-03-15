@@ -17,7 +17,7 @@ import dataset
 
 Faker.seed(47)
 
-CREATE_TABLE_SQL_FMT = '''CREATE DATABASE IF NOT EXISTS {database};
+CREATE_TABLE_SQL_FMT = '''
 CREATE TABLE IF NOT EXISTS {database}.{table} (
   trans_id BIGINT(20) AUTO_INCREMENT PRIMARY KEY,
   customer_id VARCHAR(12) NOT NULL,

@@ -115,11 +115,11 @@ Enjoy!
    | log_bin       | ON    |
    +---------------+-------+
    </pre>
-4. Run the below command to create the sample database named `testdb`.
+4. Also run this to AWS DMS has bin log access that is required for replication
    <pre>
-   mysql> create database testdb;
+   mysql> call mysql.rds_set_configuration('binlog retention hours', 24);
    </pre>
-5. Run this to AWS DMS has bin log access that is required for replication.
+5. Run the below command to create the sample database named `testdb`.
    <pre>
    mysql> create database testdb;
    </pre>
@@ -136,9 +136,9 @@ Enjoy!
                     --max-count 200
    </pre>
 9.  Check s3 and you will see data in the s3 location such as:
-     <pre>
-     s3://<i>target-s3-bucket</i>/<i>target-s3-prefix</i>/<i>your-database-name</i>/<i>your-table-name</i>/
-     </pre>
+    <pre>
+    s3://<i>target-s3-bucket</i>/<i>target-s3-prefix</i>/<i>your-database-name</i>/<i>your-table-name</i>/
+    </pre>
 
 #### Clean Up
 1. Stop the DMS Replication task by replacing the ARN in below command.
