@@ -147,13 +147,34 @@ class AuroraMysqlToS3Stack(Stack):
       ]
     }
 
+    #XXX: AWS DMS - Using Amazon Kinesis Data Streams as a target for AWS Database Migration Service
+    # https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Kinesis.html
+    task_settings_json = {
+      # Multithreaded full load task settings
+      "FullLoadSettings": {
+        "MaxFullLoadSubTasks": 8,
+      },
+      "TargetMetadata": {
+        # Multithreaded full load task settings
+        "ParallelLoadQueuesPerThread": 0,
+        "ParallelLoadThreads": 0,
+        "ParallelLoadBufferSize": 0,
+
+        # Multithreaded CDC load task settings
+        "ParallelApplyBufferSize": 1000,
+        "ParallelApplyQueuesPerThread": 16,
+        "ParallelApplyThreads": 8,
+      }
+    }
+
     dms_replication_task = aws_dms.CfnReplicationTask(self, 'DMSReplicationTask',
       replication_task_identifier='DMSMySQLToS3Task',
       replication_instance_arn=dms_replication_instance.ref,
       migration_type='full-load', # [ full-load | cdc | full-load-and-cdc ]
       source_endpoint_arn=dms_source_endpoint.ref,
       target_endpoint_arn=dms_target_endpoint.ref,
-      table_mappings=json.dumps(table_mappings_json)
+      table_mappings=json.dumps(table_mappings_json),
+      replication_task_settings=json.dumps(task_settings_json)
     )
 
 
