@@ -85,12 +85,7 @@ class AuroraMysqlToS3Stack(Stack):
 
     sm_client = boto3.client('secretsmanager')
     secret_name = self.node.try_get_context('aws_secret_name')
-    secret_id = 'arn:aws:secretsmanager:{region}:{account}:secret:{secret_name}'.format(
-      region=kwargs['env'].region,
-      account=kwargs['env'].account,
-      secret_name=secret_name
-    )
-    secret_value = sm_client.get_secret_value(SecretId=secret_id)
+    secret_value = sm_client.get_secret_value(SecretId=secret_name)
     secret = json.loads(secret_value['SecretString'])
 
     source_endpoint_id = secret['dbClusterIdentifier'].lower()
