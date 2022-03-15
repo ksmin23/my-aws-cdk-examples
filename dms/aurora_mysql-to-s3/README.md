@@ -86,9 +86,9 @@ Enjoy!
 
 1. Start the DMS Replication task by replacing the ARN in below command.
    <pre>
-   (.venv) $ aws dms start-replication-task --replication-task-arn <i>dms-task-arn</i> --region <i>region-name</i>
+   (.venv) $ aws dms start-replication-task --replication-task-arn <i>dms-task-arn</i>  --start-replication-task-type start-replication
    </pre>
-2. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format parameter` to `ROW` in the parameter group.
+2. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format` parameter to `ROW` in the parameter group.
 3. Connect to the Aurora cluster writer node.
    <pre>
    $ mysql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
