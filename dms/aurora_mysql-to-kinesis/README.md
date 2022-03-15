@@ -103,7 +103,7 @@ Enjoy!
 
     mysql>
    </pre>
-3. At SQL prompt run the below command to confirm that binary logging is enabled:
+4. At SQL prompt run the below command to confirm that binary logging is enabled:
    <pre>
    mysql> show global variables like "log_bin";
    +---------------+-------+
@@ -112,17 +112,17 @@ Enjoy!
    | log_bin       | ON    |
    +---------------+-------+
    </pre>
-4. Also run this to AWS DMS has bin log access that is required for replication
+5. Also run this to AWS DMS has bin log access that is required for replication
    <pre>
    mysql> call mysql.rds_set_configuration('binlog retention hours', 24);
    </pre>
-5. Run the below command to create the sample database named `testdb`.
+6. Run the below command to create the sample database named `testdb`.
    <pre>
    mysql> create database testdb;
    </pre>
-6. Exit from the SQL prompt and open the command-line terminal.
-7. At the command-line prompt run the below command to create the sample table named in `testdb` database.
-8.  Generate test data.
+7. Exit from the SQL prompt and open the command-line terminal.
+8. At the command-line prompt run the below command to create the sample table named in `testdb` database.
+9. Generate test data.
    <pre>
    (.venv) $ python tests/gen_fake_mysql_data.py \
                     --database <i>your-database-name</i> \
@@ -132,7 +132,7 @@ Enjoy!
                     --host <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com \
                     --max-count 200
    </pre>
-9. Check the cloudwatch dashboard of kinesis data streams and you will see graph updating on it.
+10. Check the cloudwatch dashboard of kinesis data streams and you will see graph updating on it.
 
 #### Clean Up
 1. Stop the DMS Replication task by replacing the ARN in below command.
