@@ -69,7 +69,8 @@ class AuroraMysqlStack(Stack):
         'character-set-client-handshake': '0',
         'character_set_server': 'utf8mb4',
         'collation_server': 'utf8mb4_unicode_ci',
-        'init_connect': 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci'
+        'init_connect': 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci',
+        #'binlog_format': 'ROW' #XXX: Turn on binlog
       }
     )
 

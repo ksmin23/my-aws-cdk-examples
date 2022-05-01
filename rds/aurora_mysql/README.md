@@ -88,7 +88,7 @@ Use `cdk deploy` command to create the stack shown above.
 Enjoy!
 
 # Example
-
+### Connect to Aurora MySQL
 1. Connecting to Aurora MySQL
 
     <pre>
@@ -220,3 +220,51 @@ Enjoy!
     mysql>
     </pre>
 
+### How to turn on Aurora MySQL binlog
+1. Add `'binlog_format': 'ROW'` into db cluster parameter group, and deploy cdk stack.
+   <pre>
+    ...
+    rds_cluster_param_group = aws_rds.ParameterGroup(self, 'AuroraMySQLClusterParamGroup',
+      engine=rds_engine,
+      description='Custom cluster parameter group for aurora-mysql8.x',
+      parameters={
+        ...
+        'binlog_format': 'ROW' #XXX: Turn on binlog
+      }
+    )
+    ...
+   </pre>
+2. After CDK stack creation is completed, connect to the Aurora cluster writer node.
+   <pre>
+    $ mysql -h<i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
+    Enter password:
+    Welcome to the MariaDB monitor.  Commands end with ; or \g.
+    Your MySQL connection id is 20
+    Server version: 8.0.23 Source distribution
+
+    Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    MySQL [(none)]> show global variables like "log_bin";
+   </pre>
+
+3. At SQL prompt run the below command to confirm that binary logging is enabled:
+   <pre>
+    MySQL [(none)]> show global variables like "log_bin";
+    +---------------+-------+
+    | Variable_name | Value |
+    +---------------+-------+
+    | log_bin       | ON    |
+    +---------------+-------+
+    1 row in set (0.00 sec)
+   </pre>
+
+4. Also run this to AWS DMS has bin log access that is required for replication
+   <pre>
+    MySQL [(none)]> call mysql.rds_set_configuration('binlog retention hours', 24);
+    Query OK, 0 rows affected (0.01 sec)
+   </pre>
+
+# References
+ * [Build Data Analytics using AWS Amazon Data Migration Service(DMS)](https://github.com/aws-samples/aws-dms-cdc-data-pipeline)
