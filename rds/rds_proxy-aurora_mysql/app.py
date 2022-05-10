@@ -143,8 +143,18 @@ class RdsProyAuroraMysqlStack(Stack):
     )
     db_proxy.node.add_dependency(db_cluster)
 
+    db_proxy_readonly_endpoint = aws_rds.CfnDBProxyEndpoint(self, 'RDSProxyReadOnlyEndpoint',
+        db_proxy_endpoint_name='{}-proxy-readonly'.format(db_cluster_name),
+        db_proxy_name='{}-proxy'.format(db_cluster_name),
+        vpc_subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PUBLIC).subnet_ids,
+        target_role='READ_ONLY',
+        vpc_security_group_ids=[sg_use_mysql.security_group_id, sg_mysql_public_proxy.security_group_id]
+    )
+    db_proxy_readonly_endpoint.node.add_dependency(db_proxy)
+
     cdk.CfnOutput(self, 'DBProxyName', value=db_proxy.db_proxy_name, export_name='DBProxyName')
     cdk.CfnOutput(self, 'DBProxyEndpoint', value=db_proxy.endpoint, export_name='DBProxyEndpoint')
+    cdk.CfnOutput(self, 'DBProxyReadOnlyEndpoint', value=db_proxy_readonly_endpoint.attr_endpoint, export_name='DBProxyReadOnlyEndpoint')
     cdk.CfnOutput(self, 'DBClusterEndpoint', value=db_cluster.cluster_endpoint.socket_address, export_name='DBClusterEndpoint')
     cdk.CfnOutput(self, 'DBClusterReadEndpoint', value=db_cluster.cluster_read_endpoint.socket_address, export_name='DBClusterReadEndpoint')
 

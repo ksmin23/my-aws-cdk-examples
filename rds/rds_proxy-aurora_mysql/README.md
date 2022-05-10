@@ -77,57 +77,6 @@ $ cdk -c vpc_name='<i>your-existing-vpc-name</i>' \
       deploy
 </pre>
 
-## Creating an RDS Proxy read-only endpoint
-
-The following AWS CLI command creates an RDS Proxy read-only endpoint:
-
-<pre>
-$ aws rds create-db-proxy-endpoint \
-    --db-proxy-name <i>DBProxyName</i> \
-    --db-proxy-endpoint-name <i>DBProxyEndpointName</i> \
-    --vpc-subnet-ids <i>"subnet-XXXXXXXX" "subnet-XXXXXXXX" "subnet-XXXXXXXX" ...</i> \
-    --vpc-security-group-ids <i>"sg-XXXXXXXXXXXXXXXXX" "sg-XXXXXXXXXXXXXXXXX" ... </i> \
-    --target-role READ_ONLY
-</pre>
-
-For example, you can create an RDS Proxy read-only endpoint using `rds-proxy` that is successfully deployed by `cdk deploy` command.
-
-<pre>
-$ aws rds create-db-proxy-endpoint \
-    --db-proxy-name rds-proxy \
-    --db-proxy-endpoint-name readonly-proxy \
-    --vpc-subnet-ids "subnet-72877f3f" "subnet-c68f6dc8" "subnet-592d1a77" "subnet-40b09927" "subnet-0726135b" \
-    --vpc-security-group-ids "sg-06b6dfcc710085f53" "sg-0bc1f50c70b9632ae" \
-    --target-role READ_ONLY
-</pre>
-
-Output:
-<pre>
-{
-    "DBProxyEndpoint": {
-        "DBProxyEndpointName": "readonly-proxy",
-        "DBProxyEndpointArn": "arn:aws:rds:us-east-1:123456789012:db-proxy-endpoint:prx-endpoint-058a95417f8e3c777",
-        "DBProxyName": "rds-proxy",
-        "Status": "creating",
-        "VpcId": "vpc-79d24328",
-        "VpcSecurityGroupIds": [
-            "sg-06b6dfcc710085f53",
-            "sg-0bc1f50c70b9632ae"
-        ],
-        "VpcSubnetIds": [
-            "subnet-72877f3f",
-            "subnet-c68f6dc8",
-            "subnet-592d1a77",
-            "subnet-40b09927",
-            "subnet-0726135b"
-        ],
-        "Endpoint": "readonly-proxy.endpoint.proxy-cnrh6fettief.us-east-1.rds.amazonaws.com",
-        "CreatedDate": "2021-01-07T03:56:49.128000+00:00",
-        "TargetRole": "READ_ONLY",
-        "IsDefault": false
-    }
-}
-</pre>
 
 ## Useful commands
 
