@@ -6,18 +6,21 @@ import os
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_msk
 )
+from constructs import Construct
 
 random.seed(47)
 
-class MskStack(cdk.Stack):
+class MskStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     vpc_name = self.node.try_get_context('vpc_name')
@@ -109,7 +112,7 @@ class MskStack(cdk.Stack):
     )
     
     msk_broker_node_group_info = aws_msk.CfnCluster.BrokerNodeGroupInfoProperty(
-      client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids,
+      client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
       instance_type=KAFA_BROKER_INSTANCE_TYPE.value_as_string,
       security_groups=[sg_use_msk.security_group_id, sg_msk_cluster.security_group_id],
       storage_info=msk_broker_storage_info
@@ -166,7 +169,7 @@ class MskStack(cdk.Stack):
         instance_size=aws_ec2.InstanceSize.MICRO),
       machine_image=amzn_linux,
       vpc=vpc,
-      availability_zone=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).availability_zones[0],
+      availability_zone=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).availability_zones[0],
       instance_name='KafkaClientInstance',
       role=kafka_client_ec2_instance_role,
       security_group=sg_kafka_client_ec2_instance,

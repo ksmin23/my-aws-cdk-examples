@@ -36,7 +36,7 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.
@@ -49,7 +49,7 @@ You need two CloudFormation stack. One is for ACL, the other is for Amazon Memor
   --parameters MemoryDBUserPassword=<i>'your-memory-db-user-password'</i> \
   MemoryDBAclStack
 
-(.venv) $ cdk synth MemorydbStack
+(.venv) $ cdk synth MemoryDBStack
 </pre>
 
 Amazon MemoryDB should be assicoated to only active ACL. Therefore, first you must deploy the CDK Stack for ACL,
@@ -61,7 +61,7 @@ and then deploy the CDK Stack for Amazon MemoryDB like this:
   --parameters MemoryDBUserName=<i>'your-memory-db-user-name'</i> \
   --parameters MemoryDBUserPassword=<i>'your-memory-db-user-password'</i> \
   MemoryDBAclStack
-(.venv) $ cdk deploy MemorydbStack
+(.venv) $ cdk deploy MemoryDBStack
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add

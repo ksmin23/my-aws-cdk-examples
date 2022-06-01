@@ -2,17 +2,20 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core,
+  Stack,
   aws_ec2,
   aws_elasticache
 )
+from constructs import Construct
 
 
-class RedisStack(core.Stack):
+class RedisStack(Stack):
 
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-    super().__init__(scope, id, **kwargs)
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
 
     vpc = aws_ec2.Vpc(self, 'RedisVPC',
       max_azs=2
@@ -24,7 +27,7 @@ class RedisStack(core.Stack):
       description='security group for redis client',
       security_group_name='use-default-redis'
     )
-    core.Tags.of(sg_use_elasticache).add('Name', 'use-default-redis')
+    cdk.Tags.of(sg_use_elasticache).add('Name', 'use-default-redis')
 
     sg_elasticache = aws_ec2.SecurityGroup(self, 'RedisServerSG',
       vpc=vpc,
@@ -32,7 +35,7 @@ class RedisStack(core.Stack):
       description='security group for redis',
       security_group_name='default-redis-server'
     )
-    core.Tags.of(sg_elasticache).add('Name', 'redis-server')
+    cdk.Tags.of(sg_elasticache).add('Name', 'redis-server')
 
     sg_elasticache.add_ingress_rule(peer=sg_use_elasticache, connection=aws_ec2.Port.tcp(6379),
       description='use-default-redis')
@@ -41,7 +44,7 @@ class RedisStack(core.Stack):
 
     elasticache_subnet_group = aws_elasticache.CfnSubnetGroup(self, 'RedisSubnetGroup',
       description='subnet group for redis',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids,
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
       cache_subnet_group_name='default-redis'
     )
 
@@ -72,8 +75,8 @@ class RedisStack(core.Stack):
       cache_parameter_group_name=redis_param_group.ref,
       cache_subnet_group_name=elasticache_subnet_group.cache_subnet_group_name,
       vpc_security_group_ids=[sg_elasticache.security_group_id],
-      tags=[core.CfnTag(key='Name', value='redis-primary-only'),
-        core.CfnTag(key='desc', value='primary only redis')]
+      tags=[cdk.CfnTag(key='Name', value='redis-primary-only'),
+        cdk.CfnTag(key='desc', value='primary only redis')]
     )
     #XXX: Subnet group must exist before ElastiCache is created 
     redis_primary_only.add_depends_on(elasticache_subnet_group)
@@ -93,8 +96,8 @@ class RedisStack(core.Stack):
       cache_parameter_group_name=redis_param_group.ref,
       cache_subnet_group_name=elasticache_subnet_group.cache_subnet_group_name,
       security_group_ids=[sg_elasticache.security_group_id],
-      tags=[core.CfnTag(key='Name', value='redis-with-replicas'),
-        core.CfnTag(key='desc', value='primary-replica redis')]
+      tags=[cdk.CfnTag(key='Name', value='redis-with-replicas'),
+        cdk.CfnTag(key='desc', value='primary-replica redis')]
     )
     redis_with_replicas.add_depends_on(elasticache_subnet_group)
 
@@ -124,13 +127,13 @@ class RedisStack(core.Stack):
       cache_parameter_group_name=redis_cluster_param_group.ref,
       cache_subnet_group_name=elasticache_subnet_group.cache_subnet_group_name,
       security_group_ids=[sg_elasticache.security_group_id],
-      tags=[core.CfnTag(key='Name', value='redis-cluster'),
-        core.CfnTag(key='desc', value='primary-replica redis')]
+      tags=[cdk.CfnTag(key='Name', value='redis-cluster'),
+        cdk.CfnTag(key='desc', value='primary-replica redis')]
     )
     redis_cluster.add_depends_on(elasticache_subnet_group)
 
 
-app = core.App()
-RedisStack(app, "redis")
+app = cdk.App()
+RedisStack(app, "ElastiCacheForRedis")
 
 app.synth()

@@ -4,18 +4,21 @@
 
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_docdb,
-  aws_sagemaker,
-  aws_secretsmanager
+  aws_sagemaker
 )
+from constructs import Construct
 
-class DocumentdbStack(core.Stack):
 
-  def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
+class DocumentdbStack(Stack):
+
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
@@ -30,7 +33,7 @@ class DocumentdbStack(core.Stack):
       description='security group for documentdb client',
       security_group_name='use-docdb-sg'
     )
-    core.Tags.of(sg_use_docdb).add('Name', 'docdb-client-sg')
+    cdk.Tags.of(sg_use_docdb).add('Name', 'docdb-client-sg')
 
     sg_docdb_server = aws_ec2.SecurityGroup(self, 'DocDBServerSG',
       vpc=vpc,
@@ -40,7 +43,7 @@ class DocumentdbStack(core.Stack):
     )
     sg_docdb_server.add_ingress_rule(peer=sg_use_docdb, connection=aws_ec2.Port.tcp(27017),
       description='docdb-client-sg')
-    core.Tags.of(sg_docdb_server).add('Name', 'docdb-server-sg')
+    cdk.Tags.of(sg_docdb_server).add('Name', 'docdb-server-sg')
 
     docdb_cluster_name = self.node.try_get_context('docdb_cluster_name')
     docdb_cluster_name = docdb_cluster_name if docdb_cluster_name else self.stack_name
@@ -49,21 +52,18 @@ class DocumentdbStack(core.Stack):
       master_user=aws_docdb.Login(
         username='docdbuser'
       ),
-      instance_props={
-        #'instance_type': aws_ec2.InstanceType('r5.xlarge'),
-        'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.MEMORY5, aws_ec2.InstanceSize.LARGE),
-        'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PRIVATE
-        },
-        'vpc': vpc,
-        'security_group': sg_docdb_server
-      },
+      # instance_type=aws_ec2.InstanceType('r5.xlarge'),
+      instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.MEMORY5, aws_ec2.InstanceSize.LARGE),
       instances=3,
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
+      vpc=vpc,
+      security_group=sg_docdb_server,
       preferred_maintenance_window='sun:18:00-sun:18:30',
-      removal_policy=core.RemovalPolicy.RETAIN
+      removal_policy=cdk.RemovalPolicy.RETAIN
     )
 
-    #[Warning at /docdb-sm/Database/RotationSingleUser/SecurityGroup] Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customize rules, set allowAllOutbound=false on the SecurityGroup
+    #[Warning at /docdb-sm/Database/RotationSingleUser/SecurityGroup] Ignoring Egress rule since 'allowAllOutbound' is set to true;
+    # To add customize rules, set allowAllOutbound=false on the SecurityGroup
     #docdb_cluster.add_rotation_single_user()
 
     sagemaker_notebook_role_policy_doc = aws_iam.PolicyDocument()
@@ -92,10 +92,10 @@ cd /home/ec2-user/SageMaker
 wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
 wget https://raw.githubusercontent.com/aws-samples/documentdb-sagemaker-example/main/script.ipynb
 EOF
-'''.format(AWS_Region=core.Aws.REGION)
+'''.format(AWS_Region=cdk.Aws.REGION)
 
     docdb_wb_lifecycle_config_prop = aws_sagemaker.CfnNotebookInstanceLifecycleConfig.NotebookInstanceLifecycleHookProperty(
-      content=core.Fn.base64(docdb_wb_lifecycle_content)
+      content=cdk.Fn.base64(docdb_wb_lifecycle_content)
     )
 
     docdb_wb_lifecycle_config = aws_sagemaker.CfnNotebookInstanceLifecycleConfig(self, 'DocDBWorkbenchLifeCycleConfig',
@@ -109,25 +109,25 @@ EOF
       lifecycle_config_name=docdb_wb_lifecycle_config.notebook_instance_lifecycle_config_name,
       notebook_instance_name='DocDBWorkbench',
       root_access='Disabled',
-      security_group_ids=[sg_use_docdb.security_group_name],
-      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids[0]
+      security_group_ids=[sg_use_docdb.security_group_id],
+      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[0]
     )
 
-    core.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
-    core.CfnOutput(self, 'VpcId', value=vpc.vpc_id, export_name='VpcId')
+    cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
+    cdk.CfnOutput(self, 'VpcId', value=vpc.vpc_id, export_name='VpcId')
 
-    core.CfnOutput(self, 'DocumentDBClusterName', value=docdb_cluster.cluster_identifier, export_name='DocumentDBClusterName')
-    core.CfnOutput(self, 'DocumentDBCluster', value=docdb_cluster.cluster_endpoint.socket_address, export_name='DocumentDBCluster')
+    cdk.CfnOutput(self, 'DocumentDBClusterName', value=docdb_cluster.cluster_identifier, export_name='DocumentDBClusterName')
+    cdk.CfnOutput(self, 'DocumentDBCluster', value=docdb_cluster.cluster_endpoint.socket_address, export_name='DocumentDBCluster')
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_secretsmanager/README.html
     # secret_arn="arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>",
-    core.CfnOutput(self, 'DocDBSecret', value=docdb_cluster.secret.secret_name, export_name='DocDBSecret')
+    cdk.CfnOutput(self, 'DocDBSecret', value=docdb_cluster.secret.secret_name, export_name='DocDBSecret')
 
-    core.CfnOutput(self, 'SageMakerRole', value=sagemaker_notebook_role.role_name, export_name='SageMakerRole')
-    core.CfnOutput(self, 'SageMakerNotebookInstance', value=docdb_workbench.notebook_instance_name, export_name='SageMakerNotebookInstance')
-    core.CfnOutput(self, 'SageMakerNotebookInstanceLifecycleConfig', value=docdb_workbench.lifecycle_config_name, export_name='SageMakerNotebookInstanceLifecycleConfig')
+    cdk.CfnOutput(self, 'SageMakerRole', value=sagemaker_notebook_role.role_name, export_name='SageMakerRole')
+    cdk.CfnOutput(self, 'SageMakerNotebookInstance', value=docdb_workbench.notebook_instance_name, export_name='SageMakerNotebookInstance')
+    cdk.CfnOutput(self, 'SageMakerNotebookInstanceLifecycleConfig', value=docdb_workbench.lifecycle_config_name, export_name='SageMakerNotebookInstanceLifecycleConfig')
 
-app = core.App()
-DocumentdbStack(app, 'docdb', env=core.Environment(
+app = cdk.App()
+DocumentdbStack(app, 'AmazonDocDBWithNotebook', env=cdk.Environment(
   account=os.environ['CDK_DEFAULT_ACCOUNT'],
   region=os.environ['CDK_DEFAULT_REGION']))
 

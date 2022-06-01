@@ -122,7 +122,7 @@ Enjoy!
 5. Connect to `https://localhost:9200/_plugin/kibana/` in a web browser.
 6. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.
    Since the log creation time of the test data is based on UTC, Kibana’s Timezone is also set to UTC.
-   ![kibana-management-advanced-setting](./resources/kibana-management-advanced-setting.png)
+   ![kibana-management-advanced-setting](./assets/kibana-management-advanced-setting.png)
 
 #### References
 - [Windows SSH / Tunnel for Kibana Instructions - Amazon Elasticsearch Service](https://search-sa-log-solutions.s3-us-east-2.amazonaws.com/logstash/docs/Kibana_Proxy_SSH_Tunneling_Windows.pdf)

@@ -2,17 +2,19 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core,
+  Stack,
   aws_ec2,
   aws_dynamodb
 )
+from constructs import Construct
 
+class DynamodbStack(Stack):
 
-class DynamodbStack(core.Stack):
-
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-    super().__init__(scope, id, **kwargs)
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
     vpc = aws_ec2.Vpc(self, "DynamodbVPC",
@@ -31,7 +33,7 @@ class DynamodbStack(core.Stack):
 
     ddb_table = aws_dynamodb.Table(self, "SimpleDynamoDbTable",
       table_name="SimpleTable",
-      #removal_policy=core.RemovalPolicy.DESTROY,
+      # removal_policy=cdk.RemovalPolicy.DESTROY,
       partition_key=aws_dynamodb.Attribute(name="pkid",
         type=aws_dynamodb.AttributeType.STRING),
       sort_key=aws_dynamodb.Attribute(name="sortkey",
@@ -43,7 +45,7 @@ class DynamodbStack(core.Stack):
     )
 
 
-app = core.App()
+app = cdk.App()
 DynamodbStack(app, "dynamodb")
 
 app.synth()

@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_memorydb
 )
+from constructs import Construct
 
 
-class MemoryDBAclStack(cdk.Stack):
+class MemoryDBAclStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     MEMORYDB_USER_NAME = cdk.CfnParameter(self, 'MemoryDBUserName',
@@ -43,9 +46,9 @@ class MemoryDBAclStack(cdk.Stack):
     cdk.CfnOutput(self, 'MemoryDBACL', value=self.memorydb_acl.acl_name, export_name='MemoryDBACL')
 
 
-class MemorydbStack(cdk.Stack):
+class MemoryDBStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # vpc_name = self.node.try_get_context("vpc_name")
@@ -79,7 +82,7 @@ class MemorydbStack(cdk.Stack):
 
     memorydb_subnet_group = aws_memorydb.CfnSubnetGroup(self, 'MemoryDBSubnetGroup',
       description='subnet group for memorydb',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids,
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
       subnet_group_name='default-memorydb'
     )
 
@@ -122,7 +125,7 @@ memorydb_acl_stack = MemoryDBAclStack(app, "MemoryDBAclStack",
     account=os.getenv('CDK_DEFAULT_ACCOUNT'),
     region=os.getenv('CDK_DEFAULT_REGION')))
 
-MemorydbStack(app, "MemorydbStack",
+MemoryDBStack(app, "MemoryDBStack",
   env=cdk.Environment(
     account=os.getenv('CDK_DEFAULT_ACCOUNT'),
     region=os.getenv('CDK_DEFAULT_REGION')))

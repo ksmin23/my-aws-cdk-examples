@@ -46,7 +46,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ cdk synth \
               --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
               --parameters SearchIndexName="<i>your-opensearch-index-name</i>" \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>"
+              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
@@ -55,7 +55,7 @@ Use `cdk deploy` command to create the stack shown above.
 (.venv) $ cdk deploy \
               --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
               --parameters SearchIndexName="<i>your-opensearch-index-name</i>" \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>"
+              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -176,20 +176,17 @@ Complete the following steps:
 7. Under **Index permissions**, choose **Index Patterns** and enter <i>index-name*</i>; for example, `retail-trans*`.
 8. Under **Permissions**, add three action groups: `crud`, `create_index`, and `manage`.
 9. Choose **Create**.
-   ![ops-create-firehose_role](./resources/ops-create-firehose_role.png)
+    ![ops-create-firehose_role](./resources/ops-create-firehose_role.png)
 
 In the next step, you map the IAM role that Kinesis Data Firehose uses to the role you just created.
 
-10. Under **Security**, choose **Roles**.
-11. Choose the role you just created (`firehose_role`). You need to modify the Users associated with the `firehose_role` role.
-    ![ops-security-roles](./resources/ops-security-roles.png)
-12. Choose the **Mapped users** tab.
+10. Choose the **Mapped users** tab.
     ![ops-role-mappings](./resources/ops-role-mappings.png)
-13. Choose **Manage mapping** and under **Backend roles**,
-14. For **Backend Roles**, enter the IAM ARN of the role Kinesis Data Firehose uses:
+11. Choose **Manage mapping** and under **Backend roles**,
+12. For **Backend Roles**, enter the IAM ARN of the role Kinesis Data Firehose uses:
     `arn:aws:iam::123456789012:role/firehose_stream_role_name`.
     ![ops-entries-for-firehose_role](./resources/ops-entries-for-firehose_role.png)
-15. Choose **Map**.
+13. Choose **Map**.
 
 **Note**: After OpenSearch Role mapping for Kinesis Data Firehose, you would not be supposed to meet a data delivery failure with Kinesis Data Firehose like this:
 

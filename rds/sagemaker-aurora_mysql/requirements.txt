@@ -1,7 +1,2 @@
-aws-cdk.aws-ec2==1.85.0
-aws-cdk.aws-iam==1.85.0
-aws-cdk.aws-logs==1.85.0
-aws-cdk.aws-rds==1.85.0
-aws-cdk.aws-sagemaker==1.85.0
-aws-cdk.aws-secretsmanager==1.85.0
-aws-cdk.core==1.85.0
+aws-cdk-lib==2.10.0
+constructs>=10.0.0,<11.0.0

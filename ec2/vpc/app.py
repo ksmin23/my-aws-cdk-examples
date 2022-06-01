@@ -4,16 +4,18 @@
 
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core,
-  aws_ec2,
-  aws_iam
+  Stack,
+  aws_ec2
 )
+from constructs import Construct
 
-class VpcStack(core.Stack):
+class VpcStack(Stack):
 
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-    super().__init__(scope, id, **kwargs)
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
     #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
@@ -28,7 +30,7 @@ class VpcStack(core.Stack):
       description='security group for bastion host',
       security_group_name='bastion-host-sg'
     )
-    core.Tag.of(sg_ssh_access).add('Name', 'bastion-host')
+    cdk.Tags.of(sg_ssh_access).add('Name', 'bastion-host-sg')
     sg_ssh_access.add_ingress_rule(peer=aws_ec2.Peer.any_ipv4(), connection=aws_ec2.Port.tcp(22), description='ssh access')
 
     bastion_host = aws_ec2.BastionHostLinux(self, "BastionHost",
@@ -38,9 +40,12 @@ class VpcStack(core.Stack):
       subnet_selection=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC)
     )
 
+    cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id, export_name='BastionHostId')
+    cdk.CfnOutput(self, 'BastionHostPublicDNSName', value=bastion_host.instance_public_dns_name, export_name='BastionHostPublicDNSName')
 
-app = core.App()
-VpcStack(app, "vpc", env=core.Environment(
+
+app = cdk.App()
+VpcStack(app, "vpc", env=cdk.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]))
 

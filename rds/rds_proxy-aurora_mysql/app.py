@@ -3,22 +3,22 @@
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import os
-import json
-import sys
+
+import aws_cdk as cdk
 
 from aws_cdk import (
-  core,
+  Stack,
   aws_ec2,
-  aws_iam,
   aws_logs,
   aws_rds,
   aws_secretsmanager
 )
+from constructs import Construct
 
 
-class AuroraMysqlStack(core.Stack):
+class RdsProyAuroraMysqlStack(Stack):
 
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, id: str, **kwargs) -> None:
     super().__init__(scope, id, **kwargs)
 
     # The code that defines your stack goes here
@@ -33,7 +33,7 @@ class AuroraMysqlStack(core.Stack):
       description='security group for mysql client',
       security_group_name='use-default-mysql'
     )
-    core.Tags.of(sg_use_mysql).add('Name', 'use-default-mysql')
+    cdk.Tags.of(sg_use_mysql).add('Name', 'use-default-mysql')
 
     sg_mysql_server = aws_ec2.SecurityGroup(self, 'MySQLServerSG',
       vpc=vpc,
@@ -43,12 +43,14 @@ class AuroraMysqlStack(core.Stack):
     )
     sg_mysql_server.add_ingress_rule(peer=sg_use_mysql, connection=aws_ec2.Port.tcp(3306),
       description='use-default-mysql')
-    core.Tags.of(sg_mysql_server).add('Name', 'mysql-server')
+    sg_mysql_server.add_ingress_rule(peer=sg_mysql_server, connection=aws_ec2.Port.all_tcp(),
+      description='default-mysql-server')
+    cdk.Tags.of(sg_mysql_server).add('Name', 'mysql-server')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
       description='subnet group for mysql',
       subnet_group_name='aurora-mysql',
-      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE),
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
       vpc=vpc
     )
 
@@ -86,7 +88,7 @@ class AuroraMysqlStack(core.Stack):
     db_secret_name = self.node.try_get_context('db_secret_name')
     #XXX: arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
     db_secret_arn = 'arn:aws:secretsmanager:{region}:{account}:secret:{resource_name}'.format(
-      region=core.Aws.REGION, account=core.Aws.ACCOUNT_ID, resource_name=db_secret_name)
+      region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, resource_name=db_secret_name)
     db_secret = aws_secretsmanager.Secret.from_secret_partial_arn(self, 'DBSecretFromArn', db_secret_arn)
     rds_credentials = aws_rds.Credentials.from_secret(db_secret)
 
@@ -97,7 +99,7 @@ class AuroraMysqlStack(core.Stack):
         'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
         'parameter_group': rds_db_param_group,
         'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PRIVATE
+          'subnet_type': aws_ec2.SubnetType.PRIVATE_WITH_NAT
         },
         'vpc': vpc,
         'auto_minor_version_upgrade': False,
@@ -109,7 +111,7 @@ class AuroraMysqlStack(core.Stack):
       cluster_identifier=db_cluster_name,
       subnet_group=rds_subnet_group,
       backup=aws_rds.BackupProps(
-        retention=core.Duration.days(3),
+        retention=cdk.Duration.days(3),
         preferred_window="03:00-04:00"
       )
     )
@@ -121,7 +123,7 @@ class AuroraMysqlStack(core.Stack):
       security_group_name='default-mysql-public-proxy'
     )
     sg_mysql_public_proxy.add_ingress_rule(peer=aws_ec2.Peer.any_ipv4(), connection=aws_ec2.Port.tcp(3306), description='mysql public proxy')
-    core.Tags.of(sg_mysql_public_proxy).add('Name', 'mysql-public-proxy')
+    cdk.Tags.of(sg_mysql_public_proxy).add('Name', 'mysql-public-proxy')
 
     #XXX: Datbase Proxy use only Secret Arn of target database or database cluster
     #XXX: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-dbproxy-authformat.html
@@ -132,17 +134,33 @@ class AuroraMysqlStack(core.Stack):
       secrets=[db_secret],
       vpc=vpc,
       db_proxy_name='{}-proxy'.format(db_cluster_name),
-      idle_client_timeout=core.Duration.minutes(10),
+      idle_client_timeout=cdk.Duration.minutes(10),
       max_connections_percent=90,
+      require_tls=False, #XXX: disable the setting Require Transport Layer Security in the proxy
       max_idle_connections_percent=10,
       security_groups=[sg_use_mysql, sg_mysql_public_proxy],
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC)
     )
     db_proxy.node.add_dependency(db_cluster)
 
+    db_proxy_readonly_endpoint = aws_rds.CfnDBProxyEndpoint(self, 'RDSProxyReadOnlyEndpoint',
+        db_proxy_endpoint_name='{}-proxy-readonly'.format(db_cluster_name),
+        db_proxy_name='{}-proxy'.format(db_cluster_name),
+        vpc_subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PUBLIC).subnet_ids,
+        target_role='READ_ONLY',
+        vpc_security_group_ids=[sg_use_mysql.security_group_id, sg_mysql_public_proxy.security_group_id]
+    )
+    db_proxy_readonly_endpoint.node.add_dependency(db_proxy)
 
-app = core.App()
-AuroraMysqlStack(app, "aurora-mysql", env=core.Environment(
+    cdk.CfnOutput(self, 'DBProxyName', value=db_proxy.db_proxy_name, export_name='DBProxyName')
+    cdk.CfnOutput(self, 'DBProxyEndpoint', value=db_proxy.endpoint, export_name='DBProxyEndpoint')
+    cdk.CfnOutput(self, 'DBProxyReadOnlyEndpoint', value=db_proxy_readonly_endpoint.attr_endpoint, export_name='DBProxyReadOnlyEndpoint')
+    cdk.CfnOutput(self, 'DBClusterEndpoint', value=db_cluster.cluster_endpoint.socket_address, export_name='DBClusterEndpoint')
+    cdk.CfnOutput(self, 'DBClusterReadEndpoint', value=db_cluster.cluster_read_endpoint.socket_address, export_name='DBClusterReadEndpoint')
+
+
+app = cdk.App()
+RdsProyAuroraMysqlStack(app, "RDSProyAuroraMySQLStack", env=cdk.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]))
 

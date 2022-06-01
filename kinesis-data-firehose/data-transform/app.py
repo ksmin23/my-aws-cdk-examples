@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import os
-import json
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_lambda,
@@ -13,14 +14,15 @@ from aws_cdk import (
   aws_s3 as s3,
   aws_kinesisfirehose
 )
+from constructs import Construct
 
 from aws_cdk.aws_kinesisfirehose import CfnDeliveryStream as cfn
 
 random.seed(31)
 
-class FirehoseDataTransformStack(cdk.Stack):
+class FirehoseDataTransformStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # vpc_name = self.node.try_get_context("vpc_name")
@@ -123,7 +125,7 @@ class FirehoseDataTransformStack(cdk.Stack):
       function_name="SchemaValidator",
       handler="schema_validator.lambda_handler",
       description="Check if records have valid schema",
-      code=aws_lambda.Code.asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
+      code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       timeout=cdk.Duration.minutes(5),
       layers=[lambda_lib_layer]
     )
@@ -170,7 +172,8 @@ class FirehoseDataTransformStack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       resources=[self.format_arn(service="logs", resource="log-group",
-        resource_name="{}:log-stream:*".format(firehose_log_group_name), sep=":")],
+        resource_name="{}:log-stream:*".format(firehose_log_group_name),
+        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       actions=["logs:PutLogEvents"]
     ))
 
@@ -180,7 +183,8 @@ class FirehoseDataTransformStack(cdk.Stack):
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       "resources": [self.format_arn(partition="aws", service="lambda",
         region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, resource="function",
-        resource_name="{}:*".format(schema_validator_lambda_fn.function_name), sep=":")],
+        resource_name="{}:*".format(schema_validator_lambda_fn.function_name),
+        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       "actions": ["lambda:InvokeFunction",
         "lambda:GetFunctionConfiguration"]
     }))

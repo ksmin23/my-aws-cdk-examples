@@ -3,19 +3,22 @@ import os
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_s3 as s3,
   aws_mwaa as mwaa
 )
+from constructs import Construct
 
 random.seed(47)
 
-class MwaaStack(cdk.Stack):
+class MwaaStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     #XXX: For createing Amazon MWAA in the existing VPC,
@@ -63,7 +66,7 @@ class MwaaStack(cdk.Stack):
       "effect": aws_iam.Effect.ALLOW,
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
       "resources": [self.format_arn(service="airflow", resource="environment",
-        resource_name=MY_MWAA_ENV_NAME, sep="/")],
+        resource_name=MY_MWAA_ENV_NAME, arn_format=cdk.ArnFormat.SLASH_RESOURCE_NAME)],
       "actions": ["airflow:PublishMetrics"]
     }))
 
@@ -87,7 +90,7 @@ class MwaaStack(cdk.Stack):
       "effect": aws_iam.Effect.ALLOW,
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
       "resources": [self.format_arn(service="logs", resource="log-group",
-        resource_name="airflow-{}-*".format(MY_MWAA_ENV_NAME), sep=":")],
+        resource_name="airflow-{}-*".format(MY_MWAA_ENV_NAME), arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       "actions": ["logs:CreateLogStream",
         "logs:CreateLogGroup",
         "logs:PutLogEvents",
@@ -128,7 +131,7 @@ class MwaaStack(cdk.Stack):
         "kms:GenerateDataKey*",
         "kms:Encrypt"],
       "not_resources": [self.format_arn(service="kms", region="*", resource="key",
-        resource_name="*", sep="/")],
+        resource_name="*", arn_format=cdk.ArnFormat.SLASH_RESOURCE_NAME)],
       "conditions": {
         "StringLike": {
           "kms:ViaService": [
@@ -159,7 +162,7 @@ class MwaaStack(cdk.Stack):
     #XXX: NetworkConfiguration.SubnetIds: expected maximum item count: 2
     MAX_SUBNET_IDS = 2
     mwaa_network_conf= mwaa.CfnEnvironment.NetworkConfigurationProperty(
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids[:MAX_SUBNET_IDS],
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[:MAX_SUBNET_IDS],
       security_group_ids=[sg_mwaa.security_group_id]
     )
 

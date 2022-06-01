@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 import os
 import random
-import string
+
+import aws_cdk as cdk
 
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_s3 as s3,
   aws_sagemaker
 )
+from constructs import Construct
 
 random.seed(47)
 
-class SageMakerStudioStack(cdk.Stack):
+class SageMakerStudioStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     #XXX: For createing Amazon MWAA in the existing VPC,
@@ -111,7 +113,7 @@ class SageMakerStudioStack(cdk.Stack):
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
       domain_name='StudioDomain',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids,
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
       vpc_id=vpc.vpc_id,
       app_network_access_type='VpcOnly' # [PublicInternetOnly | VpcOnly]
     )

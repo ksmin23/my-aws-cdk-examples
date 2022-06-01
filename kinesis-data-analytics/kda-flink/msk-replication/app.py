@@ -4,19 +4,22 @@
 
 import os
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core as cdk,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_kinesisanalytics as aws_kda_flink,
   aws_logs,
   aws_s3 as s3
 )
+from constructs import Construct
 
 
-class MskReplicationStack(cdk.Stack):
+class MskReplicationStack(Stack):
 
-  def __init__(self, scope: cdk.Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     # The code that defines your stack goes here
@@ -46,7 +49,8 @@ class MskReplicationStack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
       "resources": [self.format_arn(service="logs", resource="log-group",
-       resource_name="/aws/kinesis-analytics/{}:log-stream:*".format(KDA_APP_NAME), sep=":")],
+       resource_name="/aws/kinesis-analytics/{}:log-stream:*".format(KDA_APP_NAME),
+       arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       "actions": ["logs:DescribeLogGroups"]
     }))
 
@@ -56,7 +60,8 @@ class MskReplicationStack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
       "resources": [self.format_arn(service="logs", resource="log-group",
-       resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")],
+       resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME),
+       arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       "actions": ["logs:DescribeLogStreams"]
     }))
 
@@ -66,7 +71,8 @@ class MskReplicationStack(cdk.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
       "resources": [self.format_arn(service="logs", resource="log-group",
-       resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")],
+       resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME),
+       arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       "actions": ["logs:PutLogEvents"]
     }))
 
@@ -169,7 +175,8 @@ class MskReplicationStack(cdk.Stack):
     #XXX: The ARN will be formatted as follows:
     # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
     kda_app_log_stream_arn = self.format_arn(service="logs", resource="log-group",
-        resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME), sep=":")
+      resource_name="/aws/kinesis-analytics/{}:log-stream:kinesis-analytics-log-stream".format(KDA_APP_NAME),
+      arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)
 
     kda_app_cw_log = aws_kda_flink.CfnApplicationCloudWatchLoggingOptionV2(self, 'KdaMskReplicationCWLog',
       application_name=kda_app.application_name,

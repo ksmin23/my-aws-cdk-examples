@@ -19,7 +19,8 @@ setuptools.setup(
     packages=setuptools.find_packages(where="mwaa"),
 
     install_requires=[
-        "aws-cdk.core==1.98.0",
+        "aws-cdk-lib",
+        "constructs"
     ],
 
     python_requires=">=3.6",

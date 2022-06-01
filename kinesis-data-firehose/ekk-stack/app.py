@@ -4,21 +4,24 @@ import os
 import random
 import string
 
+import aws_cdk as cdk
+
 from aws_cdk import (
-  core,
+  Stack,
   aws_ec2,
   aws_iam,
   aws_s3 as s3,
   aws_kinesisfirehose,
   aws_elasticsearch
 )
+from constructs import Construct
 
 random.seed(47)
 
-class EKKStack(core.Stack):
+class EKKStack(Stack):
 
-  def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
-    super().__init__(scope, id, **kwargs)
+  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    super().__init__(scope, construct_id, **kwargs)
 
     # vpc_name = self.node.try_get_context("vpc_name")
     # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
@@ -43,7 +46,7 @@ class EKKStack(core.Stack):
       description='security group for an bastion host',
       security_group_name='bastion-host-sg'
     )
-    core.Tags.of(sg_bastion_host).add('Name', 'bastion-host-sg')
+    cdk.Tags.of(sg_bastion_host).add('Name', 'bastion-host-sg')
 
     #XXX: As there are no SSH public keys deployed on this machine,
     # you need to use EC2 Instance Connect with the command
@@ -65,7 +68,7 @@ class EKKStack(core.Stack):
       description='security group for an elasticsearch client',
       security_group_name='use-es-cluster-sg'
     )
-    core.Tags.of(sg_use_es).add('Name', 'use-es-cluster-sg')
+    cdk.Tags.of(sg_use_es).add('Name', 'use-es-cluster-sg')
 
     sg_es = aws_ec2.SecurityGroup(self, "ElasticSearchSG",
       vpc=vpc,
@@ -73,7 +76,7 @@ class EKKStack(core.Stack):
       description='security group for an elasticsearch cluster',
       security_group_name='es-cluster-sg'
     )
-    core.Tags.of(sg_es).add('Name', 'es-cluster-sg')
+    cdk.Tags.of(sg_es).add('Name', 'es-cluster-sg')
 
     sg_es.add_ingress_rule(peer=sg_es, connection=aws_ec2.Port.all_tcp(), description='es-cluster-sg')
     sg_es.add_ingress_rule(peer=sg_use_es, connection=aws_ec2.Port.all_tcp(), description='use-es-cluster-sg')
@@ -122,16 +125,16 @@ class EKKStack(core.Stack):
       },
       vpc_options={
         "securityGroupIds": [sg_es.security_group_id],
-        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids
+        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
       }
     )
-    core.Tags.of(es_cfn_domain).add('Name', ES_DOMAIN_NAME)
+    cdk.Tags.of(es_cfn_domain).add('Name', ES_DOMAIN_NAME)
 
     S3_BUCKET_SUFFIX = ''.join(random.sample((string.ascii_lowercase + string.digits), k=7))
     s3_bucket = s3.Bucket(self, "s3bucket",
-      removal_policy=core.RemovalPolicy.DESTROY, #XXX: Default: core.RemovalPolicy.RETAIN - The bucket will be orphaned
+      removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: cdk.RemovalPolicy.RETAIN - The bucket will be orphaned
       bucket_name="ekk-stack-{region}-{suffix}".format(
-        region=core.Aws.REGION, suffix=S3_BUCKET_SUFFIX))
+        region=cdk.Aws.REGION, suffix=S3_BUCKET_SUFFIX))
 
     firehose_role_policy_doc = aws_iam.PolicyDocument()
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
@@ -191,12 +194,12 @@ class EKKStack(core.Stack):
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
       resources=[self.format_arn(service="logs", resource="log-group",
-        resource_name="{}:log-stream:*".format(firehose_log_group_name), sep=":")],
+        resource_name="{}:log-stream:*".format(firehose_log_group_name), arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
       actions=["logs:PutLogEvents"]
     ))
 
     firehose_role = aws_iam.Role(self, "KinesisFirehoseServiceRole",
-      role_name="KinesisFirehoseServiceRole-{es_index}-{region}".format(es_index=ES_INDEX_NAME, region=core.Aws.REGION),
+      role_name="KinesisFirehoseServiceRole-{es_index}-{region}".format(es_index=ES_INDEX_NAME, region=cdk.Aws.REGION),
       assumed_by=aws_iam.ServicePrincipal("firehose.amazonaws.com"),
       #XXX: use inline_policies to work around https://github.com/aws/aws-cdk/issues/5221
       inline_policies={
@@ -207,7 +210,7 @@ class EKKStack(core.Stack):
     es_dest_vpc_config = aws_kinesisfirehose.CfnDeliveryStream.VpcConfigurationProperty(
       role_arn=firehose_role.role_arn,
       security_group_ids=[sg_use_es.security_group_id],
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE).subnet_ids
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
     )
 
     es_dest_config = aws_kinesisfirehose.CfnDeliveryStream.ElasticsearchDestinationConfigurationProperty(
@@ -255,8 +258,8 @@ class EKKStack(core.Stack):
       tags=[{"key": "Name", "value": ES_DOMAIN_NAME}]
     )
 
-app = core.App()
-EKKStack(app, "amazon-ekk-stack", env=core.Environment(
+app = cdk.App()
+EKKStack(app, "AmazonEKKStack", env=cdk.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]))
 

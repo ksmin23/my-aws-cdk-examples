@@ -16,42 +16,48 @@ you can create the virtualenv manually.
 To manually create a virtualenv on MacOS and Linux:
 
 ```
-$ python3 -m venv .env
+$ python3 -m venv .venv
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
 step to activate your virtualenv.
 
 ```
-$ source .env/bin/activate
+$ source .venv/bin/activate
 ```
 
 If you are a Windows platform, you would activate the virtualenv like this:
 
 ```
-% .env\Scripts\activate.bat
+% .venv\Scripts\activate.bat
 ```
 
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 To use more than 2 AZs, be sure to specify the account and region on your stack.
 
 ```
-$ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 ```
 
 After setting enviroment variables such as `CDK_DEFAULT_ACCOUNT`, `CDK_DEFAULT_REGION`, 
 you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synth
+(.venv) $ cdk synth
 ```
- 
+
+Use `cdk deploy` command to create the stack shown above.
+
+```
+(.venv) $ cdk deploy
+```
+
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
