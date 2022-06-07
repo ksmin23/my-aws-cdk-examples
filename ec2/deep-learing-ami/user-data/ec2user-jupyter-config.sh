@@ -23,9 +23,9 @@ CERTIFICATE_DIR="/home/ec2-user/certificate"
 JUPYTER_CONFIG_DIR="/home/ec2-user/.jupyter"
 
 if [ ! -d "$CERTIFICATE_DIR" ]; then
-    mkdir -p $CERTIFICATE_DIR
-    openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout "$CERTIFICATE_DIR/mykey.key" -out "$CERTIFICATE_DIR/mycert.pem" -batch
-    chown -R ec2-user $CERTIFICATE_DIR
+  mkdir -p $CERTIFICATE_DIR
+  openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout "$CERTIFICATE_DIR/mykey.key" -out "$CERTIFICATE_DIR/mycert.pem" -batch
+  chown -R ec2-user $CERTIFICATE_DIR
 fi
 echo "*********************Finished Writing Certificats******************"
 
