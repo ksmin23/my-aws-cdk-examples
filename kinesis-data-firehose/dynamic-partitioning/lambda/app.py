@@ -26,19 +26,6 @@ class FirehoseToS3LambdaStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    # vpc_name = self.node.try_get_context("vpc_name")
-    # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
-    #   is_default=True,
-    #   vpc_name=vpc_name)
-    vpc = aws_ec2.Vpc(self, "FirehoseToS3VPC",
-      max_azs=2,
-      gateway_endpoints={
-        "S3": aws_ec2.GatewayVpcEndpointOptions(
-          service=aws_ec2.GatewayVpcEndpointAwsService.S3
-        )
-      }
-    )
-
     S3_BUCKET_SUFFIX = ''.join(random.sample((string.ascii_lowercase + string.digits), k=7))
     s3_bucket = s3.Bucket(self, "s3bucket",
       removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: cdk.RemovalPolicy.RETAIN - The bucket will be orphaned
