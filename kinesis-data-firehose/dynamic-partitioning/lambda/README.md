@@ -98,7 +98,7 @@ firehose_record_output = {
 firehose_records_output['records'].append(firehose_record_output)
 ```
 
-Now you can create kinesis data firehose with the above mapping of parameters to jq expressions like this:
+Now you can create kinesis data firehose like this:
 
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)

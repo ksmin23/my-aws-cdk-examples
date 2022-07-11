@@ -14,7 +14,10 @@ from aws_cdk import (
   aws_kinesisfirehose,
   aws_logs
 )
+
 from constructs import Construct
+
+random.seed(31)
 
 class KDS2KDFStack(Stack):
 
@@ -67,7 +70,7 @@ class KDS2KDFStack(Stack):
       default='error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}'
     )
 
-    input_kinesis_stream = aws_kinesis.Stream(self, "InputKinesisStreams", stream_name=KINESIS_STREAM_NAME.value_as_string)
+    source_kinesis_stream = aws_kinesis.Stream(self, "SourceKinesisStreams", stream_name=KINESIS_STREAM_NAME.value_as_string)
     firehose_role_policy_doc = aws_iam.PolicyDocument()
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
@@ -83,6 +86,19 @@ class KDS2KDFStack(Stack):
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
       effect=aws_iam.Effect.ALLOW,
       resources=["*"],
+      actions=["ec2:DescribeVpcs",
+        "ec2:DescribeVpcAttribute",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:CreateNetworkInterfacePermission",
+        "ec2:DeleteNetworkInterface"]
+    ))
+
+    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
+      effect=aws_iam.Effect.ALLOW,
+      resources=["*"],
       actions=["glue:GetTable",
         "glue:GetTableVersion",
         "glue:GetTableVersions"]
@@ -90,7 +106,7 @@ class KDS2KDFStack(Stack):
 
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
       effect=aws_iam.Effect.ALLOW,
-      resources=[input_kinesis_stream.stream_arn],
+      resources=[source_kinesis_stream.stream_arn],
       actions=["kinesis:DescribeStream",
         "kinesis:GetShardIterator",
         "kinesis:GetRecords"]
@@ -121,7 +137,7 @@ class KDS2KDFStack(Stack):
       delivery_stream_name=FIREHOSE_STREAM_NAME.value_as_string,
       delivery_stream_type="KinesisStreamAsSource",
       kinesis_stream_source_configuration={
-        "kinesisStreamArn": input_kinesis_stream.stream_arn,
+        "kinesisStreamArn": source_kinesis_stream.stream_arn,
         "roleArn": firehose_role.role_arn
       },
       extended_s3_destination_configuration={
@@ -143,7 +159,7 @@ class KDS2KDFStack(Stack):
     )
 
     cdk.CfnOutput(self, '{}_S3DestBucket'.format(self.stack_name), value=s3_bucket.bucket_name, export_name='S3DestBucket')
-    cdk.CfnOutput(self, '{}_KinesisDataStreamName'.format(self.stack_name), value=input_kinesis_stream.stream_name, export_name='KinesisDataStreamName')
+    cdk.CfnOutput(self, '{}_KinesisDataStreamName'.format(self.stack_name), value=source_kinesis_stream.stream_name, export_name='KinesisDataStreamName')
     cdk.CfnOutput(self, '{}_KinesisDataFirehoseName'.format(self.stack_name), value=firehose_to_s3_delivery_stream.delivery_stream_name, export_name='KinesisDataFirehoseName')
 
 
