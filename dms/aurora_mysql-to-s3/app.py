@@ -112,7 +112,7 @@ class AuroraMysqlToS3Stack(Stack):
     }))
 
     dms_target_s3_access_role = aws_iam.Role(self, 'DMSTargetS3AccessRole',
-      role_name='DMSTargetS3AccessRole',
+      role_name='DMSTargetS3AccessRole-2022-7-24',
       assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
       inline_policies={
         'S3AccessRole': dms_s3_access_role_policy_doc
@@ -127,7 +127,9 @@ class AuroraMysqlToS3Stack(Stack):
       s3_settings=aws_dms.CfnEndpoint.S3SettingsProperty(
         bucket_name=s3_bucket_name.value_as_string,
         bucket_folder=s3_bucket_folder_name.value_as_string,
-        service_access_role_arn=dms_target_s3_access_role.role_arn
+        service_access_role_arn=dms_target_s3_access_role.role_arn,
+        data_format='parquet',
+        parquet_timestamp_in_millisecond=True
       )
     )
 
@@ -153,17 +155,6 @@ class AuroraMysqlToS3Stack(Stack):
       # Multithreaded full load task settings
       "FullLoadSettings": {
         "MaxFullLoadSubTasks": 8,
-      },
-      "TargetMetadata": {
-        # Multithreaded full load task settings
-        "ParallelLoadQueuesPerThread": 0,
-        "ParallelLoadThreads": 0,
-        "ParallelLoadBufferSize": 0,
-
-        # Multithreaded CDC load task settings
-        "ParallelApplyBufferSize": 1000,
-        "ParallelApplyQueuesPerThread": 16,
-        "ParallelApplyThreads": 8,
       }
     }
 
