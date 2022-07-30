@@ -39,7 +39,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 (.venv) $ pip install -r requirements.txt
 ```
 
-Before synthesizing the CloudFormation, you first set up Apache Iceberg connector for AWS Glue to use Apache Iceberg with AWS Glue jobs. (For more information, see [References](#references) (1), (2), or (3))
+Before synthesizing the CloudFormation, **you first set up Apache Iceberg connector for AWS Glue to use Apache Iceberg with AWS Glue jobs.** (For more information, see [References](#references) (1), (2), or (3))
 
 Then you should set approperly the cdk context configuration.
 For example:
@@ -61,7 +61,7 @@ For example:
 }
 </pre>
 
-:warning: You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket. 
+:warning: **You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket.**
 
 At this point you can now synthesize the CloudFormation template for this code.
 
@@ -83,7 +83,8 @@ command.
 
 ## Test
 
-1. Generate fake parquet files
+1. Set up Apache Iceberg connector for AWS Glue to use Apache Iceberg with AWS Glue jobs.
+2. Generate fake parquet files
    <pre>
    (.venv) $ pwd
    ~/my-aws-cdk-examples/glue
@@ -122,14 +123,14 @@ command.
     cdc-load-20220730173650.parquet
     full-load-20220730173650.parquet
    </pre>
-2. Copy fake parquet files into S3
+3. Copy fake parquet files into S3
    <pre>
    (.venv) $ aws mb <i>s3://aws-glue-input-parquet-atq4q5u</i> --region <i>us-east-1</i>
    (.venv) $ aws cp full-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet</i>
    (.venv) $ aws cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
    (.venv) $ aws mb s3://aws-glue-output-iceberg-atq4q5u --region <i>us-east-1</i>
    </pre>
-3. Deply glue job using `cdk deploy`
+4. Deply glue job using `cdk deploy`
    <pre>
    (.venv) $ ls src/main/python/etl/
     employee-details-cdc-etl.py
@@ -139,11 +140,11 @@ command.
    (.venv) $ aws cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py</i>
    (.venv) $ cdk deploy --require-approval never
    </pre>
-4. Run glue job
+5. Run glue job
    <pre>
    (.venv) $ aws glue start-job-run --job-name <i>employee-details-full-etl</i>
    </pre>
-5. Check the output logs of the glue job and results in S3
+6. Check the output logs of the glue job and results in S3
 
 ## Useful commands
 
