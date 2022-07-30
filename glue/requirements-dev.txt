@@ -1,2 +1,6 @@
 boto3>=1.24.41
 Faker>=13.15.1
+fastparquet==0.8.1
+numpy==1.23.1
+pandas==1.4.3
+pyarrow==8.0.0
