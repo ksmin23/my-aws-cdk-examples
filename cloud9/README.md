@@ -43,14 +43,14 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 (.venv) $ cdk -c vpc_name=<i>your-existing-vpc-name</i> synth \
-  --parameters Cloud9OwnerName='<i>cloud9-owner-name</i>'
+              --parameters Cloud9OwnerName='<i>cloud9-owner-name</i>'
 </pre>
 
 Use `cdk deploy` command to create the stack shown above,
 
 <pre>
 (.venv) $ cdk -c vpc_name=<i>your-existing-vpc-name</i> deploy --require-approval never \
-  --parameters Cloud9OwnerName='<i>cloud9-owner-name</i>'
+              --parameters Cloud9OwnerName='<i>cloud9-owner-name</i>'
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
