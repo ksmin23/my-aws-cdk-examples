@@ -145,7 +145,7 @@ command.
    (.venv) $ aws glue start-job-run --job-name <i>employee-details-full-etl</i>
    </pre>
 6. Check the output logs of the glue job and results in S3
-  <pre>
+   <pre>
    (.venv) $ aws s3 ls <i>s3://aws-glue-output-iceberg-atq4q5u/human_resources.db/employee_details_iceberg/</i>
                            PRE data/
                            PRE metadata/
