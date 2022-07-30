@@ -34,7 +34,7 @@ class OpensearchStack(Stack):
       description='Amazon EC2 Instance KeyPair name'
     )
 
-    #XXX: For createing Amazon MWAA in the existing VPC,
+    #XXX: For creating this CDK Stack in the existing VPC,
     # remove comments from the below codes and
     # comments out vpc = aws_ec2.Vpc(..) codes,
     # then pass -c vpc_name=your-existing-vpc to cdk command
