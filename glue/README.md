@@ -124,19 +124,19 @@ command.
    </pre>
 2. Copy fake parquet files into S3
    <pre>
-   (.venv) $ aws mb s3://aws-glue-input-parquet-atq4q5u --region us-east-1
-   (.venv) $ aws cp full-load-20220730173650.parquet s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet
-   (.venv) $ aws cp cdc-load-20220730173650.parquet s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet
-   (.venv) $ aws mb s3://aws-glue-output-iceberg-atq4q5u --region us-east-1
+   (.venv) $ aws mb <i>s3://aws-glue-input-parquet-atq4q5u</i> --region <i>us-east-1</i>
+   (.venv) $ aws cp full-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet</i>
+   (.venv) $ aws cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
+   (.venv) $ aws mb s3://aws-glue-output-iceberg-atq4q5u --region <i>us-east-1</i>
    </pre>
 3. Deply glue job using `cdk deploy`
    <pre>
    (.venv) $ ls src/main/python/etl/
     employee-details-cdc-etl.py
     employee-details-full-etl.py
-   (.venv) $ aws mb s3://aws-glue-assets-12345678912-us-east-1 --region us-east-1
-   (.venv) $ aws cp employee-details-full-etl.py s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-full-etl.py
-   (.venv) $ aws cp employee-details-cdc-etl.py s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py
+   (.venv) $ aws mb <i>s3://aws-glue-assets-12345678912-us-east-1</i> --region <i>us-east-1</i>
+   (.venv) $ aws cp employee-details-full-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-full-etl.py</i>
+   (.venv) $ aws cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py</i>
    (.venv) $ cdk deploy --require-approval never
    </pre>
 4. Run glue job
