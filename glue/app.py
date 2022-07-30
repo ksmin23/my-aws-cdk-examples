@@ -113,6 +113,8 @@ class GlueJobStack(Stack):
 
     glue_connections_name = self.node.try_get_context('glue_connections_name')
 
+    glue_job_name = self.node.try_get_context('glue_job_name')
+
     glue_cfn_job = aws_glue.CfnJob(self, "GlueETLJob",
       command=aws_glue.CfnJob.JobCommandProperty(
         name="glueetl",
@@ -140,13 +142,13 @@ class GlueJobStack(Stack):
       #XXX: Do not set Max Capacity if using Worker Type and Number of Workers
       # max_capacity=2,
       max_retries=0,
-      name="employee-details-full-etl-20220730", #TODO: passed by parameter
+      name=glue_job_name,
       # notification_property=aws_glue.CfnJob.NotificationPropertyProperty(
       #   notify_delay_after=10 # 10 minutes
       # ),
       number_of_workers=2,
       timeout=2880,
-      worker_type="G.1X" # ['Standard' | 'G.1X' | 'G.2X']
+      worker_type="G.1X" # ['Standard' | 'G.1X' | 'G.2X' | 'G.025x']
     )
 
     cdk.CfnOutput(self, '{}_GlueJobName'.format(self.stack_name), value=glue_cfn_job.name,
