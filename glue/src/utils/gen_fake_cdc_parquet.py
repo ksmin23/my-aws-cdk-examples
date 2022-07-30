@@ -16,14 +16,11 @@ random.seed(47)
 def main():
   parser = argparse.ArgumentParser()
 
-  parser.add_argument('--type', default='full-load-and-cdc', choices=['full-load', 'full-load-and-cdc'])
+  parser.add_argument('--type', default='FULL_LOAD_AND_CDC', choices=['FULL_LOAD', 'FULL_LOAD_AND_CDC'])
   parser.add_argument('--max-count', default=15, type=int, choices=range(1, 20), help='The max number of records to put. [1, 20)')
   parser.add_argument('--dry-run', action='store_true')
 
   options = parser.parse_args()
-  if options.max_count < 1:
-    parser.print_help() 
-    return
 
   fake = Faker()
 
@@ -53,7 +50,7 @@ def main():
     out_file = 'full-load-{}.parquet'.format(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S'))
     full_load_df.to_parquet(out_file, compression=None)
 
-  if options.type == 'full-load':
+  if options.type == 'FULL_LOAD':
     return
 
   sample_df = full_load_df.sample(frac=0.3, random_state=47)
