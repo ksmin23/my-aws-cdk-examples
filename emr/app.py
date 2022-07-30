@@ -75,15 +75,28 @@ class EmrStack(Stack):
       bootstrap_actions=None,
       configurations=[
         aws_emr.CfnCluster.ConfigurationProperty(
+          classification="spark",
+          configuration_properties={
+            "maximizeResourceAllocation": "true"
+        }),
+        #XXX: Spark defaults configuration is needed to be modified according to your workload
+        aws_emr.CfnCluster.ConfigurationProperty(
+          classification="spark-defaults",
+          configuration_properties={
+            "spark.executor.instances": "5",
+            "spark.executor.cores": "3",
+            "spark.executor.memory": "1536M",
+        }),
+        aws_emr.CfnCluster.ConfigurationProperty(
           classification="hive-site",
           configuration_properties={
             "hive.metastore.client.factory.class": "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
-          }),
+        }),
         aws_emr.CfnCluster.ConfigurationProperty(
           classification="spark-hive-site",
           configuration_properties={
             "hive.metastore.client.factory.class": "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
-          })
+        })
       ],
       ebs_root_volume_size=10,
       log_uri="s3n://aws-logs-{account}-{region}/elasticmapreduce/".format(account=cdk.Aws.ACCOUNT_ID, region=cdk.Aws.REGION),
@@ -94,6 +107,22 @@ class EmrStack(Stack):
       #   value="true"
       # )],
       visible_to_all_users=True
+    )
+
+    emr_cfn_step = aws_emr.CfnStep(self, "MyEMRCopyJarsStep",
+      action_on_failure="CONTINUE",
+      hadoop_jar_step=aws_emr.CfnStep.HadoopJarStepConfigProperty(
+        jar="command-runner.jar",
+
+        # the properties below are optional
+        args=[
+          "bash",
+          "-c",
+          "hdfs dfs -mkdir -p /apps/hudi/lib; hdfs dfs -copyFromLocal /usr/lib/hudi/hudi-spark-bundle.jar /apps/hudi/lib/hudi-spark-bundle.jar; hdfs dfs -copyFromLocal /usr/lib/spark/external/lib/spark-avro.jar /apps/hudi/lib/spark-avro.jar  ; hdfs dfs -mkdir -p /apps/iceberg/lib; hdfs dfs -copyFromLocal /usr/share/aws/iceberg/lib/iceberg-spark3-runtime.jar /apps/iceberg/lib/iceberg-spark3-runtime.jar"
+        ]
+      ),
+      job_flow_id="copy_jars_step",
+      name="CopyJarsToHDFS"
     )
 
 
