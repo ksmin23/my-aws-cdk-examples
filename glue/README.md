@@ -1,6 +1,8 @@
 
 # AWS Glue Job CDK Python project!
 
+![glue-job-cdc-parquet-to-iceberg-arch](./glue-job-cdc-parquet-to-iceberg-arch.svg)
+
 This is a glue job project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
