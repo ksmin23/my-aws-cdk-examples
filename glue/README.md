@@ -91,35 +91,35 @@ command.
    (.venv) $ pip install boto3 Faker fastparquet pyarrow pandas # pip install -r requirements-dev.txt
    (.venv) $ python src/utils/gen_fake_cdc_parquet.py
 
-    [full-load data]
-      Op  emp_no         name     department     city  salary              m_time
-    0   I     735        Oscar        Finance    Tokyo   53598 2022-02-10 05:48:13
-    1   I     173      Patrick  Manufacturing    Seoul   91282 1999-12-29 07:20:17
-    2   I     531        Donna          Sales       NY   68958 2013-11-09 04:44:35
-    3   I     967    Elizabeth             IT    Tokyo   66129 1976-05-22 13:44:48
-    4   I     332      Richard             IT    Tokyo   11466 1998-01-29 03:53:31
-    5   I     603       Daniel  Manufacturing  Chicago   88550 1989-03-14 05:23:51
-    6   I     298        James             IT       NY   48561 1987-09-09 03:56:03
-    7   I     885       Pamela     Purchasing       NY   41585 1992-12-08 23:30:18
-    8   I     631     Kristine             IT  Chicago   98029 1970-11-23 15:01:18
-    9   I     933        Brady          Sales    Tokyo   11407 1986-01-16 20:40:20
-    10  I     696  Christopher     Purchasing    Tokyo   23312 1995-03-02 09:12:12
-    11  I     373      Michael  Manufacturing    Seoul   47757 1977-12-22 09:25:07
-    12  I     238        Kelly             IT       NY   56717 2022-06-29 01:32:09
-    13  I     729        Larry  Manufacturing    Seoul   56261 2000-04-15 05:03:50
-    14  I     699      Jessica     Purchasing      SFO   17897 1982-09-11 22:19:59
+   [full-load data]
+      Op  emp_no       name     department     city  salary              m_time
+   0   I     477      Jerry             IT       NY   24202 2015-07-07 21:25:11
+   1   I     171        Ann     Purchasing  Chicago   41157 1982-03-10 19:34:45
+   2   I     750       Kyle             IT  Chicago   56326 1991-03-29 01:23:28
+   3   I     787      Megan             IT    Tokyo   62886 2001-12-06 07:12:56
+   4   I     846   Michelle     Purchasing       NY   15840 1970-07-11 02:51:10
+   5   I     818     Thomas  Manufacturing    Tokyo   28677 2016-06-27 00:43:40
+   6   I     903     Carrie        Finance  Chicago   10549 1977-11-06 22:27:21
+   7   I     448    Abigail        Finance       NY   78432 2000-11-23 23:26:43
+   8   I     354     Jerome        Finance  Chicago   39528 2010-12-08 14:47:37
+   9   I     428       Chad  Manufacturing      SFO   72664 1975-05-17 10:28:56
+   10  I     440      Kevin             IT  Chicago   63602 2010-01-15 05:33:16
+   11  I     635    Crystal             IT      SFO   67660 1992-03-07 01:49:47
+   12  I     462      Jared          Sales    Seoul   47919 1988-08-02 14:17:25
+   13  I     848  Nathaniel             IT  Chicago   10051 1997-06-16 09:55:19
+   14  I     879      Misty  Manufacturing      SFO   86170 2016-11-14 03:49:05
 
-    [cdc data]
-      Op  emp_no      name department     city  salary                  m_time
-    0  D     332   Richard   Security  Seattle   48185 2022-07-10 23:56:31.747
-    1  U     332   Richard  Marketing   Lisbon   81701 2022-07-10 21:46:31.747
-    2  U     531     Donna   Security   Sydney   59382 2022-07-10 19:37:31.747
-    3  U     603    Daniel  Marketing   Lisbon   81001 2022-07-10 21:46:31.747
-    0  I    4710  Jeremiah    Finance    Seoul   74361 2003-03-12 03:31:01.000
-    1  I    3830     Blake    Finance      SFO   22643 1988-12-25 00:01:42.000
-    2  I    9790   Christy         IT    Seoul   49510 2000-02-28 23:40:07.000
-    3  I    1021     Kelli      Sales  Chicago   87888 1981-07-14 09:27:52.000
-   (.venv) $ ls *.parquet
+   [cdc data]
+   Op  emp_no         name     department     city  salary                  m_time
+   0  D     846     Michelle      Marketing   Mumbai   57059 2022-07-11 05:00:06.596
+   1  D     818       Thomas      Marketing   Mumbai   40619 2022-07-11 09:19:06.596
+   2  U     750         Kyle       Security   Mumbai   30464 2022-07-11 07:09:06.596
+   3  D     848    Nathaniel            R&D   Pargue   56841 2022-07-11 11:24:06.596
+   4  I    3026    Katherine          Sales    Seoul   86999 2018-06-25 00:50:01.000
+   5  I    3973      Michael  Manufacturing       NY   80381 2008-06-06 16:39:15.000
+   6  I    4347        Kylie          Sales    Tokyo   15030 1995-03-26 18:08:11.000
+   7  I    5032  Christopher          Sales  Chicago   56024 1980-05-16 13:26:11.000
+   (.venv) $ ls \*.parquet
     cdc-load-20220730173650.parquet
     full-load-20220730173650.parquet
    </pre>
@@ -128,7 +128,7 @@ command.
    (.venv) $ aws mb <i>s3://aws-glue-input-parquet-atq4q5u</i> --region <i>us-east-1</i>
    (.venv) $ aws cp full-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet</i>
    (.venv) $ aws cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
-   (.venv) $ aws mb s3://aws-glue-output-iceberg-atq4q5u --region <i>us-east-1</i>
+   (.venv) $ aws mb <i>s3://aws-glue-output-iceberg-atq4q5u</i> --region <i>us-east-1</i>
    </pre>
 4. Deply glue job using `cdk deploy`
    <pre>

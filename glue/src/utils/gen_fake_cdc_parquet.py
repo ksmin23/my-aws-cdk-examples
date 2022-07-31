@@ -54,34 +54,32 @@ def main():
     return
 
   sample_df = full_load_df.sample(frac=0.3, random_state=47)
-
-  mod_emp_no_list = [emp_no for _index, emp_no in sample_df['emp_no'].iteritems()]
+  num_samples = len(sample_df)
 
   new_mtime_list = []
   base_dt = datetime.datetime.utcnow() - datetime.timedelta(days=20)
-  for _ in range(len(mod_emp_no_list)):
+  for _ in range(num_samples):
     base_dt += datetime.timedelta(hours=random.randint(1, 3), minutes=random.randint(1, 10))
     new_mtime_list.append(base_dt.isoformat(timespec='milliseconds'))
 
-  fake.set_arguments('mod_emp_no', {'elements': mod_emp_no_list})
   fake.set_arguments('update_delete', {'elements': collections.OrderedDict([('U', 0.7), ('D', 0.3)])})
   fake.set_arguments('new_city', {'elements': ['Lisbon', 'Mumbai', 'Pargue', 'Seattle', 'Sydney', 'Taipei']})
   fake.set_arguments('new_department', {'elements': ['FC', 'Laws', 'Marketing', 'R&D', 'Security']})
   fake.set_arguments('new_mtime', {'elements': new_mtime_list})
-     
+
   UPDATED_DATA_COLUMNS = {
     'Op': 'random_element:update_delete',
-    'emp_no': 'random_element:mod_emp_no',
     'department': 'random_element:new_department',
     'city': 'random_element:new_city',
     'salary': 'random_number:salary',
     'm_time': 'random_element:new_mtime'
   }
 
-  updated_records = fake.json(data_columns=UPDATED_DATA_COLUMNS, num_rows=len(mod_emp_no_list))
+  updated_records = fake.json(data_columns=UPDATED_DATA_COLUMNS, num_rows=num_samples)
   updated_df = pd.read_json(updated_records, orient='records')
 
-  merged_cdc_df = updated_df.merge(sample_df[['emp_no', 'name']], on='emp_no')
+  emp_no_name = sample_df[['emp_no', 'name']].reset_index(drop=True)
+  merged_cdc_df = pd.concat([updated_df, emp_no_name], axis=1)
   merged_cdc_df = merged_cdc_df[['Op', 'emp_no', 'name', 'department', 'city', 'salary', 'm_time']]
 
   fake.set_arguments('new_emp_no', {'digits': 4, 'fix_len': True})
@@ -91,7 +89,7 @@ def main():
 
   new_records = fake.json(data_columns=DATA_COLUMNS, num_rows=max(1, int(options.max_count*0.3)))
   new_df = pd.read_json(new_records, orient='records')
-  cdc_df = pd.concat([merged_cdc_df, new_df])
+  cdc_df = pd.concat([merged_cdc_df, new_df]).reset_index(drop=True)
 
   print('\n[cdc data]', file=sys.stderr)
   print(cdc_df, file=sys.stderr)
