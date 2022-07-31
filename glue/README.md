@@ -93,32 +93,32 @@ command.
 
    [full-load data]
       Op  emp_no       name     department     city  salary              m_time
-   0   I     477      Jerry             IT       NY   24202 2015-07-07 21:25:11
-   1   I     171        Ann     Purchasing  Chicago   41157 1982-03-10 19:34:45
-   2   I     750       Kyle             IT  Chicago   56326 1991-03-29 01:23:28
-   3   I     787      Megan             IT    Tokyo   62886 2001-12-06 07:12:56
-   4   I     846   Michelle     Purchasing       NY   15840 1970-07-11 02:51:10
-   5   I     818     Thomas  Manufacturing    Tokyo   28677 2016-06-27 00:43:40
-   6   I     903     Carrie        Finance  Chicago   10549 1977-11-06 22:27:21
-   7   I     448    Abigail        Finance       NY   78432 2000-11-23 23:26:43
-   8   I     354     Jerome        Finance  Chicago   39528 2010-12-08 14:47:37
-   9   I     428       Chad  Manufacturing      SFO   72664 1975-05-17 10:28:56
-   10  I     440      Kevin             IT  Chicago   63602 2010-01-15 05:33:16
-   11  I     635    Crystal             IT      SFO   67660 1992-03-07 01:49:47
-   12  I     462      Jared          Sales    Seoul   47919 1988-08-02 14:17:25
-   13  I     848  Nathaniel             IT  Chicago   10051 1997-06-16 09:55:19
-   14  I     879      Misty  Manufacturing      SFO   86170 2016-11-14 03:49:05
+   0   I     129    Tiffany             IT    Tokyo   49882 1973-10-15 12:32:25
+   1   I     204      Oscar             IT  Chicago   93507 2006-03-17 23:21:06
+   2   I     252      Julia     Purchasing    Seoul   41204 2007-04-26 12:00:28
+   3   I     288       Chad             IT    Tokyo   89084 2002-02-06 13:06:02
+   4   I     347      James  Manufacturing      SFO   62261 1988-09-23 20:13:34
+   5   I     377     Nathan  Manufacturing       NY   45970 1971-03-03 06:06:03
+   6   I     434      Emily          Sales      SFO   20443 1994-03-27 02:22:03
+   7   I     558     Edward  Manufacturing    Tokyo   85874 1985-08-18 11:37:01
+   8   I     633   Danielle          Sales    Seoul   65974 2020-02-16 20:01:22
+   9   I     682       Anne     Purchasing      SFO   36606 2000-07-31 17:35:01
+   10  I     695       Gina             IT    Tokyo   93670 2006-02-07 23:05:40
+   11  I     695    Richard        Finance    Seoul   37034 1998-12-09 20:18:12
+   12  I     924  Frederick          Sales  Chicago   48173 1974-05-01 01:23:15
+   13  I     951     Hannah     Purchasing       NY   71689 1993-03-07 04:18:21
+   14  I     998  Elizabeth  Manufacturing    Seoul   46318 1971-05-27 14:07:43
 
    [cdc data]
-   Op  emp_no         name     department     city  salary                  m_time
-   0  D     846     Michelle      Marketing   Mumbai   57059 2022-07-11 05:00:06.596
-   1  D     818       Thomas      Marketing   Mumbai   40619 2022-07-11 09:19:06.596
-   2  U     750         Kyle       Security   Mumbai   30464 2022-07-11 07:09:06.596
-   3  D     848    Nathaniel            R&D   Pargue   56841 2022-07-11 11:24:06.596
-   4  I    3026    Katherine          Sales    Seoul   86999 2018-06-25 00:50:01.000
-   5  I    3973      Michael  Manufacturing       NY   80381 2008-06-06 16:39:15.000
-   6  I    4347        Kylie          Sales    Tokyo   15030 1995-03-26 18:08:11.000
-   7  I    5032  Christopher          Sales  Chicago   56024 1980-05-16 13:26:11.000
+   Op  emp_no      name     department     city  salary                  m_time
+   0  U     377    Nathan       Security   Lisbon   50210 2022-07-11 15:12:31.189
+   1  U     347     James            R&D   Sydney   56497 2022-07-11 08:48:31.189
+   2  I    8826     Kelly        Finance    Tokyo   52185 2006-06-03 17:46:51.000
+   3  U     252     Julia             FC   Sydney   89129 2022-07-11 13:07:31.189
+   4  I    8787     Chris             IT  Chicago   30662 1991-08-04 05:10:38.000
+   5  D     951    Hannah     Purchasing       NY   71689 2022-07-11 08:48:31.189
+   6  I    7339  Jonathan          Sales    Seoul   33806 1972-08-24 22:44:20.000
+   7  I    7441  Kristine  Manufacturing    Seoul   87117 1990-08-19 21:13:20.000
    (.venv) $ ls \*.parquet
     cdc-load-20220730173650.parquet
     full-load-20220730173650.parquet
