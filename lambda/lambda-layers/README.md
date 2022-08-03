@@ -39,7 +39,8 @@ Once the virtualenv is activated, you can install the required dependencies.
 
 Before synthesizing the CloudFormation, **you first create a python package to regisiter with AWS Lambda Layer.
 Then you upload the python package into S3 (e.g., <i>s3-bucket-lambda-layer-lib</i>)**
-For more information about how to create a python package for AWS Lambda Layer, see References
+
+For more information about how to create a python package for AWS Lambda Layer, see [References](#references).
 
 At this point you can now synthesize the CloudFormation template for this code.
 
