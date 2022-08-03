@@ -78,6 +78,7 @@ Enjoy!
 
 + [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-path)
     + How to create a python package to register with AWS Lambda layer (e.g., **elasticsearch**) on **Amazon Linux**
+
       :warning: **You should create the python package on Amazon Linux, otherwise create it using a simulated Lambda environment with Docker.**
       <pre>
       $ python3 -m venv es-lib
