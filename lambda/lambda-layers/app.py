@@ -41,6 +41,12 @@ class LambdaLayersStack(Stack):
 
     S3_BUCKET_LAMBDA_LAYER_LIB = self.node.try_get_context('s3_bucket_lambda_layer_lib')
     s3_lib_bucket = s3.Bucket.from_bucket_name(self, construct_id, S3_BUCKET_LAMBDA_LAYER_LIB)
+    pytz_lib_layer = aws_lambda.LayerVersion(self, "PyTZLib",
+      layer_version_name="pytz-lib",
+      compatible_runtimes=[aws_lambda.Runtime.PYTHON_3_7],
+      code=aws_lambda.Code.from_bucket(s3_lib_bucket, "var/pytz-lib.zip")
+    )
+
     es_lib_layer = aws_lambda.LayerVersion(self, "ESLib",
       layer_version_name="es-lib",
       compatible_runtimes=[aws_lambda.Runtime.PYTHON_3_7],
@@ -54,7 +60,7 @@ class LambdaLayersStack(Stack):
       description="Lambda Layer Test",
       code=aws_lambda.Code.from_asset("./src/main/python"),
       timeout=cdk.Duration.minutes(5),
-      layers=[es_lib_layer],
+      layers=[es_lib_layer, pytz_lib_layer],
       vpc=vpc
     )
 

@@ -85,7 +85,7 @@ Enjoy!
       $ cd es-lib
       $ source bin/activate
       (es-lib) $ mkdir -p python_modules
-      (es-lib) $ pip install 'elasticsearch>=7.0.0,< 7.11' requests requests-aws4auth -t python_modules
+      (es-lib) $ pip install 'elasticsearch>=7.0.0,< 7.11' -t python_modules
       (es-lib) $ mv python_modules python
       (es-lib) $ zip -r es-lib.zip python/
       (es-lib) $ aws s3 mb s3://my-bucket-for-lambda-layer-packages
@@ -96,8 +96,6 @@ Enjoy!
       <pre>
       $ cat <<EOF > requirements.txt
       > elasticsearch>=7.0.0,<7.11
-      > requests==2.23.0
-      > requests-aws4auth==0.9
       > EOF
       $ docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.7" /bin/sh -c "pip install -r requirements.txt -t python/lib/python3.7/site-packages/; exit"
       $ zip -r es-lib.zip python > /dev/null
