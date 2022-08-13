@@ -173,3 +173,10 @@ Enjoy!
 - (6) [AWS Glue Immersion day](https://catalog.us-east-1.prod.workshops.aws/workshops/ee59d21b-4cb8-4b3d-a629-24537cf37bb5/en-US)
 - (7) [Amazon Athena Workshop - ACID Transactions with Iceberg](https://catalog.us-east-1.prod.workshops.aws/workshops/9981f1a1-abdc-49b5-8387-cb01d238bb78/en-US/90-athena-acid)
 
+## Troubleshooting
+
+- When you meet the following error, see [Why does my AWS Glue crawler or ETL job fail with the error "Insufficient Lake Formation permission(s)"?](https://aws.amazon.com/premiumsupport/knowledge-center/glue-insufficient-lakeformation-permissions/)
+
+   <pre>
+   An error occurred while calling o100.getCatalogSource. Insufficient Lake Formation permission(s) on <i>your-table-name</i> (Service: AWSGlue; Status Code: 400; Error Code: AccessDeniedException; Request ID: 2623b59f-b5d2-497b-bed6-a7b2bcc32ba8; Proxy: null)
+   </pre>
