@@ -85,17 +85,18 @@ Enjoy!
       $ cd es-lib
       $ source bin/activate
       (es-lib) $ mkdir -p python_modules
-      (es-lib) $ pip install 'elasticsearch>=7.0.0,< 7.11' -t python_modules
+      (es-lib) $ pip install 'elasticsearch>=7.0.0,< 7.11' pytz==2022.1 -t python_modules
       (es-lib) $ mv python_modules python
       (es-lib) $ zip -r es-lib.zip python/
       (es-lib) $ aws s3 mb s3://my-bucket-for-lambda-layer-packages
       (es-lib) $ aws s3 cp es-lib.zip s3://my-bucket-for-lambda-layer-packages/var/
       (es-lib) $ deactivate
       </pre>
-    + [How to create a Lambda layer using a simulated Lambda environment with Docker?](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
+    + [How to create a Lambda layer using a simulated Lambda environment with Docker](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
       <pre>
       $ cat <<EOF > requirements.txt
       > elasticsearch>=7.0.0,<7.11
+      > pytz==2022.1
       > EOF
       $ docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.7" /bin/sh -c "pip install -r requirements.txt -t python/lib/python3.7/site-packages/; exit"
       $ zip -r es-lib.zip python > /dev/null
