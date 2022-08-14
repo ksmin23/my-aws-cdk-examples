@@ -127,11 +127,11 @@ class GlueJobStack(Stack):
       role=glue_job_role.role_arn,
 
       # the properties below are optional
-      #XXX: Set only AllocatedCapacity or MaxCapacity 
+      #XXX: Set only AllocatedCapacity or MaxCapacity
       # Do not set Allocated Capacity if using Worker Type and Number of Workers
       # allocated_capacity=2,
       connections=aws_glue.CfnJob.ConnectionsListProperty(
-        connections=[glue_connections_name] 
+        connections=[glue_connections_name]
       ),
       default_arguments=glue_job_default_arguments,
       description="This job loads the data from employee_details dataset and creates the Iceberg Table.",
@@ -153,6 +153,8 @@ class GlueJobStack(Stack):
 
     cdk.CfnOutput(self, '{}_GlueJobName'.format(self.stack_name), value=glue_cfn_job.name,
       export_name='GlueJobName')
+    cdk.CfnOutput(self, '{}_GlueJobRoleArn'.format(self.stack_name), value=glue_job_role.role_arn,
+      export_name='GlueJobRoleArn')
 
 
 app = cdk.App()

@@ -123,34 +123,80 @@ command.
     cdc-load-20220730173650.parquet
     full-load-20220730173650.parquet
    </pre>
-3. Copy fake parquet files into S3
+3. Create S3 bucket for input and oput data and Copy fake parquet files into input S3 bucket
    <pre>
    (.venv) $ aws mb <i>s3://aws-glue-input-parquet-atq4q5u</i> --region <i>us-east-1</i>
    (.venv) $ aws cp full-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet</i>
-   (.venv) $ aws cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
    (.venv) $ aws mb <i>s3://aws-glue-output-iceberg-atq4q5u</i> --region <i>us-east-1</i>
    </pre>
-4. Deply glue job using `cdk deploy`
+4. Create an Iceberg table using Athena - To create an Iceberg table in the AWS Glue Data Catalog, open the Athena console and run the following queries in sequence:
+   <pre>
+   -- Create database for the demo
+   CREATE DATABASE human_resources;
+
+   -- Create output Iceberg table with partitioning. Replace the S3 bucket name with your bucket name
+   CREATE TABLE human_resources.employee_details_iceberg (
+      emp_no bigint,
+      name string,
+      department string,
+      city string,
+      salary int,
+      m_time timestamp,
+      last_applied_date timestamp)
+   PARTITIONED BY (`department`)
+   LOCATION 's3://aws-glue-output-iceberg-atq4q5u/human_resources/employee_details_iceberg'
+   TBLPROPERTIES (
+      'table_type'='iceberg'
+   );
+   </pre>
+5. Deply glue job using `cdk deploy`
    <pre>
    (.venv) $ ls src/main/python/etl/
     employee-details-cdc-etl.py
-    employee-details-full-etl.py
    (.venv) $ aws mb <i>s3://aws-glue-assets-12345678912-us-east-1</i> --region <i>us-east-1</i>
-   (.venv) $ aws cp employee-details-full-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-full-etl.py</i>
    (.venv) $ aws cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py</i>
    (.venv) $ cdk deploy --require-approval never
    </pre>
-5. Run glue job
+6. Make sure the glue job to access the Iceberg tables in the database, otherwise grant the glue job to permissions
    <pre>
-   (.venv) $ aws glue start-job-run --job-name <i>employee-details-full-etl</i>
+   (.venv) $ aws lakeformation grant-permissions \
+               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>account-id</i>:role/<i>GlueJobRole</i> \
+               --permissions SELECT INSERT DELETE DESCRIBE \
+               --resource '{ "Table": {"DatabaseName": "<i>human_resources</i>", "TableWildcard": {}} }'
    </pre>
-6. Check the output logs of the glue job and results in S3
+7. Run glue job to fully load data into the Iceberg table
    <pre>
-   (.venv) $ aws s3 ls <i>s3://aws-glue-output-iceberg-atq4q5u/human_resources.db/employee_details_iceberg/</i>
+   (.venv) $ aws glue start-job-run --job-name <i>employee-details-cdc-etl</i>
+   </pre>
+8. Check the output logs of the glue job and results in S3
+   <pre>
+   (.venv) $ aws s3 ls <i>s3://aws-glue-output-iceberg-atq4q5u/human_resources/employee_details_iceberg/</i>
                            PRE data/
                            PRE metadata/
    </pre>
-
+9. Query the Iceberg table using Athena - After you have successfully run the AWS Glue job, you can validate the output in Athena with the following SQL query:
+   <pre>
+   SELECT * FROM human_resources.employee_details_iceberg LIMIT 10;
+   </pre>
+10. Upload incremental (CDC) data for further processing - After processing the initial full load file, let’s upload the following incremental files, which include insert, update, and delete records.
+    <pre>
+    (.venv) $ aws cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
+    </pre>
+11. Run the AWS Glue job again to process incremental files
+    <pre>
+    (.venv) $ aws glue start-job-run \
+                --job-name <i>employee-details-cdc-etl</i> \
+                --arguments='--raw_s3_path="s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/"'
+    </pre>
+12. Query the Iceberg table using Athena, after incremental data processing - After incremental data processing is complete, you can run the same SELECT statement again
+    <pre>
+    SELECT * FROM human_resources.employee_details_iceberg LIMIT 10;
+    </pre>
+13. Query the previous version of data with Iceberg’s time travel feature - You can run the following SQL query in Athena that uses the AS OF TIME statement of Iceberg to query the previous version of the data:
+    <pre>
+    -- Replace the timestamp with an appropriate one
+    SELECT * FROM iceberg_demo.iceberg_output FOR SYSTEM_TIME AS OF TIMESTAMP '2022-07-30 17:36:00'
+    </pre>
 
 ## Useful commands
 
@@ -173,6 +219,8 @@ Enjoy!
 - (5) [Introduction to AWS Glue and Glue Databrew](https://catalog.us-east-1.prod.workshops.aws/workshops/aaaabcab-5e1e-4bff-b604-781a804763e1/en-US)
 - (6) [AWS Glue Immersion day](https://catalog.us-east-1.prod.workshops.aws/workshops/ee59d21b-4cb8-4b3d-a629-24537cf37bb5/en-US)
 - (7) [Amazon Athena Workshop - ACID Transactions with Iceberg](https://catalog.us-east-1.prod.workshops.aws/workshops/9981f1a1-abdc-49b5-8387-cb01d238bb78/en-US/90-athena-acid)
+- (8) [Querying Iceberg table data and performing time travel](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-table-data.html)
+- (9) [AWS Lake Formation - Granting Data Catalog permissions using the named resource method](https://docs.aws.amazon.com/lake-formation/latest/dg/granting-cat-perms-named-resource.html)
 
 ## Troubleshooting
 

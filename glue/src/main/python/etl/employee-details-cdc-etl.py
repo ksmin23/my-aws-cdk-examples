@@ -3,18 +3,27 @@
 #vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import sys
+from datetime import datetime
+
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from pyspark.conf import SparkConf
 from awsglue.dynamicframe import DynamicFrame
-from pyspark.sql.functions import concat, col, lit, to_timestamp
-from datetime import datetime
 
-## @params: [JOB_NAME]
-#0. Define Glue job arguments from Glue job parameters
+from pyspark.conf import SparkConf
+from pyspark.sql.window import Window
+from pyspark.sql.functions import (
+  concat,
+  col,
+  lit,
+  max,
+  rank,
+  to_timestamp
+)
+
+# Define Glue job arguments from Glue job parameters
 args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'raw_s3_path',
   'iceberg_s3_path',
@@ -22,18 +31,20 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'database',
   'table_name',
   'primary_key',
-  'partition_key'])
+  'partition_key',
+  'lock_table_name'])
 
 # Examples of Glue Job Parameters
-# raw_s3_path : s3://aws-glue-input-parquet-atq4q5u/cdc-load
+# raw_s3_path : s3://aws-glue-input-parquet-atq4q5u/cdc-load/
 # iceberg_s3_path : s3://aws-glue-output-iceberg-atq4q5u
-# catalog : glue_catalog
+# catalog : job_catalog
 # database : human_resources
-# table_name : employee_details
+# table_name : employee_details_iceberg
 # primary_key : emp_no
 # partition_key : department
+# lock_table_name : employee_details_lock
 
-#1. Set variables
+# Set variables
 RAW_S3_PATH = args.get("raw_s3_path")
 CATALOG = args.get("catalog")
 ICEBERG_S3_PATH = args.get("iceberg_s3_path")
@@ -41,99 +52,113 @@ DATABASE = args.get("database")
 TABLE_NAME = args.get("table_name")
 PK = args.get("primary_key")
 PARTITION = args.get("partition_key")
-DYNAMODB_LOCK_TABLE = f'{TABLE_NAME}_lock'
+DYNAMODB_LOCK_TABLE = args.get("lock_table_name")
 
-#2. Set the Spark Configuration of Apache Iceberg. You can refer the Apache Iceberg Connector Usage Instructions.
-def set_iceberg_spark_conf() -> SparkConf:
-       conf = SparkConf() \
-           .set(f"spark.sql.catalog.{CATALOG}", "org.apache.iceberg.spark.SparkCatalog") \
-           .set(f"spark.sql.catalog.{CATALOG}.warehouse", ICEBERG_S3_PATH) \
-           .set(f"spark.sql.catalog.{CATALOG}.catalog-impl", "org.apache.iceberg.aws.glue.GlueCatalog") \
-           .set(f"spark.sql.catalog.{CATALOG}.io-impl", "org.apache.iceberg.aws.s3.S3FileIO") \
-           .set(f"spark.sql.catalog.{CATALOG}.lock-impl", "org.apache.iceberg.aws.glue.DynamoLockManager") \
-           .set(f"spark.sql.catalog.{CATALOG}.lock.table", DYNAMODB_LOCK_TABLE) \
-           .set("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
-       return conf
+# Set the Spark Configuration of Apache Iceberg. You can refer the Apache Iceberg Connector Usage Instructions.
+def set_spark_iceberg_conf() -> SparkConf:
+  conf = SparkConf()
 
-#3. Set the Spark + Glue context
-conf = set_iceberg_spark_conf()
+  conf.set(f"spark.sql.catalog.{CATALOG}", "org.apache.iceberg.spark.SparkCatalog")
+  conf.set(f"spark.sql.catalog.{CATALOG}.warehouse", ICEBERG_S3_PATH)
+  conf.set(f"spark.sql.catalog.{CATALOG}.catalog-impl", "org.apache.iceberg.aws.glue.GlueCatalog")
+  conf.set(f"spark.sql.catalog.{CATALOG}.io-impl", "org.apache.iceberg.aws.s3.S3FileIO")
+  conf.set(f"spark.sql.catalog.{CATALOG}.lock-impl", "org.apache.iceberg.aws.glue.DynamoLockManager")
+  conf.set(f"spark.sql.catalog.{CATALOG}.lock.table", DYNAMODB_LOCK_TABLE)
+  conf.set("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
+  conf.set("spark.sql.iceberg.handle-timestamp-without-timezone","true")
+
+  return conf
+
+# Set the Spark + Glue context
+conf = set_spark_iceberg_conf()
 glueContext = GlueContext(SparkContext(conf=conf))
 spark = glueContext.spark_session
 
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-#4. Read data from S3 location where is cdc-loaded by DMS.
+# Read data from S3 location where is cdc-loaded by DMS
+cdcDynamicFrame = glueContext.create_dynamic_frame_from_options(
+  connection_type='s3',
+  connection_options={
+    'paths': [f'{RAW_S3_PATH}'],
+    'groupFiles': 'none',
+    'recurse': True
+  },
+  format='parquet',
+  transformation_ctx='cdcDyf')
 
-cdcDyf = glueContext.create_dynamic_frame_from_options(
-    connection_type='s3',
-    connection_options={
-        'paths': [f'{RAW_S3_PATH}/{DATABASE}/{TABLE_NAME}/'],
-        'groupFiles': 'none',
-        'recurse': True
-    },
-    format='parquet',
-    transformation_ctx='cdcDyf')
+print(f"Count of CDC data after last job bookmark:{cdcDynamicFrame.count()}")
 
-print(f"Count of CDC data after last job bookmark:{cdcDyf.count()}")
-cdcDf = cdcDyf.toDF()
-
-if(cdcDyf.count() > 0):
-    # Count by CDC Operations(Insert, Update, Delete)
-    cdcInsertCount = cdcDf.filter("Op = 'I'").count()
-    cdcUpdateCount = cdcDf.filter("Op = 'U'").count()
-    cdcDeleteCount = cdcDf.filter("Op = 'D'").count()
-    print(f"Inserted count: {cdcInsertCount}")
-    print(f"Updated count: {cdcUpdateCount}")
-    print(f"Deleted count: {cdcDeleteCount}")
-    print(f"Total CDC count: {cdcDf.count()}")
-
-    #5. Merge CDC data into Iceberg Table
-    dropColumnList = ['Op','schema_name','table_name']
-
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    cdcDf = cdcDf.withColumn('update_ts_dms',to_timestamp(col('update_ts_dms')))
-    cdcDf = cdcDf.withColumn('last_applied_date',to_timestamp(lit(current_datetime)))
-    # cdcDf.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
-
-    existing_tables = spark.sql(f"SHOW TABLES IN {CATALOG}.{DATABASE};")
-    df_existing_tables = existing_tables.select('tableName').rdd.flatMap(lambda x:x).collect()
-    if f"{TABLE_NAME}_iceberg" in df_existing_tables:
-        # DataFrame for the inserted or updated data
-        upsertDf = cdcDf.filter("Op != 'D'").drop(*dropColumnList)
-        upsertDf.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
-
-        # DataFrame for the deleted data
-        deleteDf = cdcDf.filter("Op = 'D'").drop(*dropColumnList)
-        deleteDf.createOrReplaceTempView(f"{TABLE_NAME}_delete")
-        if upsertDf.count() > 0:
-            print(f"Table {TABLE_NAME}_iceberg is upserting...")
-            spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME}_iceberg t
-                USING {TABLE_NAME}_upsert s ON s.{PK} = t.{PK}
-                WHEN MATCHED THEN UPDATE SET *
-                WHEN NOT MATCHED THEN INSERT *
-                """)
-        else:
-            print("No data to insert or update.")
-
-        if deleteDf.count() > 0:
-            print(f"Table {TABLE_NAME}_iceberg is deleting...")
-            spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME}_iceberg t
-                USING {TABLE_NAME}_delete s ON s.{PK} = t.{PK}
-                WHEN MATCHED THEN DELETE
-                """)
-        else:
-            print("No data to delete.")
-    else:
-        print(f"Table {TABLE_NAME}_iceberg doesn't exist in {CATALOG}.{DATABASE}.")
-
-    #6. Read data from Apache Iceberg Table
-    spark.sql(f"SELECT * FROM {CATALOG}.{DATABASE}.{TABLE_NAME}_iceberg limit 5").show()
-    print(f"Total count of {TABLE_NAME}_Iceberg Table Results:\n")
-    countDf = spark.sql(f"SELECT count(*) FROM {CATALOG}.{DATABASE}.{TABLE_NAME}_iceberg")
-    print(f"{countDf.show()}")
-    print(f"Iceberg data load is completed successfully.")
+if cdcDynamicFrame.count() == 0:
+  print(f"No Data changed.")
 else:
-    print(f"No Data changed.")
+  cdcDF = cdcDynamicFrame.toDF()
+  cdcDF = cdcDF.withColumn('m_time', to_timestamp(col('m_time')))
 
+  # Apply De-duplication logic on input data, to pickup latest record based on timestamp and operation
+  # For example, emp_no is unique key
+  IDWindowDF = Window.partitionBy(cdcDF.emp_no).orderBy(cdcDF.m_time).rangeBetween(-sys.maxsize, sys.maxsize)
+
+  # Add new columns to capture first and last OP value and what is the latest timestamp
+  inputDFWithTS = cdcDF.withColumn("max_op_date", max(cdcDF.m_time).over(IDWindowDF))
+
+  # Filter out new records that are inserted, then select latest record from existing records and merge both to get deduplicated output 
+  newInsertedDF = inputDFWithTS.filter("m_time=max_op_date").filter("Op='I'")
+  updatedOrDeletedDF = inputDFWithTS.filter("m_time=max_op_date").filter("Op IN ('U', 'D')")
+  finalInputDF = newInsertedDF.unionAll(updatedOrDeletedDF)
+
+  CURRENT_DATETIME = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+  finalInputDF = finalInputDF.withColumn('last_applied_date', to_timestamp(lit(CURRENT_DATETIME)))
+
+  cdcInsertCount = finalInputDF.filter("Op = 'I'").count()
+  cdcUpdateCount = finalInputDF.filter("Op = 'U'").count()
+  cdcDeleteCount = finalInputDF.filter("Op = 'D'").count()
+  totalCDCCount = finalInputDF.count()
+  print(f"Inserted count:  {cdcInsertCount}")
+  print(f"Updated count:   {cdcUpdateCount}")
+  print(f"Deleted count:   {cdcDeleteCount}")
+  print(f"Total CDC count: {totalCDCCount}")
+
+  # Merge CDC data into Iceberg Table
+  dropColumnList = ['Op', 'schema_name', 'table_name', 'max_op_date']
+
+  table_list = spark.sql(f"SHOW TABLES IN {CATALOG}.{DATABASE};")
+  tablesDF = table_list.select('tableName').rdd.flatMap(lambda x: x).collect()
+  if f"{TABLE_NAME}" not in tablesDF:
+    print(f"Table {TABLE_NAME} doesn't exist in {CATALOG}.{DATABASE}.")
+  else:
+    # DataFrame for the inserted or updated data
+    upsertedDF = finalInputDF.filter("Op != 'D'").drop(*dropColumnList)
+    if upsertedDF.count() > 0:
+      upsertedDF.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
+      print(f"Table {TABLE_NAME} is upserting...")
+      spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
+        USING {TABLE_NAME}_upsert s ON s.{PK} = t.{PK}
+        WHEN MATCHED THEN UPDATE SET *
+        WHEN NOT MATCHED THEN INSERT *
+        """)
+    else:
+      print("No data to insert or update.")
+
+    # DataFrame for the deleted data
+    deletedDF = finalInputDF.filter("Op = 'D'").drop(*dropColumnList)
+    if deletedDF.count() > 0:
+      deletedDF.createOrReplaceTempView(f"{TABLE_NAME}_delete")
+      print(f"Table {TABLE_NAME} is deleting...")
+      spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
+        USING {TABLE_NAME}_delete s ON s.{PK} = t.{PK}
+        WHEN MATCHED THEN DELETE
+        """)
+    else:
+      print("No data to delete.")
+
+    # Read data from Apache Iceberg Table
+    spark.sql(f"SELECT * FROM {CATALOG}.{DATABASE}.{TABLE_NAME} limit 5").show()
+    print(f"Total count of {TABLE_NAME} Table Results:\n")
+    countDF = spark.sql(f"SELECT count(*) FROM {CATALOG}.{DATABASE}.{TABLE_NAME}")
+    print(f"{countDF.show()}")
+    print(f"Iceberg data load is completed successfully.")
+
+job.commit()
 print(f"Glue Job is completed successfully.")
