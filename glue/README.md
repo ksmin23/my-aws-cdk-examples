@@ -119,7 +119,7 @@ command.
    5  D     951    Hannah     Purchasing       NY   71689 2022-07-11 08:48:31.189
    6  I    7339  Jonathan          Sales    Seoul   33806 1972-08-24 22:44:20.000
    7  I    7441  Kristine  Manufacturing    Seoul   87117 1990-08-19 21:13:20.000
-   (.venv) $ ls \*.parquet
+   (.venv) $ ls *.parquet
     cdc-load-20220730173650.parquet
     full-load-20220730173650.parquet
    </pre>
