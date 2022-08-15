@@ -123,9 +123,9 @@ else:
   # Merge CDC data into Iceberg Table
   dropColumnList = ['Op', 'schema_name', 'table_name', 'max_op_date']
 
-  table_list = spark.sql(f"SHOW TABLES IN {CATALOG}.{DATABASE};")
-  tablesDF = table_list.select('tableName').rdd.flatMap(lambda x: x).collect()
-  if f"{TABLE_NAME}" not in tablesDF:
+  tablesDF = spark.sql(f"SHOW TABLES IN {CATALOG}.{DATABASE}")
+  table_list = tablesDF.select('tableName').rdd.flatMap(lambda x: x).collect()
+  if f"{TABLE_NAME}" not in table_list:
     print(f"Table {TABLE_NAME} doesn't exist in {CATALOG}.{DATABASE}.")
   else:
     # DataFrame for the inserted or updated data
