@@ -98,23 +98,23 @@ class GlueJobStack(Stack):
     # As such, the `iam:PassRole` permission needs to be part of the role's policy.
     # More info at: https://docs.aws.amazon.com/glue/latest/ug/notebook-getting-started.html
     #
-    # glue_job_role.add_to_policy(aws_iam.PolicyStatement(**{
-    #   "sid": "AWSGlueJobIAMPassRole",
-    #   "effect": aws_iam.Effect.ALLOW,
-    #   #XXX: The ARN will be formatted as follows:
-    #   # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
-    #   "resources": [self.format_arn(service="iam", resource="role", resource_name=glue_job_role.role_name)],
-    #   "conditions": {
-    #     "StringLike": {
-    #       "iam:PassedToService": [
-    #         "glue.amazonaws.com"
-    #       ]
-    #     }
-    #   },
-    #   "actions": [
-    #     "iam:PassRole"
-    #   ]
-    # }))
+    glue_job_role.add_to_policy(aws_iam.PolicyStatement(**{
+      "sid": "AWSGlueJobIAMPassRole",
+      "effect": aws_iam.Effect.ALLOW,
+      #XXX: The ARN will be formatted as follows:
+      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
+      "resources": [self.format_arn(service="iam", resource="role", resource_name=glue_job_role.role_name)],
+      "conditions": {
+        "StringLike": {
+          "iam:PassedToService": [
+            "glue.amazonaws.com"
+          ]
+        }
+      },
+      "actions": [
+        "iam:PassRole"
+      ]
+    }))
 
     glue_assets_s3_bucket_name = self.node.try_get_context('glue_assets_s3_bucket_name')
     glue_job_script_file_name = self.node.try_get_context('glue_job_script_file_name')
