@@ -31,7 +31,7 @@ class LambdaAsyncInvokeStack(Stack):
     # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
     #   is_default=True,
     #   vpc_name=vpc_name)
-    vpc = aws_ec2.Vpc(self, "FirehoseToS3VPC",
+    vpc = aws_ec2.Vpc(self, "LambdaAsyncInvokeVPC",
       max_azs=2,
       gateway_endpoints={
         "S3": aws_ec2.GatewayVpcEndpointOptions(
