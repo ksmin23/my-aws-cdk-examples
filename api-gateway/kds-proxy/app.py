@@ -188,6 +188,53 @@ class KdsProxyStack(Stack):
         }
       )])
 
+
+    #XXX: PUT /streams/{stream-name}/records
+    # Put records into a stream in Kinesis
+    # https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html#api-gateway-get-and-add-records-to-stream
+    records_resource = one_stream_resource.add_resource("records")
+
+    put_records_request_mapping_templates = '''
+{
+  "StreamName": "$input.params('stream-name')",
+  "Records": [
+    #foreach($elem in $input.path('$.records'))
+      {
+        "Data": "$util.base64Encode($elem.data)",
+        "PartitionKey": "$elem.partition-key"
+      }#if($foreach.hasNext),#end
+    #end
+  ]
+}
+'''
+
+    put_records_options = aws_apigateway.IntegrationOptions(
+      credentials_role=apigw_kds_role,
+      integration_responses=[
+        aws_apigateway.IntegrationResponse(
+          status_code="200"
+        )
+      ],
+      request_templates={
+        'application/json': put_records_request_mapping_templates
+      },
+      passthrough_behavior=aws_apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES
+    )
+
+    put_records_integration = aws_apigateway.AwsIntegration(
+      service='kinesis',
+      action='PutRecords',
+      integration_http_method='POST',
+      options=put_records_options
+    )
+
+    records_resource.add_method("PUT", put_records_integration,
+      method_responses=[aws_apigateway.MethodResponse(status_code='200',
+        response_models={
+          'application/json': aws_apigateway.Model.EMPTY_MODEL
+        }
+      )])
+
     cdk.CfnOutput(self, '{}_KinesisDataStreamName'.format(self.stack_name), 
       value=source_kinesis_stream.stream_name, export_name='KinesisDataStreamName')
 
