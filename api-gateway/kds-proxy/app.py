@@ -116,7 +116,11 @@ class KdsProxyStack(Stack):
     )
 
     streams_resource.add_method("GET", list_streams_integration,
-      method_responses=[aws_apigateway.MethodResponse(status_code='200')])
+      method_responses=[aws_apigateway.MethodResponse(status_code='200',
+        response_models={
+          'application/json': aws_apigateway.Model.EMPTY_MODEL
+        }
+      )])
 
     #XXX: GET /streams/{stream-name}
     # Describe a stream in Kinesis
