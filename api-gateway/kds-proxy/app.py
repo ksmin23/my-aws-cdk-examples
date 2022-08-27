@@ -36,11 +36,11 @@ class KdsProxyStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    vpc_name = self.node.try_get_context("vpc_name")
-    vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
-      is_default=True,
-      vpc_name=vpc_name)
-
+    # vpc_name = self.node.try_get_context("vpc_name")
+    # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
+    #   is_default=True,
+    #   vpc_name=vpc_name)
+    #
     #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
     # vpc = aws_ec2.Vpc(self, "EmrStudioVPC",
@@ -57,15 +57,29 @@ class KdsProxyStack(Stack):
       stream_mode=aws_kinesis.StreamMode.ON_DEMAND, 
       stream_name=KINESIS_STREAM_NAME.value_as_string)
 
+    apigw_kds_access_role_policy_doc = aws_iam.PolicyDocument()
+    apigw_kds_access_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "kinesis:DescribeStream",
+        "kinesis:PutRecord",
+        "kinesis:PutRecords"]
+    }))
+
     apigw_kds_role = aws_iam.Role(self, "APIGatewayRoleToAccessKinesisDataStreams",
       role_name='APIGatewayRoleToAccessKinesisDataStreams',
       assumed_by=aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
+      inline_policies={
+        'KinesisWriteAccess': apigw_kds_access_role_policy_doc
+      },
       managed_policies=[
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonKinesisReadOnlyAccess'),
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonKinesisFullAccess')
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonKinesisReadOnlyAccess')
       ]
     )
 
+    #XXX: Start to create an API as a Kinesis proxy
+    # https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html#api-gateway-create-api-as-kinesis-proxy
     kds_proxy_api = aws_apigateway.RestApi(self, "KdsProxyAPI",
       rest_api_name="kds-proxy",
       description="An Amazon API Gateway REST API that integrated with an Amazon Kinesis Data Streams.",
@@ -83,12 +97,6 @@ class KdsProxyStack(Stack):
       aws_apigateway.IntegrationResponse(status_code="500", selection_pattern="5\d{2}")
     ]
 
-    apigw_ok_responses = [
-      aws_apigateway.IntegrationResponse(
-        status_code="200"
-      )
-    ]
-
     #XXX: GET /streams
     # List Kinesis streams by using the API Gateway console
     # https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html#api-gateway-list-kinesis-streams
@@ -100,7 +108,8 @@ class KdsProxyStack(Stack):
       integration_responses=[
         aws_apigateway.IntegrationResponse(
           status_code="200"
-        )
+        ),
+        *apigw_error_responses
       ],
       request_templates={
         'application/json': '{}'
@@ -117,10 +126,13 @@ class KdsProxyStack(Stack):
 
     streams_resource.add_method("GET", list_streams_integration,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
-        response_models={
-          'application/json': aws_apigateway.Model.EMPTY_MODEL
-        }
-      )])
+          response_models={
+            'application/json': aws_apigateway.Model.EMPTY_MODEL
+          }
+        ),
+        aws_apigateway.MethodResponse(status_code='400'),
+        aws_apigateway.MethodResponse(status_code='500')
+        ])
 
     #XXX: GET /streams/{stream-name}
     # Describe a stream in Kinesis
@@ -132,7 +144,8 @@ class KdsProxyStack(Stack):
       integration_responses=[
         aws_apigateway.IntegrationResponse(
           status_code="200"
-        )
+        ),
+        *apigw_error_responses
       ],
       request_templates={
         'application/json': json.dumps({
@@ -151,29 +164,37 @@ class KdsProxyStack(Stack):
 
     one_stream_resource.add_method("GET", describe_stream_integration,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
-        response_models={
-          'application/json': aws_apigateway.Model.EMPTY_MODEL
-        }
-      )])
+          response_models={
+            'application/json': aws_apigateway.Model.EMPTY_MODEL
+          }
+        ),
+        aws_apigateway.MethodResponse(status_code='400'),
+        aws_apigateway.MethodResponse(status_code='500')
+        ])
 
     #XXX: PUT /streams/{stream-name}/record
     # Put a record into a stream in Kinesis
     # https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html#api-gateway-get-and-add-records-to-stream
     record_resource = one_stream_resource.add_resource("record")
 
+    put_record_request_mapping_templates = '''
+{
+  "StreamName": "$input.params('stream-name')",
+  "Data": "$util.base64Encode($input.json('$.Data'))",
+  "PartitionKey": "$input.path('$.PartitionKey')"
+}
+'''
+
     put_record_options = aws_apigateway.IntegrationOptions(
       credentials_role=apigw_kds_role,
       integration_responses=[
         aws_apigateway.IntegrationResponse(
           status_code="200"
-        )
+        ),
+        *apigw_error_responses
       ],
       request_templates={
-        'application/json': json.dumps({
-            "StreamName": "$input.params('stream-name')",
-            "Data": "$util.base64Encode($input.json('$.Data'))",
-            "PartitionKey": "$input.path('$.PartitionKey')"
-          }, indent=2)
+        'application/json': put_record_request_mapping_templates
       },
       passthrough_behavior=aws_apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES
     )
@@ -187,10 +208,13 @@ class KdsProxyStack(Stack):
 
     record_resource.add_method("PUT", put_record_integration,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
-        response_models={
-          'application/json': aws_apigateway.Model.EMPTY_MODEL
-        }
-      )])
+          response_models={
+            'application/json': aws_apigateway.Model.EMPTY_MODEL
+          }
+        ),
+        aws_apigateway.MethodResponse(status_code='400'),
+        aws_apigateway.MethodResponse(status_code='500')
+        ])
 
 
     #XXX: PUT /streams/{stream-name}/records
@@ -217,7 +241,8 @@ class KdsProxyStack(Stack):
       integration_responses=[
         aws_apigateway.IntegrationResponse(
           status_code="200"
-        )
+        ),
+        *apigw_error_responses
       ],
       request_templates={
         'application/json': put_records_request_mapping_templates
@@ -234,10 +259,13 @@ class KdsProxyStack(Stack):
 
     records_resource.add_method("PUT", put_records_integration,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
-        response_models={
-          'application/json': aws_apigateway.Model.EMPTY_MODEL
-        }
-      )])
+          response_models={
+            'application/json': aws_apigateway.Model.EMPTY_MODEL
+          }
+        ),
+        aws_apigateway.MethodResponse(status_code='400'),
+        aws_apigateway.MethodResponse(status_code='500')
+        ])
 
     cdk.CfnOutput(self, '{}_KinesisDataStreamName'.format(self.stack_name), 
       value=source_kinesis_stream.stream_name, export_name='KinesisDataStreamName')
