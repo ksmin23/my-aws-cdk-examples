@@ -76,7 +76,7 @@ EmrStudioStack: deploying...
 ...
 
 Outputs:
-EmrStudioStack.EmrStudioDefaultS3Location = s3://datalake-demo-demo-emr-studio-us-east-1-a4hzjvb
+EmrStudioStack.EmrStudioDefaultS3Location = s3://datalake-demo-emr-studio-us-east-1-a4hzjvb
 EmrStudioStack.EmrStudioId = es-KWX8LX799XYDYTL7SAWH75UV
 EmrStudioStack.EmrStudioName = datalake-demo
 EmrStudioStack.EmrStudioUrl = https://es-KWX8LX799XYDYTL7SAWH75UV.emrstudio-prod.us-east-1.amazonaws.com
