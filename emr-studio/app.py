@@ -255,7 +255,7 @@ class EmrStudioStack(Stack):
         service_role=emr_studio_service_role.role_arn,
         subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
         vpc_id=vpc.vpc_id,
-        workspace_security_group_id=sg_emr_studio_workspace.security_group_id,
+        workspace_security_group_id=sg_emr_studio_workspace.security_group_id
     )
 
     cdk.CfnOutput(self, 'EmrStudioName', value=emr_cfn_studio.name)
