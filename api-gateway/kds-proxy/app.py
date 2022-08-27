@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import json
 import random
 import string
 
@@ -88,6 +89,10 @@ class KdsProxyStack(Stack):
       )
     ]
 
+    #XXX: GET /streams
+    # List Kinesis streams by using the API Gateway console
+    # https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html#api-gateway-list-kinesis-streams
+
     streams_resource = kds_proxy_api.root.add_resource("streams")
 
     list_streams_options = aws_apigateway.IntegrationOptions(
@@ -112,6 +117,40 @@ class KdsProxyStack(Stack):
 
     streams_resource.add_method("GET", list_streams_integration,
       method_responses=[aws_apigateway.MethodResponse(status_code='200')])
+
+    #XXX: GET /streams/{stream-name}
+    # Describe a stream in Kinesis
+    # https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html#api-gateway-create-describe-delete-stream
+    one_stream_resource = streams_resource.add_resource("{stream-name}")
+
+    describe_stream_options = aws_apigateway.IntegrationOptions(
+      credentials_role=apigw_kds_role,
+      integration_responses=[
+        aws_apigateway.IntegrationResponse(
+          status_code="200"
+        )
+      ],
+      request_templates={
+        'application/json': json.dumps({
+            "StreamName": "$input.params('stream-name')"
+          }, indent=2)
+      },
+      passthrough_behavior=aws_apigateway.PassthroughBehavior.WHEN_NO_TEMPLATES
+    )
+
+    describe_stream_integration = aws_apigateway.AwsIntegration(
+      service='kinesis',
+      action='DescribeStream',
+      integration_http_method='POST',
+      options=describe_stream_options
+    )
+
+    one_stream_resource.add_method("GET", describe_stream_integration,
+      method_responses=[aws_apigateway.MethodResponse(status_code='200',
+        response_models={
+          'application/json': aws_apigateway.Model.EMPTY_MODEL
+        }
+      )])
 
     cdk.CfnOutput(self, '{}_KinesisDataStreamName'.format(self.stack_name), 
       value=source_kinesis_stream.stream_name, export_name='KinesisDataStreamName')
