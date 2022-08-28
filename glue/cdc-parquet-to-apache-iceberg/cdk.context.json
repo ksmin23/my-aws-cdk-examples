@@ -1,0 +1,17 @@
+{
+  "vpc_name": "default",
+  "glue_assets_s3_bucket_name": "aws-glue-assets-1234567812-us-east-1",
+  "glue_job_script_file_name": "employee-details-cdc-etl.py",
+  "glue_job_name": "employee-details-cdc-etl",
+  "glue_job_input_arguments": {
+    "--raw_s3_path": "s3://aws-glue-input-parquet-atq4q5u/full-load/",
+    "--iceberg_s3_path": "s3://aws-glue-output-iceberg-atq4q5u",
+    "--catalog": "job_catalog",
+    "--database": "human_resources",
+    "--table_name": "employee_details_iceberg",
+    "--partition_key": "department",
+    "--primary_key": "emp_no",
+    "--lock_table_name": "employee_details_lock"
+  },
+  "glue_connections_name": "iceberg-connection"
+}

@@ -84,12 +84,8 @@ Enjoy!
 
 ## Example
 
-1. Start the DMS Replication task by replacing the ARN in below command.
-   <pre>
-   (.venv) $ aws dms start-replication-task --replication-task-arn <i>dms-task-arn</i>  --start-replication-task-type start-replication
-   </pre>
-2. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format` parameter to `ROW` in the parameter group.
-3. Connect to the Aurora cluster writer node.
+1. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format` parameter to `ROW` in the parameter group.
+2. Connect to the Aurora cluster writer node.
    <pre>
    $ mysql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
     Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -124,8 +120,12 @@ Enjoy!
    mysql> create database testdb;
    </pre>
 6. Exit from the SQL prompt and open the command-line terminal.
-7. At the command-line prompt run the below command to create the sample table named in `testdb` database.
-8. Generate test data.
+7. Start the DMS Replication task by replacing the ARN in below command.
+   <pre>
+   (.venv) $ aws dms start-replication-task --replication-task-arn <i>dms-task-arn</i>  --start-replication-task-type start-replication
+   </pre>
+8. At the command-line prompt run the below command to create the sample table named in `testdb` database.
+9. Generate test data.
    <pre>
    (.venv) $ python tests/gen_fake_mysql_data.py \
                     --database <i>your-database-name</i> \
@@ -135,7 +135,7 @@ Enjoy!
                     --host <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com \
                     --max-count 200
    </pre>
-9.  Check s3 and you will see data in the s3 location such as:
+10. Check s3 and you will see data in the s3 location such as:
     <pre>
     s3://<i>target-s3-bucket</i>/<i>target-s3-prefix</i>/<i>your-database-name</i>/<i>your-table-name</i>/
     </pre>

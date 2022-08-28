@@ -139,7 +139,7 @@ In order to test the flow we have to:
      --user-pool-id <i>your-user-pool-id</i> \
      --username "<i>user-email-id@domain.com</i>"
    </pre>
-   At this point if you look at your cognito user pool, you would see that the user is confirmed and ready to log in:
+   At this point if you look at your [cognito user pool](https://console.aws.amazon.com/cognito/home), you would see that the user is confirmed and ready to log in:
    ![amazon-cognito-user-pool-users](./resources/amazon-cognito-user-pool-users.png)
 
    Note: You can find `UserPoolId` with the following command:
@@ -219,3 +219,5 @@ Enjoy!
  * [Using Amazon API Gateway as a proxy for DynamoDB](https://aws.amazon.com/blogs/compute/using-amazon-api-gateway-as-a-proxy-for-dynamodb/)
  * [Amazon API Gateway REST API to DynamoDB](https://serverlessland.com/patterns/apigw-dynamodb)
  * [Amazon API Gateway mapping template and access logging variable reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html)
+ * [Curl Cookbook](https://catonmat.net/cookbooks/curl)
+

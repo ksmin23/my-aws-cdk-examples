@@ -129,6 +129,26 @@ Enjoy!
     postgres=>
     </pre>
 
+# PostgreSQL cheat sheet for MySQL users
+
+### General hints on PostgreSQL
+- `\?` opens the command overview
+- `\d` lists things: `\du` lists users, `\dt` lists tables etc
+
+### Command comparison
+
+| MySQL command | PostgreSQL equivalent |
+|---------------|-----------------------|
+| mysql -u $USERNAME -p | psql -u postgres |
+| SHOW DATABASES | \l[ist1] |
+| USE some_database | \c some_database |
+| SHOW TABLES | \dt |
+| DESCRIBE some_table | \d+ some_table |
+| SHOW INDEX FROM some_table | \di |
+| CREATE USER username IDENTIFIED BY 'password' | CREATE ROLE username WITH createdb LOGIN [PASSWORD 'password']; |
+| GRANT ALL PRIVILEGES ON database.\* TO username@localhost | GRANT ALL PRIVILEGES ON DATABASE database TO username; |
+| SELECT * FROM table LIMIT 10\G; | \x on |
+
 # References
 
  * [PostgreSQL Cheat Sheet](https://postgrescheatsheet.com/#/connections)

@@ -136,3 +136,5 @@ Enjoy!
  * [Add a Cognito Authorizer to API Gateway V2 in AWS CDK](https://bobbyhadz.com/blog/aws-cdk-api-authorizer)
  * [Amazon APIGateway backed by Lambda and protected by Cognito User Pools](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/cognito-api-lambda)
  * [How do I set up an Amazon Cognito user pool as an authorizer on an API Gateway REST API?](https://aws.amazon.com/premiumsupport/knowledge-center/api-gateway-cognito-user-pool-authorizer/)
+ * [Curl Cookbook](https://catonmat.net/cookbooks/curl)
+

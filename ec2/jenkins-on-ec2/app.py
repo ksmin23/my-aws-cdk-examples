@@ -60,6 +60,8 @@ class JenkinsOnEC2Stack(Stack):
         kernel=aws_ec2.AmazonLinuxKernel.KERNEL5_X
       ),
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
+      #XXX: Create a jenkins in the private subnets
+      # vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
       security_group=sg_jenkins_host,
       key_name=EC2_KEY_PAIR_NAME.value_as_string
     )
@@ -80,6 +82,7 @@ class JenkinsOnEC2Stack(Stack):
     user_data_asset.grant_read(jenkins_host.role)
 
     cdk.CfnOutput(self, 'JenkinsHostId', value=jenkins_host.instance_id, export_name='JenkinsHostId')
+    #XXX: comments out the follwing line if you create a jenkins in the private subnets
     cdk.CfnOutput(self, 'JenkinsHostPublicDNSName', value=jenkins_host.instance_public_dns_name, export_name='JenkinsHostPublicDNSName')
 
 

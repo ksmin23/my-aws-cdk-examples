@@ -1,0 +1,4 @@
+{
+  "vpc_name": "default",
+  "s3_bucket_lambda_layer_lib": "your-s3-bucket-lambda-layer-lib"
+}
