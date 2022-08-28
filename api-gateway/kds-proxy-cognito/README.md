@@ -106,7 +106,8 @@ Hit our Api to test the Authorizer; use the token to invoke our API endpoint whi
 
   <pre>
   $ MY_ID_TOKEN=$(aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME="<i>user-email-id@domain.com</i>",PASSWORD="<i>user-password</i>" --client-id <i>your-user-pool-client-id</i> | jq -r '.AuthenticationResult.IdToken')
-  $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams --header "Authorization: ${MY_ID_TOKEN}"
+  $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams \
+         --header "Authorization: ${MY_ID_TOKEN}"
   </pre>
 
   The response is:
@@ -134,7 +135,8 @@ Hit our Api to test the Authorizer; use the token to invoke our API endpoint whi
 
   <pre>
   $ MY_ID_TOKEN=$(aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME="<i>user-email-id@domain.com</i>",PASSWORD="<i>user-password</i>" --client-id <i>your-user-pool-client-id</i> | jq -r '.AuthenticationResult.IdToken')
-  $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams/PUT-Firehose-aEhWz  --header "Authorization: ${MY_ID_TOKEN}"
+  $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams/PUT-Firehose-aEhWz \
+         --header "Authorization: ${MY_ID_TOKEN}"
   </pre>
 
   The response is:
@@ -178,7 +180,7 @@ Hit our Api to test the Authorizer; use the token to invoke our API endpoint whi
   <pre>
   $ MY_ID_TOKEN=$(aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME="<i>user-email-id@domain.com</i>",PASSWORD="<i>user-password</i>" --client-id <i>your-user-pool-client-id</i> | jq -r '.AuthenticationResult.IdToken')
   $ curl -X PUT https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams/PUT-Firehose-aEhWz/record \
-        --header "Authorization: ${MY_ID_TOKEN}" \
+         --header "Authorization: ${MY_ID_TOKEN}" \
          -H 'Content-Type: application/json' \
          -d '{ "Data": "some data", "PartitionKey": "some key" }'
   </pre>
