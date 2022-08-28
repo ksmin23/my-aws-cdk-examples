@@ -184,6 +184,7 @@ Enjoy!
  * [Tutorial: Create a REST API as an Amazon Kinesis proxy in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html)
  * [Serverless Patterns Collection](https://serverlessland.com/patterns)
  * [aws-samples/serverless-patterns](https://github.com/aws-samples/serverless-patterns)
+ * [Curl Cookbook](https://catonmat.net/cookbooks/curl)
 
 ## Trouble Shooting
 
