@@ -59,6 +59,116 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+## Examples
+
+- `GET /streams` method to invoke `ListStreams` in Kinesis
+
+  <pre>
+  $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams
+  </pre>
+
+  <pre>
+  {
+    "HasMoreStreams": false,
+    "StreamNames": [
+      "PUT-Firehose-aEhWz"
+    ],
+    "StreamSummaries": [
+      {
+        "StreamARN": "arn:aws:kinesis:us-east-1:123456789012:stream/PUT-Firehose-aEhWz",
+        "StreamCreationTimestamp": 1661612556,
+        "StreamModeDetails": {
+          "StreamMode": "ON_DEMAND"
+        },
+        "StreamName": "PUT-Firehose-aEhWz",
+        "StreamStatus": "ACTIVE"
+      }
+    ]
+  }
+  </pre>
+
+- `GET /streams/{stream-name}` method to invoke `DescribeStream` in Kinesis
+
+  <pre>
+  $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams/PUT-Firehose-aEhWz
+  </pre>
+
+  <pre>
+  {
+    "StreamDescription": {
+      "EncryptionType": "KMS",
+      "EnhancedMonitoring": [
+        {
+          "ShardLevelMetrics": []
+        }
+      ],
+      "HasMoreShards": false,
+      "KeyId": "alias/aws/kinesis",
+      "RetentionPeriodHours": 24,
+      "Shards": [
+        {
+          "HashKeyRange": {
+            "EndingHashKey": "340282366920938463463374607431768211455",
+            "StartingHashKey": "0"
+          },
+          "SequenceNumberRange": {
+            "StartingSequenceNumber": "49632740478318570836537313591685157894516301790768529410"
+          },
+          "ShardId": "shardId-000000000000"
+        }
+      ],
+      "StreamARN": "arn:aws:kinesis:us-east-1:123456789012:stream/PUT-Firehose-aEhWz",
+      "StreamCreationTimestamp": 1661612556,
+      "StreamModeDetails": {
+        "StreamMode": "ON_DEMAND"
+      },
+      "StreamName": "PUT-Firehose-aEhWz",
+      "StreamStatus": "ACTIVE"
+    }
+  }
+  </pre>
+
+- `PUT /streams/{stream-name}/record` method to invoke `PutRecord` in Kinesis
+
+  <pre>
+  $ curl -X PUT https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams/PUT-Firehose-aEhWz/record \
+         -H 'Content-Type: application/json' \
+         -d '{ "Data": "some data", "PartitionKey": "some key" }'
+  </pre>
+
+  <pre>
+  {
+    "EncryptionType": "KMS",
+    "SequenceNumber": "49632757272385358984391127998703515973414866647712268290",
+    "ShardId": "shardId-000000000000"
+  }
+  </pre>
+
+- `PUT /streams/{stream-name}/records` method to invoke `PutRecords` in Kinesis
+
+  <pre>
+  $ curl -X PUT https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams/PUT-Firehose-aEhWz/records \
+         -H 'Content-Type: application/json' \
+         -d '{"records":[{"data":"some data","partition-key":"some key"},{"data":"some other data","partition-key":"some key"}]}'
+  </pre>
+
+  <pre>
+  {
+    "EncryptionType": "KMS",
+    "FailedRecordCount": 0,
+    "Records": [
+      {
+        "SequenceNumber": "49632757272385358984391128069035193381135165118304223234",
+        "ShardId": "shardId-000000000000"
+      },
+      {
+        "SequenceNumber": "49632757272385358984391128069037611232774394376653635586",
+        "ShardId": "shardId-000000000000"
+      }
+    ]
+  }
+  </pre>
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -70,5 +180,17 @@ command.
 Enjoy!
 
 ## References
+
  * [Tutorial: Create a REST API as an Amazon Kinesis proxy in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html)
+ * [Serverless Patterns Collection](https://serverlessland.com/patterns)
+ * [aws-samples/serverless-patterns](https://github.com/aws-samples/serverless-patterns)
+
+## Trouble Shooting
+
+  <pre>
+  { "message": "Missing Authentication Token" }
+  </pre>
+
+ * [How do I troubleshoot API Gateway REST API endpoint 403 "Missing Authentication Token" errors?](https://aws.amazon.com/premiumsupport/knowledge-center/api-gateway-authentication-token-errors/)
+ * [API Gateway permissions model for invoking an API](https://docs.aws.amazon.com/apigateway/latest/developerguide/permissions.html#api-gateway-control-access-iam-permissions-model-for-calling-api)
 

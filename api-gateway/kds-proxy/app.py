@@ -125,6 +125,8 @@ class KdsProxyStack(Stack):
     )
 
     streams_resource.add_method("GET", list_streams_integration,
+      # Default `authorization_type`: - open access unless `authorizer` is specified
+      authorization_type=aws_apigateway.AuthorizationType.NONE,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
           response_models={
             'application/json': aws_apigateway.Model.EMPTY_MODEL
@@ -163,6 +165,8 @@ class KdsProxyStack(Stack):
     )
 
     one_stream_resource.add_method("GET", describe_stream_integration,
+      # Default `authorization_type`: - open access unless `authorizer` is specified
+      authorization_type=aws_apigateway.AuthorizationType.NONE,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
           response_models={
             'application/json': aws_apigateway.Model.EMPTY_MODEL
@@ -207,6 +211,8 @@ class KdsProxyStack(Stack):
     )
 
     record_resource.add_method("PUT", put_record_integration,
+      # Default `authorization_type`: - open access unless `authorizer` is specified
+      authorization_type=aws_apigateway.AuthorizationType.NONE,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
           response_models={
             'application/json': aws_apigateway.Model.EMPTY_MODEL
@@ -258,6 +264,8 @@ class KdsProxyStack(Stack):
     )
 
     records_resource.add_method("PUT", put_records_integration,
+      # Default `authorization_type`: - open access unless `authorizer` is specified
+      authorization_type=aws_apigateway.AuthorizationType.NONE,
       method_responses=[aws_apigateway.MethodResponse(status_code='200',
           response_models={
             'application/json': aws_apigateway.Model.EMPTY_MODEL
