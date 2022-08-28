@@ -1,6 +1,8 @@
 
 # Create a REST API as an Amazon Kinesis proxy in API Gateway
 
+![apigw-kds-proxy-arch](./apigw-kds-proxy-arch.svg)
+
 This is an Amazon Kinesis proxy project using API Gateway for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
