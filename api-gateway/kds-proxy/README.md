@@ -67,6 +67,7 @@ command.
   $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams
   </pre>
 
+  The response is:
   <pre>
   {
     "HasMoreStreams": false,
@@ -93,6 +94,7 @@ command.
   $ curl -X GET https://<i>your-api-gateway-id</i>.execute-api.us-east-1.amazonaws.com/v1/streams/PUT-Firehose-aEhWz
   </pre>
 
+  The response is:
   <pre>
   {
     "StreamDescription": {
@@ -136,6 +138,7 @@ command.
          -d '{ "Data": "some data", "PartitionKey": "some key" }'
   </pre>
 
+  The response is:
   <pre>
   {
     "EncryptionType": "KMS",
@@ -152,6 +155,7 @@ command.
          -d '{"records":[{"data":"some data","partition-key":"some key"},{"data":"some other data","partition-key":"some key"}]}'
   </pre>
 
+  The response is:
   <pre>
   {
     "EncryptionType": "KMS",
