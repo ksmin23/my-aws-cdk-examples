@@ -139,7 +139,7 @@ In order to test the flow we have to:
      --user-pool-id <i>your-user-pool-id</i> \
      --username "<i>user-email-id@domain.com</i>"
    </pre>
-   At this point if you look at your cognito user pool, you would see that the user is confirmed and ready to log in:
+   At this point if you look at your [cognito user pool](https://console.aws.amazon.com/cognito/home), you would see that the user is confirmed and ready to log in:
    ![amazon-cognito-user-pool-users](./resources/amazon-cognito-user-pool-users.png)
 
    Note: You can find `UserPoolId` with the following command:
