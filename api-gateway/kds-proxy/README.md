@@ -187,6 +187,9 @@ Enjoy!
 
  * [Tutorial: Create a REST API as an Amazon Kinesis proxy in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html)
  * [Streaming Data Solution for Amazon Kinesis](https://aws.amazon.com/ko/solutions/implementations/aws-streaming-data-solution-for-amazon-kinesis/)
+   <div>
+     <img src="https://d1.awsstatic.com/Solutions/Solutions%20Category%20Template%20Draft/Solution%20Architecture%20Diagrams/aws-streaming-data-using-api-gateway-architecture.1b9d28f061fe84385cb871ec58ccad18c7265d22.png", alt with="385" height="204">
+   </div>
  * [Serverless Patterns Collection](https://serverlessland.com/patterns)
  * [aws-samples/serverless-patterns](https://github.com/aws-samples/serverless-patterns)
  * [Curl Cookbook](https://catonmat.net/cookbooks/curl)
