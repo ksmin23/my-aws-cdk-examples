@@ -70,7 +70,12 @@ class KDS2KDFStack(Stack):
       default='error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}'
     )
 
-    source_kinesis_stream = aws_kinesis.Stream(self, "SourceKinesisStreams", stream_name=KINESIS_STREAM_NAME.value_as_string)
+    source_kinesis_stream = aws_kinesis.Stream(self, "SourceKinesisStreams",
+      # specify the ON-DEMAND capacity mode.
+      # default: StreamMode.PROVISIONED
+      stream_mode=aws_kinesis.StreamMode.ON_DEMAND,
+      stream_name=KINESIS_STREAM_NAME.value_as_string)
+
     firehose_role_policy_doc = aws_iam.PolicyDocument()
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
