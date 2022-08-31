@@ -68,3 +68,34 @@ command.
 - `cdk docs` open CDK documentation
 
 Enjoy!
+
+## References
+
++ [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-path)
+    + How to create a python package to register with AWS Lambda layer (e.g., **elasticsearch**, **pytz**) on **Amazon Linux**
+
+      :warning: **You should create the python package on Amazon Linux, otherwise create it using a simulated Lambda environment with Docker.**
+      <pre>
+      $ python3 -m venv es-lib
+      $ cd es-lib
+      $ source bin/activate
+      (es-lib) $ mkdir -p python_modules
+      (es-lib) $ pip install 'elasticsearch>=7.0.0,< 7.11' pytz==2022.1 -t python_modules
+      (es-lib) $ mv python_modules python
+      (es-lib) $ zip -r es-lib.zip python/
+      (es-lib) $ aws s3 mb s3://my-bucket-for-lambda-layer-packages
+      (es-lib) $ aws s3 cp es-lib.zip s3://my-bucket-for-lambda-layer-packages/var/
+      (es-lib) $ deactivate
+      </pre>
+    + [How to create a Lambda layer using a simulated Lambda environment with Docker](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
+      <pre>
+      $ cat <<EOF > requirements.txt
+      > elasticsearch>=7.0.0,<7.11
+      > pytz==2022.1
+      > EOF
+      $ docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.7" /bin/sh -c "pip install -r requirements.txt -t python/lib/python3.7/site-packages/; exit"
+      $ zip -r es-lib.zip python > /dev/null
+      $ aws s3 mb s3://my-bucket-for-lambda-layer-packages
+      $ aws s3 cp es-lib.zip s3://my-bucket-for-lambda-layer-packages/var/
+      </pre>
+
