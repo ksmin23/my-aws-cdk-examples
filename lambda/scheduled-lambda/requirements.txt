@@ -1,0 +1,4 @@
+aws-cdk-lib==2.39.1
+constructs>=10.0.0,<11.0.0
+aws_lambda_powertools~=1.21.1
+cdk-lambda-powertools-python-layer~=2.1.0
