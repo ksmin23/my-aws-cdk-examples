@@ -9,6 +9,7 @@ import aws_cdk as cdk
 from aws_cdk import (
   Stack,
   aws_ec2,
+  aws_logs,
   aws_opensearchservice,
   aws_secretsmanager
 )
@@ -47,20 +48,20 @@ class OpensearchStack(Stack):
     # check https://github.com/aws/aws-cdk/issues/12078
     # This error occurs when ZoneAwarenessEnabled in aws_opensearch.Domain(..) is set `true`
     #
-    # vpc_name = self.node.try_get_context('vpc_name')
-    # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-    #   is_default=True,
-    #   vpc_name=vpc_name
-    # )
-
-    vpc = aws_ec2.Vpc(self, "OpenSearchVPC",
-      max_azs=3,
-      gateway_endpoints={
-        "S3": aws_ec2.GatewayVpcEndpointOptions(
-          service=aws_ec2.GatewayVpcEndpointAwsService.S3
-        )
-      }
+    vpc_name = self.node.try_get_context('vpc_name')
+    vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
+      is_default=True,
+      vpc_name=vpc_name
     )
+
+    # vpc = aws_ec2.Vpc(self, "OpenSearchVPC",
+    #   max_azs=3,
+    #   gateway_endpoints={
+    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
+    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
+    #     )
+    #   }
+    # )
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceSize.html#aws_cdk.aws_ec2.InstanceSize
@@ -122,52 +123,155 @@ class OpensearchStack(Stack):
 
     #XXX: aws cdk elastsearch example - https://github.com/aws/aws-cdk/issues/2873
     # You should camelCase the property names instead of PascalCase
-    opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
-      domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
-      version=aws_opensearchservice.EngineVersion.OPENSEARCH_1_0,
-      capacity={
-        "master_nodes": 3,
-        "master_node_instance_type": "r6g.large.search",
-        "data_nodes": 3,
-        "data_node_instance_type": "r6g.large.search"
-      },
-      ebs={
-        "volume_size": 10,
-        "volume_type": aws_ec2.EbsDeviceVolumeType.GP2
-      },
-      #XXX: az_count must be equal to vpc subnets count.
-      zone_awareness={
-        "availability_zone_count": 3
-      },
-      logging={
-        "slow_search_log_enabled": True,
-        "app_log_enabled": True,
-        "slow_index_log_enabled": True
-      },
-      fine_grained_access_control=aws_opensearchservice.AdvancedSecurityOptions(
-        master_user_name=master_user_secret.secret_value_from_json("username").to_string(),
-        master_user_password=master_user_secret.secret_value_from_json("password")
-      ),
-      # Enforce HTTPS is required when fine-grained access control is enabled.
-      enforce_https=True,
-      # Node-to-node encryption is required when fine-grained access control is enabled
-      node_to_node_encryption=True,
-      # Encryption-at-rest is required when fine-grained access control is enabled.
-      encryption_at_rest={
-        "enabled": True
-      },
-      use_unsigned_basic_auth=True,
-      security_groups=[sg_opensearch_cluster],
-      automated_snapshot_start_hour=17, # 2 AM (GTM+9)
-      vpc=vpc,
-      vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT)],
-      removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
+    # opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
+    #   domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
+    #   version=aws_opensearchservice.EngineVersion.OPENSEARCH_1_0,
+    #   capacity={
+    #     "master_nodes": 3,
+    #     "master_node_instance_type": "r6g.large.search",
+    #     "data_nodes": 3,
+    #     "data_node_instance_type": "r6g.large.search"
+    #   },
+    #   ebs={
+    #     "volume_size": 10,
+    #     "volume_type": aws_ec2.EbsDeviceVolumeType.GP2
+    #   },
+    #   #XXX: az_count must be equal to vpc subnets count.
+    #   zone_awareness={
+    #     "availability_zone_count": 3
+    #   },
+    #   logging={
+    #     "slow_search_log_enabled": True,
+    #     "app_log_enabled": True,
+    #     "slow_index_log_enabled": True
+    #   },
+    #   fine_grained_access_control=aws_opensearchservice.AdvancedSecurityOptions(
+    #     master_user_name=master_user_secret.secret_value_from_json("username").to_string(),
+    #     master_user_password=master_user_secret.secret_value_from_json("password")
+    #   ),
+    #   # Enforce HTTPS is required when fine-grained access control is enabled.
+    #   enforce_https=True,
+    #   # Node-to-node encryption is required when fine-grained access control is enabled
+    #   node_to_node_encryption=True,
+    #   # Encryption-at-rest is required when fine-grained access control is enabled.
+    #   encryption_at_rest={
+    #     "enabled": True
+    #   },
+    #   use_unsigned_basic_auth=True,
+    #   security_groups=[sg_opensearch_cluster],
+    #   automated_snapshot_start_hour=17, # 2 AM (GTM+9)
+    #   vpc=vpc,
+    #   vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT)],
+    #   removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
+    # )
+    # cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
+
+    ops_application_log_group = aws_logs.LogGroup(self, "OpenSearchAppLogs",
+      log_group_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-application-logs",
+      retention=aws_logs.RetentionDays.THREE_DAYS,
+      removal_policy=cdk.RemovalPolicy.DESTROY
     )
-    cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
+
+    ops_slow_index_log_group = aws_logs.LogGroup(self, "OpenSearchSlowIndexLogs",
+      log_group_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-index-slow-logs",
+      retention=aws_logs.RetentionDays.THREE_DAYS,
+      removal_policy=cdk.RemovalPolicy.DESTROY
+    )
+
+    ops_slow_search_log_group = aws_logs.LogGroup(self, "OpenSearchSlowSearchLogs",
+      log_group_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-slow-logs",
+      retention=aws_logs.RetentionDays.THREE_DAYS,
+      removal_policy=cdk.RemovalPolicy.DESTROY
+    )
+
+    #XXX: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html
+    opensearch_cfn_domain = aws_opensearchservice.CfnDomain(self, "OpenSearchCfnDomain",
+      access_policies={
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "*"
+            },
+            "Action": [
+              "es:Describe*",
+              "es:List*",
+              "es:Get*",
+              "es:ESHttp*"
+            ],
+            "Resource": self.format_arn(service="es", resource="domain", resource_name=f"{OPENSEARCH_DOMAIN_NAME.value_as_string}/*")
+          }
+        ]
+      },
+      advanced_security_options=aws_opensearchservice.CfnDomain.AdvancedSecurityOptionsInputProperty(
+        enabled=True,
+        internal_user_database_enabled=True,
+        master_user_options=aws_opensearchservice.CfnDomain.MasterUserOptionsProperty(
+          master_user_name=master_user_secret.secret_value_from_json("username").to_string(),
+          master_user_password=master_user_secret.secret_value_from_json("password").to_string()
+        )
+      ),
+      cluster_config=aws_opensearchservice.CfnDomain.ClusterConfigProperty(
+        dedicated_master_count=3,
+        dedicated_master_enabled=True,
+        dedicated_master_type="r6g.large.search",
+        instance_count=3,
+        instance_type="r6g.large.search",
+        zone_awareness_config=aws_opensearchservice.CfnDomain.ZoneAwarenessConfigProperty(
+          availability_zone_count=3
+        ),
+        zone_awareness_enabled=True
+      ),
+      domain_endpoint_options=aws_opensearchservice.CfnDomain.DomainEndpointOptionsProperty(
+        enforce_https=True,
+        # optional
+        tls_security_policy='Policy-Min-TLS-1-0-2019-07'
+      ),
+      domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
+      ebs_options=aws_opensearchservice.CfnDomain.EBSOptionsProperty(
+        volume_size=10,
+        volume_type="gp2"
+      ),
+      encryption_at_rest_options=aws_opensearchservice.CfnDomain.EncryptionAtRestOptionsProperty(
+        enabled=True
+      ),
+      engine_version="OpenSearch_1.0",
+      log_publishing_options={
+        "ES_APPLICATION_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
+          cloud_watch_logs_log_group_arn=ops_application_log_group.log_group_arn,
+          enabled=True
+        ),
+        "SEARCH_SLOW_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
+          cloud_watch_logs_log_group_arn=ops_slow_search_log_group.log_group_arn,
+          enabled=True
+        ),
+        "INDEX_SLOW_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
+          cloud_watch_logs_log_group_arn=ops_slow_index_log_group.log_group_arn,
+          enabled=True
+        )
+      },
+      node_to_node_encryption_options=aws_opensearchservice.CfnDomain.NodeToNodeEncryptionOptionsProperty(
+        enabled=True
+      ),
+      snapshot_options=aws_opensearchservice.CfnDomain.SnapshotOptionsProperty(
+        automated_snapshot_start_hour=17
+      ),
+      tags=[cdk.CfnTag(
+        key='Name',
+        value=f'{OPENSEARCH_DOMAIN_NAME.value_as_string}'
+      )],
+      vpc_options=aws_opensearchservice.CfnDomain.VPCOptionsProperty(
+        security_group_ids=[sg_opensearch_cluster.security_group_id],
+        subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
+      )
+    )
+    opensearch_cfn_domain.apply_removal_policy(cdk.RemovalPolicy.DESTROY) # default: cdk.RemovalPolicy.RETAIN
 
     cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id, export_name='BastionHostId')
-    cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_domain.domain_endpoint, export_name='OpenSearchDomainEndpoint')
-    cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"{opensearch_domain.domain_endpoint}/_dashboards/", export_name='OpenSearchDashboardsURL')
+    # cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_domain.domain_endpoint, export_name='OpenSearchDomainEndpoint')
+    # cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"{opensearch_domain.domain_endpoint}/_dashboards/", export_name='OpenSearchDashboardsURL')
+    cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_cfn_domain.attr_domain_endpoint, export_name='OpenSearchDomainEndpoint')
+    cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"{opensearch_cfn_domain.attr_domain_endpoint}/_dashboards/", export_name='OpenSearchDashboardsURL')
     cdk.CfnOutput(self, 'MasterUserSecretId', value=master_user_secret.secret_name, export_name='MasterUserSecretId')
 
 
