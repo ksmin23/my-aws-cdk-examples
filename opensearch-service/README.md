@@ -148,3 +148,6 @@ Enjoy!
 - [OpenSearch Popular APIs](https://opensearch.org/docs/latest/opensearch/popular-api/)
 - [Amazon OpenSearch Plugins by engine version](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html)
 
+#### Issues
+- [(aws-elasticsearch): Vpc.fromLookup returns dummy VPC if the L2 elasticsearch.Domain availabilityZoneCount is set to 3](https://github.com/aws/aws-cdk/issues/12078)
+

@@ -25,8 +25,8 @@ class OpensearchStack(Stack):
     OPENSEARCH_DOMAIN_NAME = cdk.CfnParameter(self, 'OpenSearchDomainName',
       type='String',
       description='Amazon OpenSearch Service domain name',
-      default='opensearch-{}'.format(''.join(random.sample((string.ascii_letters), k=5))),
-      allowed_pattern='[a-z]+[A-Za-z0-9\-]+'
+      default='opensearch-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5))),
+      allowed_pattern='[a-z]+[a-z0-9\-]+'
     )
 
     EC2_KEY_PAIR_NAME = cdk.CfnParameter(self, 'EC2KeyPairName',
@@ -40,6 +40,12 @@ class OpensearchStack(Stack):
     # then pass -c vpc_name=your-existing-vpc to cdk command
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
+    #
+    # if you encounter an error such as:
+    #  jsii.errors.JavaScriptError:
+    #    Error: When providing vpc options you need to provide a subnet for each AZ you are using at new Domain
+    # check https://github.com/aws/aws-cdk/issues/12078
+    # This error occurs when ZoneAwarenessEnabled in aws_opensearch.Domain(..) is set `true`
     #
     # vpc_name = self.node.try_get_context('vpc_name')
     # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
