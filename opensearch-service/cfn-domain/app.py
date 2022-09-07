@@ -121,53 +121,6 @@ class OpensearchStack(Stack):
       )
     )
 
-    #XXX: aws cdk elastsearch example - https://github.com/aws/aws-cdk/issues/2873
-    # You should camelCase the property names instead of PascalCase
-    # opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
-    #   domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
-    #   #XXX: Supported versions of OpenSearch and Elasticsearch
-    #   #https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
-    #   version=aws_opensearchservice.EngineVersion.OPENSEARCH_1_0,
-    #   capacity={
-    #     "master_nodes": 3,
-    #     "master_node_instance_type": "r6g.large.search",
-    #     "data_nodes": 3,
-    #     "data_node_instance_type": "r6g.large.search"
-    #   },
-    #   ebs={
-    #     "volume_size": 10,
-    #     "volume_type": aws_ec2.EbsDeviceVolumeType.GP2
-    #   },
-    #   #XXX: az_count must be equal to vpc subnets count.
-    #   zone_awareness={
-    #     "availability_zone_count": 3
-    #   },
-    #   logging={
-    #     "slow_search_log_enabled": True,
-    #     "app_log_enabled": True,
-    #     "slow_index_log_enabled": True
-    #   },
-    #   fine_grained_access_control=aws_opensearchservice.AdvancedSecurityOptions(
-    #     master_user_name=master_user_secret.secret_value_from_json("username").to_string(),
-    #     master_user_password=master_user_secret.secret_value_from_json("password")
-    #   ),
-    #   # Enforce HTTPS is required when fine-grained access control is enabled.
-    #   enforce_https=True,
-    #   # Node-to-node encryption is required when fine-grained access control is enabled
-    #   node_to_node_encryption=True,
-    #   # Encryption-at-rest is required when fine-grained access control is enabled.
-    #   encryption_at_rest={
-    #     "enabled": True
-    #   },
-    #   use_unsigned_basic_auth=True,
-    #   security_groups=[sg_opensearch_cluster],
-    #   automated_snapshot_start_hour=17, # 2 AM (GTM+9)
-    #   vpc=vpc,
-    #   vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT)],
-    #   removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
-    # )
-    # cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
-
     #XXX: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html
     opensearch_cfn_domain = aws_opensearchservice.CfnDomain(self, "OpenSearchCfnDomain",
       access_policies={
@@ -222,7 +175,7 @@ class OpensearchStack(Stack):
       ),
       #XXX: Supported versions of OpenSearch and Elasticsearch
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
-      engine_version="OpenSearch_1.0",
+      engine_version="OpenSearch_1.3",
       node_to_node_encryption_options=aws_opensearchservice.CfnDomain.NodeToNodeEncryptionOptionsProperty(
         enabled=True
       ),
@@ -241,8 +194,6 @@ class OpensearchStack(Stack):
     opensearch_cfn_domain.apply_removal_policy(cdk.RemovalPolicy.DESTROY) # default: cdk.RemovalPolicy.RETAIN
 
     cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id, export_name='BastionHostId')
-    # cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_domain.domain_endpoint, export_name='OpenSearchDomainEndpoint')
-    # cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"{opensearch_domain.domain_endpoint}/_dashboards/", export_name='OpenSearchDashboardsURL')
     cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_cfn_domain.attr_domain_endpoint, export_name='OpenSearchDomainEndpoint')
     cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"{opensearch_cfn_domain.attr_domain_endpoint}/_dashboards/", export_name='OpenSearchDashboardsURL')
     cdk.CfnOutput(self, 'MasterUserSecretId', value=master_user_secret.secret_name, export_name='MasterUserSecretId')

@@ -151,10 +151,10 @@ Enjoy!
 #### Known Issues
 - [(aws-elasticsearch): Vpc.fromLookup returns dummy VPC if the L2 elasticsearch.Domain availabilityZoneCount is set to 3](https://github.com/aws/aws-cdk/issues/12078)
   - **What did you expect to happen?**
-    The lookup should find the VPC and populate the cdk.context.json. The synth should successfully show the resource template with the correct subnets and values.
+    The lookup should find the VPC and populate the `cdk.context.json`. The synth should successfully show the resource template with the correct subnets and values.
   - **What actually happened?**
     An error is thrown, "When providing vpc options you need to provide a subnet for each AZ you are using" due to the VPC lookup silently failing and instead giving dummy data.
-
-  > To workaround this problem for now, you can temporarily remove the `Domain` definition from the application, run `cdk synth`, and then put it back in. This first `synth` will query the actual VPC details and store them in the `cdk.context.json` file, which will be used from now on, so that the dummy VPC will not be used.
-  > (davidhessler@ commented on 29 Dec 2020)
+  - **How to work around this problem**
+    > To work around this problem for now, you can temporarily remove the `Domain` definition from the application, run `cdk synth`, and then put it back in. This first `synth` will query the actual VPC details and store them in the `cdk.context.json` file, which will be used from now on, so that the dummy VPC will not be used.
+    > (davidhessler@ commented on 29 Dec 2020)
 
