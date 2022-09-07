@@ -48,20 +48,20 @@ class OpensearchStack(Stack):
     # check https://github.com/aws/aws-cdk/issues/12078
     # This error occurs when ZoneAwarenessEnabled in aws_opensearch.Domain(..) is set `true`
     #
-    vpc_name = self.node.try_get_context('vpc_name')
-    vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-      is_default=True,
-      vpc_name=vpc_name
-    )
-
-    # vpc = aws_ec2.Vpc(self, "OpenSearchVPC",
-    #   max_azs=3,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
+    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
+    #   is_default=True,
+    #   vpc_name=vpc_name
     # )
+
+    vpc = aws_ec2.Vpc(self, "OpenSearchVPC",
+      max_azs=3,
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceSize.html#aws_cdk.aws_ec2.InstanceSize
@@ -125,6 +125,8 @@ class OpensearchStack(Stack):
     # You should camelCase the property names instead of PascalCase
     # opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
     #   domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
+    #   #XXX: Supported versions of OpenSearch and Elasticsearch
+    #   #https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
     #   version=aws_opensearchservice.EngineVersion.OPENSEARCH_1_0,
     #   capacity={
     #     "master_nodes": 3,
@@ -165,24 +167,6 @@ class OpensearchStack(Stack):
     #   removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
     # )
     # cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
-
-    ops_application_log_group = aws_logs.LogGroup(self, "OpenSearchAppLogs",
-      log_group_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-application-logs",
-      retention=aws_logs.RetentionDays.THREE_DAYS,
-      removal_policy=cdk.RemovalPolicy.DESTROY
-    )
-
-    ops_slow_index_log_group = aws_logs.LogGroup(self, "OpenSearchSlowIndexLogs",
-      log_group_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-index-slow-logs",
-      retention=aws_logs.RetentionDays.THREE_DAYS,
-      removal_policy=cdk.RemovalPolicy.DESTROY
-    )
-
-    ops_slow_search_log_group = aws_logs.LogGroup(self, "OpenSearchSlowSearchLogs",
-      log_group_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-slow-logs",
-      retention=aws_logs.RetentionDays.THREE_DAYS,
-      removal_policy=cdk.RemovalPolicy.DESTROY
-    )
 
     #XXX: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html
     opensearch_cfn_domain = aws_opensearchservice.CfnDomain(self, "OpenSearchCfnDomain",
@@ -236,24 +220,9 @@ class OpensearchStack(Stack):
       encryption_at_rest_options=aws_opensearchservice.CfnDomain.EncryptionAtRestOptionsProperty(
         enabled=True
       ),
+      #XXX: Supported versions of OpenSearch and Elasticsearch
+      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
       engine_version="OpenSearch_1.0",
-      log_publishing_options={
-        "ES_APPLICATION_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
-          cloud_watch_logs_log_group_arn=ops_application_log_group.log_group_arn,
-          #cloud_watch_logs_log_group_arn=self.format_arn(service="logs", resource="log-group", resource_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-application-logs")
-          enabled=True
-        ),
-        "SEARCH_SLOW_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
-          cloud_watch_logs_log_group_arn=ops_slow_search_log_group.log_group_arn,
-          #cloud_watch_logs_log_group_arn=self.format_arn(service="logs", resource="log-group", resource_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-slow-logs")
-          enabled=True
-        ),
-        "INDEX_SLOW_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
-          cloud_watch_logs_log_group_arn=ops_slow_index_log_group.log_group_arn,
-          #cloud_watch_logs_log_group_arn=self.format_arn(service="logs", resource="log-group", resource_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-index-slow-logs")
-          enabled=True
-        )
-      },
       node_to_node_encryption_options=aws_opensearchservice.CfnDomain.NodeToNodeEncryptionOptionsProperty(
         enabled=True
       ),
