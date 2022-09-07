@@ -128,4 +128,15 @@ Enjoy!
 - [Windows SSH / Tunnel for Kibana Instructions - Amazon Elasticsearch Service](https://search-sa-log-solutions.s3-us-east-2.amazonaws.com/logstash/docs/Kibana_Proxy_SSH_Tunneling_Windows.pdf)
 - [Use an SSH Tunnel to access Kibana within an AWS VPC with PuTTy on Windows](https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/createesdashboard.html)
 - [Amazon OpenSearch Plugins by engine version](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html)
+- [Supported versions of OpenSearch and Elasticsearch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version)
+
+#### Known Issues
+- [(aws-elasticsearch): Vpc.fromLookup returns dummy VPC if the L2 elasticsearch.Domain availabilityZoneCount is set to 3](https://github.com/aws/aws-cdk/issues/12078)
+  - **What did you expect to happen?**
+    The lookup should find the VPC and populate the `cdk.context.json`. The synth should successfully show the resource template with the correct subnets and values.
+  - **What actually happened?**
+    An error is thrown, "When providing vpc options you need to provide a subnet for each AZ you are using" due to the VPC lookup silently failing and instead giving dummy data.
+  - **How to work around this problem**
+    > To work around this problem for now, you can temporarily remove the `Domain` definition from the application, run `cdk synth`, and then put it back in. This first `synth` will query the actual VPC details and store them in the `cdk.context.json` file, which will be used from now on, so that the dummy VPC will not be used.
+    > (davidhessler@ commented on 29 Dec 2020)
 
