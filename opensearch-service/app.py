@@ -229,6 +229,7 @@ class OpensearchStack(Stack):
       ),
       domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
       ebs_options=aws_opensearchservice.CfnDomain.EBSOptionsProperty(
+        ebs_enabled=True,
         volume_size=10,
         volume_type="gp2"
       ),
@@ -239,14 +240,17 @@ class OpensearchStack(Stack):
       log_publishing_options={
         "ES_APPLICATION_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
           cloud_watch_logs_log_group_arn=ops_application_log_group.log_group_arn,
+          #cloud_watch_logs_log_group_arn=self.format_arn(service="logs", resource="log-group", resource_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-application-logs")
           enabled=True
         ),
         "SEARCH_SLOW_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
           cloud_watch_logs_log_group_arn=ops_slow_search_log_group.log_group_arn,
+          #cloud_watch_logs_log_group_arn=self.format_arn(service="logs", resource="log-group", resource_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-slow-logs")
           enabled=True
         ),
         "INDEX_SLOW_LOGS": aws_opensearchservice.CfnDomain.LogPublishingOptionProperty(
           cloud_watch_logs_log_group_arn=ops_slow_index_log_group.log_group_arn,
+          #cloud_watch_logs_log_group_arn=self.format_arn(service="logs", resource="log-group", resource_name=f"/aws/opensearch/{OPENSEARCH_DOMAIN_NAME.value_as_string}/opensearch-index-slow-logs")
           enabled=True
         )
       },
