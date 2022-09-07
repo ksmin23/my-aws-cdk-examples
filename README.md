@@ -22,7 +22,8 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [ec2/jenkins-on-ec2](./ec2/jenkins-on-ec2/) | ![jenkins-on-ec2](./ec2/jenkins-on-ec2/jenkins-on-ec2.svg) | jenkins, ec2 |
 | [elasticache/redis](./elasticache/redis/) | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) | redis, redis-cluster |
 | [elasticsearch](./elasticsearch/) | ![amazon-es-arch](./elasticsearch/amazon-es-arch.svg) | elasticsearch |
-| [opensearch](./opensearch-service/) | ![amazon-es-arch](./opensearch-service/amazon-opensearch-arch.svg) | opensearch |
+| [opensearch/cfn-domain](./opensearch-service/cfn-domain) | ![amazon-es-arch](./opensearch-service/cfn-domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.CfnDomain construct |
+| [opensearch/domain](./opensearch-service/) | ![amazon-es-arch](./opensearch-service/domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.Domain construct |
 | [emr](./emr/) | Launch an Amazon EMR cluster | emr, Hive, Spark, JupyterHub, Hudi, Iceberg  |
 | [emr-studio](./emr-studio/) | Launch an Amazon EMR Studio | emr studio |
 | [glue/cdc-parquet-to-apache-iceberg](./glue/cdc-parquet-to-apache-iceberg/) | ![glue-job-cdc-parquet-to-iceberg-arch](./glue/cdc-parquet-to-apache-iceberg/glue-job-cdc-parquet-to-iceberg-arch.svg) | aws glue, Apache Iceberg, Parquet |
