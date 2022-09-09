@@ -126,8 +126,10 @@ class OpensearchStack(Stack):
     opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
       domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
       #XXX: Supported versions of OpenSearch and Elasticsearch
-      #https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
-      version=aws_opensearchservice.EngineVersion.OPENSEARCH_1_0,
+      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
+      version=aws_opensearchservice.EngineVersion.OPENSEARCH_1_3,
+      #XXX: Amazon OpenSearch Service - Current generation instance types
+      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen
       capacity={
         "master_nodes": 3,
         "master_node_instance_type": "r6g.large.search",
@@ -136,7 +138,7 @@ class OpensearchStack(Stack):
       },
       ebs={
         "volume_size": 10,
-        "volume_type": aws_ec2.EbsDeviceVolumeType.GP2
+        "volume_type": aws_ec2.EbsDeviceVolumeType.GP3
       },
       #XXX: az_count must be equal to vpc subnets count.
       zone_awareness={
@@ -161,7 +163,9 @@ class OpensearchStack(Stack):
       },
       use_unsigned_basic_auth=True,
       security_groups=[sg_opensearch_cluster],
-      automated_snapshot_start_hour=17, # 2 AM (GTM+9)
+      #XXX: For domains running OpenSearch or Elasticsearch 5.3 and later, OpenSearch Service takes hourly automated snapshots
+      # Only applies for Elasticsearch versions below 5.3
+      # automated_snapshot_start_hour=17, # 2 AM (GTM+9)
       vpc=vpc,
       vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT)],
       removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN

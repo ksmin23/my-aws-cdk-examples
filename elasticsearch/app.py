@@ -96,12 +96,14 @@ class ElasticsearchStack(Stack):
     #XXX: aws cdk elastsearch example - https://github.com/aws/aws-cdk/issues/2873
     es_domain_name = 'es-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     es_cfn_domain = aws_elasticsearch.CfnDomain(self, "ElasticSearch",
+      #XXX: Amazon OpenSearch Service - Current generation instance types
+      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen
       elasticsearch_cluster_config={
         "dedicatedMasterCount": 3,
         "dedicatedMasterEnabled": True,
-        "dedicatedMasterType": "t2.medium.elasticsearch",
+        "dedicatedMasterType": "t3.medium.elasticsearch",
         "instanceCount": 3,
-        "instanceType": "t2.medium.elasticsearch",
+        "instanceType": "t3.medium.elasticsearch",
         "zoneAwarenessConfig": {
           #XXX: az_count must be equal to vpc subnets count.
           "availabilityZoneCount": 3,
@@ -111,7 +113,7 @@ class ElasticsearchStack(Stack):
       ebs_options={
         "ebsEnabled": True,
         "volumeSize": 10,
-        "volumeType": "gp2"
+        "volumeType": "gp3"
       },
       domain_name=es_domain_name,
       #XXX: Supported versions of OpenSearch and Elasticsearch
@@ -137,9 +139,11 @@ class ElasticsearchStack(Stack):
           }
         ]
       },
-      snapshot_options={
-        "automatedSnapshotStartHour": 17
-      },
+      #XXX: For domains running OpenSearch or Elasticsearch 5.3 and later, OpenSearch Service takes hourly automated snapshots
+      # Only applies for Elasticsearch versions below 5.3
+      # snapshot_options={
+      #   "automatedSnapshotStartHour": 17
+      # },
       vpc_options={
         "securityGroupIds": [sg_es.security_group_id],
         #XXX: az_count must be equal to vpc subnets count.

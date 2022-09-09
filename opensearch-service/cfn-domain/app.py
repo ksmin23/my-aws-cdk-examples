@@ -148,6 +148,8 @@ class OpensearchStack(Stack):
           master_user_password=master_user_secret.secret_value_from_json("password").to_string()
         )
       ),
+      #XXX: Amazon OpenSearch Service - Current generation instance types
+      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen
       cluster_config=aws_opensearchservice.CfnDomain.ClusterConfigProperty(
         dedicated_master_count=3,
         dedicated_master_enabled=True,
@@ -155,6 +157,7 @@ class OpensearchStack(Stack):
         instance_count=3,
         instance_type="r6g.large.search",
         zone_awareness_config=aws_opensearchservice.CfnDomain.ZoneAwarenessConfigProperty(
+          #XXX: az_count must be equal to vpc subnets count.
           availability_zone_count=3
         ),
         zone_awareness_enabled=True
@@ -168,7 +171,7 @@ class OpensearchStack(Stack):
       ebs_options=aws_opensearchservice.CfnDomain.EBSOptionsProperty(
         ebs_enabled=True,
         volume_size=10,
-        volume_type="gp2"
+        volume_type="gp3"
       ),
       encryption_at_rest_options=aws_opensearchservice.CfnDomain.EncryptionAtRestOptionsProperty(
         enabled=True
@@ -179,9 +182,11 @@ class OpensearchStack(Stack):
       node_to_node_encryption_options=aws_opensearchservice.CfnDomain.NodeToNodeEncryptionOptionsProperty(
         enabled=True
       ),
-      snapshot_options=aws_opensearchservice.CfnDomain.SnapshotOptionsProperty(
-        automated_snapshot_start_hour=17
-      ),
+      #XXX: For domains running OpenSearch or Elasticsearch 5.3 and later, OpenSearch Service takes hourly automated snapshots
+      # Only applies for Elasticsearch versions below 5.3
+      # snapshot_options=aws_opensearchservice.CfnDomain.SnapshotOptionsProperty(
+      #   automated_snapshot_start_hour=17
+      # ),
       tags=[cdk.CfnTag(
         key='Name',
         value=f'{OPENSEARCH_DOMAIN_NAME.value_as_string}'
