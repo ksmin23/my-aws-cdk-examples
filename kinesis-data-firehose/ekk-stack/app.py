@@ -23,12 +23,26 @@ class EKKStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
+    #XXX: For creating this CDK Stack in the existing VPC,
+    # remove comments from the below codes and
+    # comments out vpc = aws_ec2.Vpc(..) codes,
+    # then pass -c vpc_name=your-existing-vpc to cdk command
+    # for example,
+    # cdk -c vpc_name=your-existing-vpc syth
+    #
+    # if you encounter an error such as:
+    #  jsii.errors.JavaScriptError:
+    #    Error: When providing vpc options you need to provide a subnet for each AZ you are using at new Domain
+    # check https://github.com/aws/aws-cdk/issues/12078
+    # This error occurs when ZoneAwarenessEnabled in aws_opensearch.Domain(..) is set `true`
+    #
     # vpc_name = self.node.try_get_context("vpc_name")
     # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
     #   is_default=True,
     #   vpc_name=vpc_name)
+    #
     vpc = aws_ec2.Vpc(self, "EKKStackVPC",
-      max_azs=2,
+      max_azs=3,
       gateway_endpoints={
         "S3": aws_ec2.GatewayVpcEndpointOptions(
           service=aws_ec2.GatewayVpcEndpointAwsService.S3
@@ -88,15 +102,19 @@ class EKKStack(Stack):
       elasticsearch_cluster_config={
         "dedicatedMasterCount": 3,
         "dedicatedMasterEnabled": True,
-        "dedicatedMasterType": "t2.medium.elasticsearch",
-        "instanceCount": 2,
-        "instanceType": "t2.medium.elasticsearch",
+        "dedicatedMasterType": "t3.medium.elasticsearch",
+        "instanceCount": 3,
+        "instanceType": "t3.medium.elasticsearch",
+        "zoneAwarenessConfig": {
+          #XXX: az_count must be equal to vpc subnets count.
+          "availabilityZoneCount": 3,
+        },
         "zoneAwarenessEnabled": True
       },
       ebs_options={
         "ebsEnabled": True,
         "volumeSize": 10,
-        "volumeType": "gp2"
+        "volumeType": "gp3"
       },
       domain_name=ES_DOMAIN_NAME,
       elasticsearch_version="7.10",
@@ -120,11 +138,14 @@ class EKKStack(Stack):
           }
         ]
       },
-      snapshot_options={
-        "automatedSnapshotStartHour": 17
-      },
+      #XXX: For domains running OpenSearch or Elasticsearch 5.3 and later, OpenSearch Service takes hourly automated snapshots
+      # Only applies for Elasticsearch versions below 5.3
+      # snapshot_options={
+      #   "automatedSnapshotStartHour": 17
+      # },
       vpc_options={
         "securityGroupIds": [sg_es.security_group_id],
+        #XXX: az_count must be equal to vpc subnets count.
         "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
       }
     )
@@ -243,6 +264,10 @@ class EKKStack(Stack):
         "logStreamName": "ElasticsearchDelivery"
       },
       domain_arn=es_cfn_domain.attr_arn,
+      #XXX: Index rotation appends a timestamp to the IndexName to facilitate the expiration of old data.
+      # For more information, see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-elasticsearch
+      # For more information about allowed values,
+      # see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-elasticsearchdestinationconfiguration.html#cfn-kinesisfirehose-deliverystream-elasticsearchdestinationconfiguration-indexrotationperiod
       index_rotation_period="NoRotation", # [NoRotation | OneDay | OneHour | OneMonth | OneWeek]
       retry_options={
         "durationInSeconds": 60
