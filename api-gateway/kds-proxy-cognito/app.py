@@ -113,7 +113,7 @@ class KdsProxyWithCognitoStack(Stack):
     #XXX: Start to create an API as a Kinesis proxy
     # https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-kinesis.html#api-gateway-create-api-as-kinesis-proxy
     kds_proxy_api = aws_apigateway.RestApi(self, "KdsProxyAPI",
-      rest_api_name="kds-proxy",
+      rest_api_name="kds-proxy-with-cognito",
       description="An Amazon API Gateway REST API that integrated with an Amazon Kinesis Data Streams.",
       endpoint_types=[aws_apigateway.EndpointType.REGIONAL],
       default_cors_preflight_options={
