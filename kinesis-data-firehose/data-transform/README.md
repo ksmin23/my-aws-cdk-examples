@@ -228,8 +228,17 @@ command.
 
 ## References
 
- * [fastavro](https://fastavro.readthedocs.io/)
+ * [fastavro](https://fastavro.readthedocs.io/) - Fast read/write of `AVRO` files
  * [Apache Avro Specification](https://avro.apache.org/docs/current/spec.html)
- * [How do I create a Lambda layer using a simulated Lambda environment with Docker?](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
+ * [How to create a Lambda layer using a simulated Lambda environment with Docker](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
+   <pre>
+   $ cat <<EOF > requirements-Lambda-Layer.txt
+   > fastavro==1.6.1
+   > EOF
+   $ docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.9" /bin/sh -c "pip install -r requirements-Lambda-Layer.txt -t python/lib/python3.9/site-packages/; exit"
+   $ zip -r fastavro-lib.zip python > /dev/null
+   $ aws s3 mb s3://my-bucket-for-lambda-layer-packages
+   $ aws s3 cp fastavro-lib.zip s3://my-bucket-for-lambda-layer-packages/var/
+   </pre>
 
 Enjoy!
