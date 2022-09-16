@@ -2,7 +2,7 @@
 
 LAMBDA_LAYER_NAME=fastavro-lib
 S3_PATH=$1
-REQUIREMENTS=${2:-requirements.txt}
+REQUIREMENTS=${2:-requirements-dev.txt}
 
 mkdir -p python_modules
 
