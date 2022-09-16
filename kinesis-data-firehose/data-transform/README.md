@@ -52,8 +52,6 @@ For example,
 (.venv) $ ./build-aws-lambda-layer-package.sh lambda-layer-resources
 </pre>
 
-:warning: **You should create the python package on Amazon Linux, otherwise create it using a simulated Lambda environment with Docker.**
-
 ### Deploy
 
 At this point you can now synthesize the CloudFormation template for this code.
