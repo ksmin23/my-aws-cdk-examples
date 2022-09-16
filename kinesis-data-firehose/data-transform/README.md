@@ -49,7 +49,7 @@ Before deployment, you should uplad zipped code files to s3 like this:
 For example,
 <pre>
 (.venv) $ aws s3api create-bucket --bucket lambda-layer-resources --region us-east-1
-(.venv) $ ./build-aws-lambda-layer.sh lambda-layer-resources
+(.venv) $ ./build-aws-lambda-layer-package.sh lambda-layer-resources
 </pre>
 
 :warning: **You should create the python package on Amazon Linux, otherwise create it using a simulated Lambda environment with Docker.**
