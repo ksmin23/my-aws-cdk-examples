@@ -62,5 +62,7 @@ Enjoy!
  * [AWS CDK v2 Reference Documentation](https://docs.aws.amazon.com/cdk/api/v2/)
  * [Migrating to AWS CDK v2](https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html)
  * [AWS CDK Toolkit (cdk command)](https://docs.aws.amazon.com/cdk/v2/guide/cli.html)
+ * [AWS CDK Workshop](https://cdkworkshop.com/)
+ * [Construct Hub: Open-source CDK libraries](https://constructs.dev/)
  * [aws-samples/aws-cdk-examples](https://github.com/aws-samples/aws-cdk-examples)
 
