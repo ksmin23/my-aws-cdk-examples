@@ -1,7 +1,7 @@
 
 # Amazon Athena CDK Python project!
 
-![aws-athena](./aws-athena.svg)
+![aws-athena](./aws-athena-arch.svg)
 
 This is an Amazon Athena project for CDK development with Python.
 
