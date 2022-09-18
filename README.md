@@ -11,6 +11,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [api-gateway/dynamodb-cognito](./api-gateway/dynamodb-cognito/) | ![apigw-cognito-dynamodb-arch](./api-gateway/dynamodb-cognito/apigw-cognito-dynamodb-arch.svg) | api-gateway, cognito, dynamodb |
 | [api-gateway/kds-proxy](./api-gateway/kds-proxy/) | ![apigw-kds-proxy-arch](./api-gateway/kds-proxy/apigw-kds-proxy-arch.svg) | api-gateway, kinesis data streams |
 | [api-gateway/kds-proxy-cognito](./api-gateway/kds-proxy-cognito/) | ![apigw-kds-proxy-cognito-arch](./api-gateway/kds-proxy-cognito/apigw-kds-proxy-cognito-arch.svg) | api-gateway, cognito, kinesis data streams |
+| [athena](./athena/) | ![athena-arch](./athena/aws-athena-arch.svg) | athena (named query, work group), s3 |
 | [batch/batch-with-ec2](./batch/batch-with-ec2/) | Launch AWS Batch | aws batch |
 | [cloudfront/static-site](./cloudfront/static-site/) | ![cloudfront-s3-static-site-arch](./cloudfront/static-site/cloudfront-s3-static-site-arch.svg) | cloudfront |
 | [dms/aurora_mysql-to-kinesis](./dms/aurora_mysql-to-kinesis/) | ![dms-mysql-to-kinesis-arch](./dms/aurora_mysql-to-kinesis/dms-mysql-to-kinesis-arch.svg) | dms, mysql, kinesis |
