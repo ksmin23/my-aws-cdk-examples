@@ -35,7 +35,7 @@ class AthenaStack(Stack):
         region=cdk.Aws.REGION, suffix=S3_BUCKET_SUFFIX))
 
     athena_cfn_work_group = aws_athena.CfnWorkGroup(self, 'AthenaCfnWorkGroup',
-      name='dev',
+      name=ATHENA_WORK_GROUP_NAME.value_as_string,
 
       # the properties below are optional
       description='workgroup for developer',
