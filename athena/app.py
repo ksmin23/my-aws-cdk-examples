@@ -15,7 +15,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-random.seed(31)
+random.seed(47)
 
 class AthenaStack(Stack):
 
@@ -46,7 +46,6 @@ class AthenaStack(Stack):
         value=ATHENA_WORK_GROUP_NAME.value_as_string
       )],
       work_group_configuration=aws_athena.CfnWorkGroup.WorkGroupConfigurationProperty(
-        # bytes_scanned_cutoff_per_query=11000000,
         #XXX: EnforceWorkGroupConfiguration
         # Link: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html#cfn-athena-workgroup-workgroupconfiguration-enforceworkgroupconfiguration
         # If set to "true", the settings for the workgroup override client-side settings.
@@ -90,7 +89,7 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT
   'org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat'
 LOCATION
-  's3://bucket-name/folder';
+  's3://<bucket-name>/<folder>';
 
 /* Next we will load the partitions for this table */
 MSCK REPAIR TABLE mydatabase.web_log_json;
@@ -110,6 +109,7 @@ SELECT COUNT(*) FROM mydatabase.web_log_json;
       name="Create Web Log table (json) with partitions",
       work_group=athena_cfn_work_group.name
     )    
+    athena_cfn_named_query.add_depends_on(athena_cfn_work_group)
 
     query = '''/* Create your database */
 CREATE DATABASE IF NOT EXISTS mydatabase;
@@ -137,7 +137,7 @@ STORED AS INPUTFORMAT
 OUTPUTFORMAT
   'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
 LOCATION
-  's3://bucket-name/folder';
+  's3://<bucket-name>/<folder>';
 
 /* Next we will load the partitions for this table */
 MSCK REPAIR TABLE mydatabase.web_log_parquet;
@@ -157,6 +157,22 @@ SELECT COUNT(*) FROM mydatabase.web_log_parquet;
       name="Create Web Log table (parquet) with partitions",
       work_group=athena_cfn_work_group.name
     )
+    athena_cfn_named_query.add_depends_on(athena_cfn_work_group)
+
+    query = '''SELECT * FROM mydatabase.web_log_json
+WHERE year=? AND month=? AND day=? AND hour >=? LIMIT 5
+'''
+
+    athena_cfn_prepare_statment = aws_athena.CfnPreparedStatement(self, "MyAthenaCfnPrepareStetement",
+      query_statement=query,
+      statement_name="select_all_limit",
+      work_group=athena_cfn_work_group.name,
+
+      # the properties below are optional
+      description="Prepare statement"
+    )
+    athena_cfn_prepare_statment.add_depends_on(athena_cfn_work_group)
+    athena_cfn_prepare_statment.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
     cdk.CfnOutput(self, 'f{self.stack_name}_AthenaWorkGroupName', value=athena_cfn_work_group.name,
       export_name='AthenaWorkGroupName')
@@ -168,3 +184,4 @@ AthenaStack(app, "AthenaStack", env=cdk.Environment(
   region=os.getenv('CDK_DEFAULT_REGION')))
 
 app.synth()
+

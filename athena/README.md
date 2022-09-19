@@ -57,6 +57,24 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+## Test
+
+ * Lists available workgroups for the account. Returns information about the workgroup with the specified name.
+    <pre>
+    $ aws athena list-work-groups
+    $ aws athena get-work-group --work-group <i>work-group-name</i>
+    </pre>
+ * Provides a list of available query IDs only for queries saved in the specified workgroup. Returns information about a single query.
+    <pre>
+    $ aws athena list-named-queries --work-group <i>value</i>
+    $ aws athena get-named-query --named-query-id <i>value</i>
+    </pre>
+ * Lists the prepared statements in the specified workgroup. Retrieves the prepared statement with the specified name from the specified workgroup.
+    <pre>
+    $ aws athena list-prepared-statements --work-group <i>value</i>
+    $ aws athena get-prepared-statement --statement-name <i>value</i> --work-group <i>value</i>
+    </pre>
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -71,5 +89,7 @@ Enjoy!
 
  * [Amazon Athena Workshop](https://athena-in-action.workshop.aws/)
  * [Performance tuning in Athena](https://docs.aws.amazon.com/athena/latest/ug/performance-tuning.html)
+ * [Amazon Athena - Using saved queries](https://docs.aws.amazon.com/athena/latest/ug/saved-queries.html)
+ * [Amazon Athena - Using parameterized queries](https://docs.aws.amazon.com/athena/latest/ug/querying-with-prepared-statements.html)
  * [PyAthena](https://github.com/laughingman7743/PyAthena/) - Python DB API 2.0 (PEP 249) client for Amazon Athena
 
