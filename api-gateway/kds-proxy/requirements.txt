@@ -1,7 +1,7 @@
-aws-cdk-lib==2.40.0
+aws-cdk-lib==2.43.0
 constructs>=10.0.0,<11.0.0
 
 # https://github.com/aws/aws-cdk/issues/21902
 # issue: Type 'aws-cdk-lib.aws_apigateway.EmptyModel' not found
 # solution: Downgrade the jsii version to 1.66.0 works
-jsii==1.66.0
+#jsii==1.66.0
