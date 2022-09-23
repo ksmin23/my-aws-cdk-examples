@@ -61,7 +61,7 @@ class JenkinsOnEC2Stack(Stack):
       ),
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
       #XXX: Create a jenkins in the private subnets
-      # vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
+      # vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS),
       security_group=sg_jenkins_host,
       key_name=EC2_KEY_PAIR_NAME.value_as_string
     )

@@ -146,7 +146,7 @@ class EKKStack(Stack):
       vpc_options={
         "securityGroupIds": [sg_es.security_group_id],
         #XXX: az_count must be equal to vpc subnets count.
-        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
+        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
       }
     )
     cdk.Tags.of(es_cfn_domain).add('Name', ES_DOMAIN_NAME)
@@ -231,7 +231,7 @@ class EKKStack(Stack):
     es_dest_vpc_config = aws_kinesisfirehose.CfnDeliveryStream.VpcConfigurationProperty(
       role_arn=firehose_role.role_arn,
       security_group_ids=[sg_use_es.security_group_id],
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
     )
 
     es_dest_config = aws_kinesisfirehose.CfnDeliveryStream.ElasticsearchDestinationConfigurationProperty(

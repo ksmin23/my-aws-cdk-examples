@@ -51,7 +51,7 @@ class NeptuneStack(Stack):
 
     graph_db_subnet_group = aws_neptune.CfnDBSubnetGroup(self, 'NeptuneHolSubnetGroup',
       db_subnet_group_description='subnet group for neptune hol',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       db_subnet_group_name='neptune-hol'
     )
 

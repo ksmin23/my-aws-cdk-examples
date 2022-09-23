@@ -113,7 +113,7 @@ class SageMakerStudioStack(Stack):
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
       domain_name='StudioDomain',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       vpc_id=vpc.vpc_id,
       app_network_access_type='VpcOnly' # [PublicInternetOnly | VpcOnly]
     )

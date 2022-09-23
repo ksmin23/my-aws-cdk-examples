@@ -147,7 +147,7 @@ class ElasticsearchStack(Stack):
       vpc_options={
         "securityGroupIds": [sg_es.security_group_id],
         #XXX: az_count must be equal to vpc subnets count.
-        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
+        "subnetIds": vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
       }
     )
     cdk.Tags.of(es_cfn_domain).add('Name', 'es-hol')

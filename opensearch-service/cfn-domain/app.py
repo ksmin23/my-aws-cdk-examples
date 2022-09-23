@@ -193,7 +193,7 @@ class OpensearchStack(Stack):
       )],
       vpc_options=aws_opensearchservice.CfnDomain.VPCOptionsProperty(
         security_group_ids=[sg_opensearch_cluster.security_group_id],
-        subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
+        subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
       )
     )
     opensearch_cfn_domain.apply_removal_policy(cdk.RemovalPolicy.DESTROY) # default: cdk.RemovalPolicy.RETAIN
