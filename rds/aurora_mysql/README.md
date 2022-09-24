@@ -204,7 +204,7 @@ Enjoy!
 
     Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-    mysql> show databases;
+    mysql> SHOW DATABASES;
     +--------------------+
     | Database           |
     +--------------------+
@@ -215,7 +215,7 @@ Enjoy!
     +--------------------+
     4 rows in set (0.01 sec)
 
-    mysql> create database test;
+    mysql> CREATE DATABASE test;
     ERROR 1290 (HY000): The MySQL server is running with the --read-only option so it cannot execute this statement
     mysql>
     </pre>
@@ -246,12 +246,12 @@ Enjoy!
 
     Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-    MySQL [(none)]> show global variables like "log_bin";
+    MySQL [(none)]> SHOW GLOBAL VARIABLES LIKE "log_bin";
    </pre>
 
 3. At SQL prompt run the below command to confirm that binary logging is enabled:
    <pre>
-    MySQL [(none)]> show global variables like "log_bin";
+    MySQL [(none)]> SHOW GLOBAL VARIABLES LIKE "log_bin";
     +---------------+-------+
     | Variable_name | Value |
     +---------------+-------+
@@ -262,7 +262,7 @@ Enjoy!
 
 4. Also run this to AWS DMS has bin log access that is required for replication
    <pre>
-    MySQL [(none)]> call mysql.rds_set_configuration('binlog retention hours', 24);
+    MySQL [(none)]> CALL mysql.rds_set_configuration('binlog retention hours', 24);
     Query OK, 0 rows affected (0.01 sec)
    </pre>
 
