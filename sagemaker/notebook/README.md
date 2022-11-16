@@ -66,3 +66,8 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## References
+
+ * [SageMaker Notebook Instance Lifecycle Config Samples](https://github.com/aws-samples/amazon-sagemaker-notebook-instance-lifecycle-config-samples) - A collection of sample scripts to customize Amazon SageMaker Notebook Instances using Lifecycle Configurations
+ * [Resolve Amazon SageMaker lifecycle configuration timeouts](https://aws.amazon.com/premiumsupport/knowledge-center/sagemaker-lifecycle-script-timeout/) - How can I be sure that manually installed libraries persist in Amazon SageMaker if my lifecycle configuration times out when I try to install the libraries?
