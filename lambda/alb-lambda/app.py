@@ -49,7 +49,7 @@ class AlbLambdaStack(Stack):
 
     lambda_fn = aws_lambda.Function(self, "AlbTargetLambdaFunction",
       runtime=aws_lambda.Runtime.PYTHON_3_9,
-      function_name="Serverless-Lambda",
+      function_name="ALBTargetLambda",
       handler="index.lambda_handler",
       description="Lambda function triggerred by Application Load Balancer",
       code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
