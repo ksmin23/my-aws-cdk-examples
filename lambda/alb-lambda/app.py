@@ -77,6 +77,9 @@ class AlbLambdaStack(Stack):
       ),
     )
 
+    cdk.CfnOutput(self, 'ALB_DNS_Name', value=lb.load_balancer_dns_name)
+    cdk.CfnOutput(self, 'ALB_URL', value=f'http://{lb.load_balancer_dns_name}')
+
 
 app = cdk.App()
 AlbLambdaStack(app, "AlbLambdaStack", env=cdk.Environment(
