@@ -1,9 +1,9 @@
 
-# Amazon Lambda with Application Load Balancer CDK Project
+# Amazon Lambda with Application Load Balancer Path-based Routing CDK Project
 
 This is an Amazon Application Load Balancer Serverless Application with Lambda for CDK development with Python.
 
-![aws-alb-lambda-arch](./aws-alb-lambda-arch.svg)
+![aws-alb-path-routing-lambda-arch](./aws-alb-path-routing-lambda-arch.svg)
 
 Application Load Balancer (ALB) can now trigger Lambda functions to serve HTTP/HTTPS requests enabling users to access serverless applications from the web browsers or mobile applications.
 

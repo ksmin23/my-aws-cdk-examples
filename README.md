@@ -35,6 +35,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [kinesis-data-firehose/opskk-stack](./kinesis-data-firehose/opskk-stack/) | ![amazon-opskk-stack-arch](./kinesis-data-firehose/opskk-stack/amazon-opskk-stack-arch.svg) | kinesis firehose, s3, OpenSearch, bastion host |
 | [kinesis-data-streams/to-kinesis-data-firehose](./kinesis-data-streams/to-kinesis-data-firehose/) | ![amazon-ekk-stack-arch](./kinesis-data-streams/to-kinesis-data-firehose/kinesis_streams_to_firehose_to_s3.svg) | kinesis data streams, kinesis firehose, s3 |
 | [lambda/alb-lambda](./lambda/alb-lambda/) | ![aws-alb-lambda](./lambda/alb-lambda/aws-alb-lambda-arch.svg) | lambda, application load balancer |
+| [lambda/alb-path-routing-lambda](./lambda/alb-path-routing-lambda/) | ![alb-path-routing-lambda](./lambda/alb-path-routing-lambda/aws-alb-path-routing-lambda-arch.svg) | lambda, application load balancer |
 | [lambda/async-invoke](./lambda/async-invoke/) | ![aws-lambda-async-invocation](./lambda/async-invoke/aws-lambda-async-invocation.svg) | lambda, sns, event-bridge |
 | [memorydb-for-redis](./memorydb/) | ![memorydb-for-redis](./memorydb/amazon-memorydb.svg) | memorydb |
 | [msk](./msk/) | ![msk-arch](./msk/msk-arch.svg) | msk(kafka) |
