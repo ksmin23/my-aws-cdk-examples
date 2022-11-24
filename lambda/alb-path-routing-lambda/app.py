@@ -77,9 +77,12 @@ class AlbPathRoutingLambdaStack(Stack):
     )
 
     alb_tg = elbv2.ApplicationTargetGroup(self, "ALBTargetGroup",
-      # target_type=elbv2.TargetType.INSTANCE,
-      port=80,
-      stickiness_cookie_duration=cdk.Duration.minutes(5),
+      # [Warning] When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future)
+      target_type=elbv2.TargetType.LAMBDA,
+      # [Error] port/protocol should not be specified for Lambda targets
+      # port=80,
+      # [Error] A target group with target type 'lambda' does not support the attribute stickiness.lb_cookie.duration_seconds
+      # stickiness_cookie_duration=cdk.Duration.minutes(5),
       vpc=vpc
     )
 
@@ -100,8 +103,7 @@ class AlbPathRoutingLambdaStack(Stack):
       priority=1,
       targets=[elbv2_targets.LambdaTarget(lambda_fn1)],
       conditions=[
-        # elbv2.ListenerCondition.path_patterns(["/hello"])
-        elbv2.ListenerCondition.path_patterns(["/hello", "/hello/*"])
+        elbv2.ListenerCondition.path_patterns(["/", "/hello", "/hello/*"])
       ],
       health_check=elbv2.HealthCheck(
         enabled=True
@@ -113,20 +115,12 @@ class AlbPathRoutingLambdaStack(Stack):
       priority=2,
       targets=[elbv2_targets.LambdaTarget(lambda_fn2)],
       conditions=[
-        # elbv2.ListenerCondition.path_patterns(["/aloha"])
         elbv2.ListenerCondition.path_patterns(["/aloha", "/aloha/*"])
       ],
       health_check=elbv2.HealthCheck(
         enabled=True
       ),
     )
-
-    # lb.add_redirect(
-    #   source_port=8080,
-    #   source_protocol=elbv2.ApplicationProtocol.HTTP,
-    #   target_port=80,
-    #   target_protocol=elbv2.ApplicationProtocol.HTTP
-    # )
 
     cdk.CfnOutput(self, 'ALB_DNS_Name', value=lb.load_balancer_dns_name)
     cdk.CfnOutput(self, 'ALB_URL', value=f'http://{lb.load_balancer_dns_name}')
