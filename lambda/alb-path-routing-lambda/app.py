@@ -51,7 +51,7 @@ class AlbPathRoutingLambdaStack(Stack):
       runtime=aws_lambda.Runtime.PYTHON_3_9,
       function_name="Hello-World",
       handler="index.lambda_handler",
-      description="Lambda function triggerred by Application Load Balancer",
+      description='An Application Load Balancer Lambda Target that returns "Hello World"',
       code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       environment={
         "MESSAGE": "Hello"
@@ -63,7 +63,7 @@ class AlbPathRoutingLambdaStack(Stack):
       runtime=aws_lambda.Runtime.PYTHON_3_9,
       function_name="Aloha-World",
       handler="index.lambda_handler",
-      description="Lambda function triggerred by Application Load Balancer",
+      description='An Application Load Balancer Lambda Target that returns "Aloha World"',
       code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       environment={
         "MESSAGE": "Aloha"
