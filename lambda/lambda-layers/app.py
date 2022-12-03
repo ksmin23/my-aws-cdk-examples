@@ -40,7 +40,7 @@ class LambdaLayersStack(Stack):
     # )
 
     S3_BUCKET_LAMBDA_LAYER_LIB = self.node.try_get_context('s3_bucket_lambda_layer_lib')
-    s3_lib_bucket = s3.Bucket.from_bucket_name(self, construct_id, S3_BUCKET_LAMBDA_LAYER_LIB)
+    s3_lib_bucket = s3.Bucket.from_bucket_name(self, "LambdaLayerS3Bucket", S3_BUCKET_LAMBDA_LAYER_LIB)
 
     pytz_lib_layer = aws_lambda.LayerVersion(self, "PyTZLib",
       layer_version_name="pytz-lib",
