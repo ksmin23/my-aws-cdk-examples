@@ -1,5 +1,5 @@
 
-# Welcome to your CDK Python project!
+# Logging Amazon API Gateway API Calls to Kinesis Data Firehose
 
 ![logging-api-calls-to-firehose](./logging-api-calls-to-firehose.svg)
 
