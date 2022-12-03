@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import json
 import random
 import string
@@ -5,34 +9,34 @@ import string
 random.seed(47)
 
 MIN_LEN, MAX_LEN = (1, 20)
+MIN_NUM, MAX_NUM = (1, 100)
 
 ALLOWED_CHARS = {
   'letters': string.ascii_letters,
   'lowercase': string.ascii_lowercase,
   'uppercase': string.ascii_uppercase,
-  'digits': string.digits*2,
+  'digits': string.digits,
 }
 
 DEFAULT_PARAMS = {
   'chars': 'letters',
-  'num': '1',
+  'num': f'{MIN_NUM}',
   'len': f'{MIN_LEN}'
 }
 
 
 def lambda_handler(event, context):
-  params = event['queryStringParameters'] if event['queryStringParameters'] else {}
+  params = event['queryStringParameters'] if event.get('queryStringParameters', {}) else {}
   params.update({k: v for k, v in DEFAULT_PARAMS.items() if k not in params})
 
   char_type = params['chars']
   allowed_chars = ALLOWED_CHARS[char_type]
 
-  num = max(int(params['num']), 1)
+  num = min(max(int(params['num']), MIN_NUM), MAX_NUM)
   length = min(max(int(params['len']), MIN_LEN), MAX_LEN)
 
-  ret = [''.join(random.sample(allowed_chars, k=length))]
+  ret = [''.join(random.choices(allowed_chars, k=length)) for _ in range(num)]
 
-  # TODO implement
   return {
     'statusCode': 200,
     'body': json.dumps(ret)
@@ -48,7 +52,7 @@ if __name__ == '__main__':
     "multiValueHeaders": None,
     "queryStringParameters": {
       "chars": "letters", # [letters, lowercase, uppercase, digits]
-      "num": "1",
+      "num": "3",
       "len": "10"
     },
     "multiValueQueryStringParameters": {
@@ -56,7 +60,7 @@ if __name__ == '__main__':
         "letters"
       ],
       "num": [
-        "1"
+        "3"
       ],
       "len": [
         "10"
