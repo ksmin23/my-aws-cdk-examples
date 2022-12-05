@@ -69,6 +69,41 @@ command.
 
 Enjoy!
 
+## Run Test
+
+1. Invoke REST API method
+   <pre>
+   $ curl -X GET 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?len=7'
+   </pre>
+
+   The response is:
+   <pre>
+   ["weBJDKv"]
+   </pre>
+
+2. Generate test requests and run them.
+   <pre>
+   $ cat <&lt;EOF > run_test.sh
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?len=7'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?chars=letters'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?chars=letters&len=15'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?chars=lowercase&len=15'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?chars=uppercase&len=5'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?chars=digits&len=7'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?chars=digits&len=17'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?len=3'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?chars=letters&len=9'
+   > curl 'https://<i>{your-api-gateway-id}</i>.execute-api.<i>{region}</i>.amazonaws.com/prod/random/strings?len=17'
+   > EOF
+   $ bash ./run_test.sh
+   </pre>
+
+3. Check the access logs in S3
+
+   After 5~10 minutes, you can see that the access logs have been delivered by **Kinesis Data Firehose** to **S3** and stored in a folder structure by year, month, day, and hour.
+
+   ![amazon-apigatewy-access-log-in-s3](./amazon-apigatewy-access-log-in-s3.png)
+
 ## References
 
  * [Amazon API Gateway - Logging API calls to Kinesis Data Firehose](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html)
