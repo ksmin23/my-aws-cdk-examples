@@ -127,7 +127,7 @@ Enjoy!
    After `5~10` minutes, you can see that the cloud watch logs have been delivered by Kinesis Data Firehose to S3 and stored in a folder structure by year, month, day, and hour.
    ![amazon-apigatewy-access-log-in-s3](./amazon-apigatewy-access-log-in-s3.png)
 
-   The data in the Amazon S3 object is compressed with the gzip format. When you examine the raw data, you would see one of the following type of cloud watch logs:
+   The data in the Amazon S3 object is compressed with the gzip format. When you examine the raw data, you would see one of the following types of cloud watch logs:
 
    * Control Message
       <pre>
