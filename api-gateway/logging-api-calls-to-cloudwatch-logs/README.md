@@ -47,6 +47,8 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ cdk synth -c firehose_name=<i>{your-delivery-stream-name}</i>
 </pre>
 
+:warning: The name of your Kinesis Data Firehose delivery stream must not start with **amazon-apigateway-** prefix.
+
 Use `cdk deploy` command to create the stack shown above,
 
 <pre>

@@ -19,7 +19,7 @@ class LoggingApiCallsToCloudwatchLogsStack(Stack):
     super().__init__(scope, construct_id, **kwargs)
 
     FIREHOSE_NAME = self.node.try_get_context('firehose_name')
-    #assert FIREHOSE_NAME.startswith('amazon-apigateway-')
+    assert not FIREHOSE_NAME.startswith('amazon-apigateway-')
 
     firehose_arn = f'arn:aws:firehose:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:deliverystream/{FIREHOSE_NAME}'
 
@@ -33,7 +33,7 @@ class LoggingApiCallsToCloudwatchLogsStack(Stack):
 
     cwl_to_firehose_role = aws_iam.Role(self, 'CWLtoKinesisFirehoseRole',
       role_name="CWLtoKinesisFirehoseRole",
-      assumed_by=aws_iam.ServicePrincipal(f"logs.{cdk.Aws.REGION}.amazonaws.com",
+      assumed_by=aws_iam.ServicePrincipal(f"logs.amazonaws.com",
         conditions={
           "StringLike": {
             "aws:SourceArn": f"arn:aws:logs:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:*"
