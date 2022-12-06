@@ -47,12 +47,36 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ cdk synth -c firehose_name=<i>{your-delivery-stream-name}</i>
 </pre>
 
-:warning: The name of your Kinesis Data Firehose delivery stream must not start with `amazon-apigateway-` prefix.
+:warning: The name of your Kinesis Data Firehose delivery stream **MUST NOT** start with `amazon-apigateway-` prefix.
+If your delivery stream name had `amazon-apigateway-` prefix, you would encounter the following error like this:
+<pre>
+Resource handler returned message: "Could not deliver test message to specified Firehose stream. Check if the given Firehose stream is in ACTIVE state. (Service: CloudWatchLogs, Status Code: 400, Request ID: aaaa7f10-a5d6-44d5-8191-dba9f27d36f3)" (RequestToken: bb4b2fc5-26cd-de7b-a7d9-8653c44f8642, HandlerErrorCode: InternalFailure)
+</pre>
 
 Use `cdk deploy` command to create the stack shown above,
 
 <pre>
 (.venv) $ cdk deploy -c firehose_name=<i>{your-delivery-stream-name}</i>
+</pre>
+
+After deployment, you can find out the cloud watch log subscription filters with Amazon Kinesis Data Firehose by running the following instructions.
+
+<pre>
+$ CW_LOG_GROUP_NAME=$(aws cloudformation describe-stacks --stack-name LoggingApiCallsToCloudwatchLogsStack  | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "RestApiAccessLogGroupName")) | .[0].OutputValue')
+$ aws logs describe-subscription-filters --log-group-name ${CW_LOG_GROUP_NAME}
+{
+    "subscriptionFilters": [
+        {
+            "filterName": "LoggingApiCallsToCloudwatchLogsStack-CWLSubscriptionFilter-Zi6qt8IvfIJV",
+            "logGroupName": "LoggingApiCallsToCloudwatchLogsStack-RandomGenApiLogs96EBA3FC-VV1l7d2OJqLV",
+            "filterPattern": "",
+            "destinationArn": "arn:aws:firehose:us-east-1:123456789012:deliverystream/PUT-S3-vvMmG",
+            "roleArn": "arn:aws:iam::123456789012:role/CWLtoKinesisFirehoseRole",
+            "distribution": "ByLogStream",
+            "creationTime": 1670315295923
+        }
+    ]
+}
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -98,6 +122,50 @@ Enjoy!
    $ bash ./run_test.sh
    </pre>
 
+3. Check the access logs in S3
+
+   After `5~10` minutes, you can see that the cloud watch logs have been delivered by Kinesis Data Firehose to S3 and stored in a folder structure by year, month, day, and hour.<br/>
+   The data in the Amazon S3 object is compressed with the gzip format. When you examine the raw data, you would see one of the following type of cloud watch logs:
+
+   * Control Message
+      <pre>
+      {
+         "messageType": "CONTROL_MESSAGE",
+         "owner": "CloudwatchLogs",
+         "logGroup": "",
+         "logStream": "",
+         "subscriptionFilters": [],
+         "logEvents": [
+            {
+               "id": "",
+               "timestamp": 1670315295923,
+               "message": "CWL CONTROL MESSAGE: Checking health of destination Firehose."
+            }
+         ]
+      }
+      </pre>
+
+   * Data Message
+
+      <pre>
+      {
+         "messageType": "DATA_MESSAGE",
+         "owner": "819320734790",
+         "logGroup": "LoggingApiCallsToCloudwatchLogsStack-RandomGenApiLogs96EBA3FC-VV1l7d2OJqLV",
+         "logStream": "a5f69e5c7656d84117661e8a24b04807",
+         "subscriptionFilters": [
+            "LoggingApiCallsToCloudwatchLogsStack-CWLSubscriptionFilter-Zi6qt8IvfIJV"
+         ],
+         "logEvents": [
+            {
+               "id": "37249425165417151864519688057747871138717457702689112064",
+               "timestamp": 1670321993001,
+               "message": "{\"requestId\": \"65401bed-607a-4b27-a33f-f1f5c811b1d2\", \"ip\": \"124.17.254.27\", \"user\": \"-\", \"requestTime\": 1670321993001, \"httpMethod\": \"GET\", \"resourcePath\": \"/random/strings\", \"status\": 200, \"protocol\": \"HTTP/1.1\", \"responseLength\": 11}\n"
+            }
+         ]
+      }
+      </pre>
+   :information_source: The api access logs are included in the `logEvents` attribute as string data type.
 
 ## References
 
