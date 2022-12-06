@@ -48,7 +48,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 </pre>
 
 :warning: The name of your Kinesis Data Firehose delivery stream **MUST NOT** start with `amazon-apigateway-` prefix.
-If your delivery stream name had `amazon-apigateway-` prefix, you would encounter the following error like this:
+If your delivery stream name had `amazon-apigateway-` prefix, you would encounter the following error like this during deployment:
 <pre>
 Resource handler returned message: "Could not deliver test message to specified Firehose stream. Check if the given Firehose stream is in ACTIVE state. (Service: CloudWatchLogs, Status Code: 400, Request ID: aaaa7f10-a5d6-44d5-8191-dba9f27d36f3)" (RequestToken: bb4b2fc5-26cd-de7b-a7d9-8653c44f8642, HandlerErrorCode: InternalFailure)
 </pre>
