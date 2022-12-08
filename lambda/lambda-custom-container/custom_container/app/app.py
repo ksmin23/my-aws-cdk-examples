@@ -5,14 +5,19 @@
 import json
 import os
 
+print("$ whereis java")
 os.system("whereis java")
+
+print("$ readlink -f /usr/bin/java")
 os.system("readlink -f /usr/bin/java")
-print("JAVA_HOME=", os.getenv("JAVA_HOME", "Not exist"))
+
+print(f"\nJAVA_HOME={os.getenv('JAVA_HOME', 'Non-exist')}")
 
 def lambda_handler(event, context):
   from konlpy.tag import Komoran
 
   komoran = Komoran()
+  print("\nKomoran.morphs:")
   print(komoran.morphs(u'우왕 코모란도 오픈소스가 되었어요'))
 
   # TODO implement

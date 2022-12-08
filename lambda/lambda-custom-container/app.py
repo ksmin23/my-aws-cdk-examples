@@ -51,7 +51,10 @@ class LambdaCustomContainerStack(Stack):
       "LambdaCustomContainerEcrRepo", repository_name=ecr_repo_name)
 
     lambda_fn = aws_lambda.Function(self, "CustomContainerLambdaFunction",
-      code=aws_lambda.Code.from_ecr_image(repository=custom_container_ecr_repo),
+      code=aws_lambda.Code.from_ecr_image(repository=custom_container_ecr_repo,
+        # The image tag or digest to use when pulling the image from ECR (digests must start with sha256:)
+        tag_or_digest='latest' # default: 'latest'
+      ),
       #XXX: handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function
       handler=aws_lambda.Handler.FROM_IMAGE,
       #XXX: runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function
