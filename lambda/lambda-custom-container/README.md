@@ -95,6 +95,8 @@ In the following commands, replace `123456789012` with your **AWS account ID** a
    docker push <i>123456789012</i>.dkr.ecr.<i>us-east-1</i>.amazonaws.com/<i>hello-world</i>:latest        
    </pre>
 
+### Deploy
+
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
