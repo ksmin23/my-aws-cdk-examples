@@ -6,10 +6,7 @@ import aws_cdk as cdk
 from aws_cdk import (
   Stack,
   aws_ec2,
-  aws_elasticloadbalancingv2 as elbv2,
-  aws_elasticloadbalancingv2_targets as elbv2_targets,
   aws_lambda,
-  aws_sam,
   aws_ecr,
 )
 
@@ -49,8 +46,9 @@ class LambdaCustomContainerStack(Stack):
     #   }
     # )
 
-    custom_container_ecr_repo = aws_ecr.Repository.from_repository_name(self, "LambdaCustomContainerEcrRepo",
-        repository_name="hello-world")
+    ecr_repo_name = self.node.try_get_context('ecr_repo_name')
+    custom_container_ecr_repo = aws_ecr.Repository.from_repository_name(self,
+      "LambdaCustomContainerEcrRepo", repository_name=ecr_repo_name)
 
     lambda_fn = aws_lambda.Function(self, "CustomContainerLambdaFunction",
       code=aws_lambda.Code.from_ecr_image(repository=custom_container_ecr_repo),
