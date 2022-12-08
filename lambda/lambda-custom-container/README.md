@@ -3,6 +3,10 @@
 
 This is a CDK Python project to show how to deploy AWS Lambda function with a custom container.
 
+![aws-lambda-custom-container](./aws-lambda-custom-container.svg)
+
+It is useful to use the custom container when you need to more than two different run time enviroments for AWS Lambda function. For example, if you try to use a python package wrapping Java package (e.g., [KoNLpy](https://konlpy.org/ko/latest/)) in the AWS Lambda function, you would need both Python and Java run time.
+
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 This project is set up like a standard Python project.  The initialization
@@ -42,7 +46,10 @@ $ pip install -r requirements.txt
 Before you deploy a lambda function with a custom container image, you need to build the container image for the new Lambda function. You can start to create the container image with an AWS base image for Lambda.
 
 1. On your local machine, create a project directory for your new function.
-2. Create a directory named `app` in the project directory, and then add your function handler code to the `app` directory.<br/>
+
+2. Create a directory named `app` in the project directory, and then add your function handler code to the `app` directory.
+
+3. Use a text editor to create a new Dockerfile.<br/>
 In this project, you can find the examplary application in the `custom_container/app` directory.
    ```
    $ cd custom_container/app
@@ -55,9 +62,19 @@ In this project, you can find the examplary application in the `custom_container
    0 directories, 3 files
    ```
 
-1. Build your Docker image with the docker build command. Enter a name for the image. The following example names the image `hello-world`.
+4. Build your Docker image with the docker build command. Enter a name for the image. The following example names the image `hello-world`.
    <pre>
    docker build -t <i>hello-world</i> .
+   </pre>
+
+5. Start the Docker image with the `docker run` command. For this example, enter `hello-world` as the image name.
+   <pre>
+   docker run -p 9000:8080 <i>hello-world</i>
+   </pre>
+
+6. (Optional) Test your application locally using the [runtime interface emulator](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html). From a new terminal window, post an event to the following endpoint using a curl command:
+   <pre>
+   curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
    </pre>
 
 ### Upload the image to the Amazon ECR repository
@@ -119,4 +136,5 @@ When you run `Test` in the lambda function, you can see the result like this:
  * [New for AWS Lambda – Container Image Support](https://aws.amazon.com/ko/blogs/aws/new-for-aws-lambda-container-image-support/)
  * [AWS Lambda Base images for Lambda](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-images.html)
  * [Amazon ECR Public Gallery](https://gallery.ecr.aws/lambda/provided)
+ * [Testing AWS Lambda container images locally](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html)
 
