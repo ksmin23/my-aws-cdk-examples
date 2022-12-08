@@ -39,6 +39,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [lambda/alb-lambda](./lambda/alb-lambda/) | ![aws-alb-lambda](./lambda/alb-lambda/aws-alb-lambda-arch.svg) | lambda, application load balancer |
 | [lambda/alb-path-routing-lambda](./lambda/alb-path-routing-lambda/) | ![alb-path-routing-lambda](./lambda/alb-path-routing-lambda/aws-alb-path-routing-lambda-arch.svg) | lambda, application load balancer |
 | [lambda/async-invoke](./lambda/async-invoke/) | ![aws-lambda-async-invocation](./lambda/async-invoke/aws-lambda-async-invocation.svg) | lambda, sns, event-bridge |
+| [lambda/lambda-custom-container](./lambda/lambda-custom-container/) | ![aws-lambda-custom-container](./lambda/lambda-custom-container/aws-lambda-custom-container.svg) | lambda, ecr, custom container |
 | [memorydb-for-redis](./memorydb/) | ![memorydb-for-redis](./memorydb/amazon-memorydb.svg) | memorydb |
 | [msk](./msk/) | ![msk-arch](./msk/msk-arch.svg) | msk(kafka) |
 | [mwaa(airflow)](./mwaa/) | ![mwaa-arch](./mwaa/mwaa-arch.svg) | mwaa(airflow) |
