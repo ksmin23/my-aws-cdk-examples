@@ -53,11 +53,13 @@ class LambdaCustomContainerStack(Stack):
         repository_name="hello-world")
 
     lambda_fn = aws_lambda.Function(self, "CustomContainerLambdaFunction",
+      code=aws_lambda.Code.from_ecr_image(repository=custom_container_ecr_repo),
+      #XXX: handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function
+      handler=aws_lambda.Handler.FROM_IMAGE,
+      #XXX: runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function
       runtime=aws_lambda.Runtime.FROM_IMAGE,
       function_name="Hello-KoNLpy",
-      handler=aws_lambda.Handler.FROM_IMAGE,
       description="Lambda function defined in the custom container",
-      code=aws_lambda.Code.from_ecr_image(repository=custom_container_ecr_repo),
       timeout=cdk.Duration.minutes(5),
       memory_size=5120
     )
