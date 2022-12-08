@@ -106,6 +106,12 @@ command.
 
 Enjoy!
 
+## Run Test
+
+When you run `Test` in the lambda function, you can see the result like this:
+
+![aws-lambda-custom-container-test-run-result](./aws-lambda-custom-container-test-run-result.png)
+
 ## References
 
  * [AWS Lambda - Creating images from AWS base images](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html#images-create-from-base)
