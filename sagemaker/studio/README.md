@@ -70,5 +70,8 @@ command.
  * [Perform interactive data processing using Spark in Amazon SageMaker Studio Notebooks (2021-03-17)](https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-studio-notebooks-backed-by-spark-in-amazon-emr/)
  * [Build Amazon SageMaker notebooks backed by Spark in Amazon EMR (2018-01-05)](https://aws.amazon.com/blogs/machine-learning/build-amazon-sagemaker-notebooks-backed-by-spark-in-amazon-emr/)
  * [Amazon SageMaker - Set Up a Connection to an Amazon EMR Cluster](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-emr.html)
+ * [SageMaker Studio Permissions Required to Use Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-studio-updates.html)
+ * [Automate Amazon SageMaker Studio setup using AWS CDK (2021-06-16)](https://aws.amazon.com/ko/blogs/machine-learning/automate-amazon-sagemaker-studio-setup-using-aws-cdk/)
+   * [aws-samples/aws-cdk-sagemaker-studio](https://github.com/aws-samples/aws-cdk-sagemaker-studio)
 
 Enjoy!
