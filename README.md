@@ -28,6 +28,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [opensearch/cfn-domain](./opensearch-service/cfn-domain) | ![amazon-es-arch](./opensearch-service/cfn-domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.CfnDomain construct |
 | [opensearch/domain](./opensearch-service/domain) | ![amazon-es-arch](./opensearch-service/domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.Domain construct |
 | [emr](./emr/) | Launch an Amazon EMR cluster | emr, Hive, Spark, JupyterHub, Hudi, Iceberg  |
+| [emr-serverless](./emr-serverless/) | Launch an Amazon EMR Serverless Applation | emr serverless |
 | [emr-studio](./emr-studio/) | Launch an Amazon EMR Studio | emr studio |
 | [glue/cdc-parquet-to-apache-iceberg](./glue/cdc-parquet-to-apache-iceberg/) | ![glue-job-cdc-parquet-to-iceberg-arch](./glue/cdc-parquet-to-apache-iceberg/glue-job-cdc-parquet-to-iceberg-arch.svg) | aws glue, Apache Iceberg, Parquet |
 | [kinesis-data-firehose/data-transform](./kinesis-data-firehose/data-transform/) | ![firehose_data_transform](./kinesis-data-firehose/data-transform/firehose_data_transform.svg) | kinesis firehose, lambda, s3, schema-validation |
