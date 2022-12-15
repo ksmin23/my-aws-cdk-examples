@@ -49,7 +49,7 @@ Use cdk `deploy command` to create the stack shown above.
 (.venv) $ cdk deploy --parameters EMRServerlessAppName="<i>your-emr-serverless-application-name</i>"
 </pre>
 
-If emr serverless application is successfully created, you can get detailed information about the application.
+If an emr serverless application is successfully created, you can get detailed information about the application.
 
 <pre>
 (.venv) $ export APPLICATION_ID=$(aws emr-serverless list-applications | jq -r '.applications[] | select(.name=="<i>your-emr-serverless-application-name</i>") | .id')
@@ -120,6 +120,6 @@ Enjoy!
  * [Getting started with Amazon EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/getting-started.html)
  * [Amazon EMR Serverless Release versions](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/release-versions.html)
  * [Amazon EMR Best Practices Guides](https://aws.github.io/aws-emr-best-practices/)
- * [Tutorials for EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/tutorials.html)
+ * [Tutorials for Amazon EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/tutorials.html)
  * :movie_camera: [Amazon EMR Serverless로 시작하는 쉬운 빅데이터 분석](https://youtu.be/TZHnLhCqdNg)
 
