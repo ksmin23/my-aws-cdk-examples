@@ -8,8 +8,7 @@ import string
 import aws_cdk as cdk
 
 from aws_cdk import (
-	# Duration,
-	Stack,
+  Stack,
   aws_ec2,
   aws_iam,
 )
@@ -20,7 +19,7 @@ random.seed(47)
 
 class KafkaClientEC2InstanceStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, vpc, kafka_client_iam_policy, sg_msk_client, msk_cluster_name, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, vpc, sg_msk_client, msk_cluster_name, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     KAFKA_CLIENT_EC2_SG_NAME = 'kafka-client-ec2-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
@@ -34,42 +33,42 @@ class KafkaClientEC2InstanceStack(Stack):
     sg_kafka_client_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
       connection=aws_ec2.Port.tcp(22))
 
-    # kafka_client_policy_doc = aws_iam.PolicyDocument()
-    # kafka_client_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-    #   "effect": aws_iam.Effect.ALLOW,
-    #   "resources": [ f"arn:aws:kafka:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:cluster/{msk_cluster_name}/*" ],
-    #   "actions": [
-    #     "kafka-cluster:Connect",
-    #     "kafka-cluster:AlterCluster",
-    #     "kafka-cluster:DescribeCluster"
-    #   ]
-    # }))
-
-    # kafka_client_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-    #   "effect": aws_iam.Effect.ALLOW,
-    #   "resources": [ f"arn:aws:kafka:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:topic/{msk_cluster_name}/*" ],
-    #   "actions": [
-    #     "kafka-cluster:*Topic*",
-    #     "kafka-cluster:WriteData",
-    #     "kafka-cluster:ReadData"
-    #   ]
-    # }))
-
-    # kafka_client_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-    #   "effect": aws_iam.Effect.ALLOW,
-    #   "resources": [ f"arn:aws:kafka:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:group/{msk_cluster_name}/*" ],
-    #   "actions": [
-    #     "kafka-cluster:AlterGroup",
-    #     "kafka-cluster:DescribeGroup"
-    #   ]
-    # }))
+    #XXX: For more information, see https://docs.aws.amazon.com/msk/latest/developerguide/create-iam-role.html
+    kafka_client_iam_policy = aws_iam.Policy(self, 'KafkaClientIAMPolicy',
+      statements=[
+        aws_iam.PolicyStatement(**{
+          "effect": aws_iam.Effect.ALLOW,
+          "resources": [ f"arn:aws:kafka:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:cluster/{msk_cluster_name}/*" ],
+          "actions": [
+            "kafka-cluster:Connect",
+            "kafka-cluster:AlterCluster",
+            "kafka-cluster:DescribeCluster"
+          ]
+        }),
+        aws_iam.PolicyStatement(**{
+          "effect": aws_iam.Effect.ALLOW,
+          "resources": [ f"arn:aws:kafka:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:topic/{msk_cluster_name}/*" ],
+          "actions": [
+            "kafka-cluster:*Topic*",
+            "kafka-cluster:WriteData",
+            "kafka-cluster:ReadData"
+          ]
+        }),
+        aws_iam.PolicyStatement(**{
+          "effect": aws_iam.Effect.ALLOW,
+          "resources": [ f"arn:aws:kafka:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:group/{msk_cluster_name}/*" ],
+          "actions": [
+            "kafka-cluster:AlterGroup",
+            "kafka-cluster:DescribeGroup"
+          ]
+        })
+      ]
+    )
+    kafka_client_iam_policy.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
     kafka_client_ec2_instance_role = aws_iam.Role(self, 'KafkaClientEC2InstanceRole',
-      role_name=f'{self.stack_name}-KafkaClientEC2InstanceRole',
+      role_name=f'KafkaClientEC2InstanceRole-{self.stack_name}',
       assumed_by=aws_iam.ServicePrincipal('ec2.amazonaws.com'),
-      # inline_policies={
-      #   'KafkaClientPolicy': kafka_client_policy_doc
-      # },
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSSMManagedInstanceCore')
       ]
@@ -101,20 +100,37 @@ class KafkaClientEC2InstanceStack(Stack):
     commands = '''
 yum update -y 
 yum install python3.7 -y
-yum install java-1.8.0-openjdk-devel -y
-cd /home/ec2-user
-echo "export PATH=.local/bin:$PATH" >> .bash_profile
-mkdir -p opt
-cd opt
-wget https://archive.apache.org/dist/kafka/2.2.1/kafka_2.12-2.2.1.tgz
-tar -xzf kafka_2.12-2.2.1.tgz
-ln -nsf kafka_2.12-2.2.1 kafka
+yum install java-11 -y
+
+mkdir -p /home/ec2-user/opt
+cd /home/ec2-user/opt
+wget https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz
+tar -xzf kafka_2.12-2.8.1.tgz
+ln -nsf kafka_2.12-2.8.1 kafka
+
+cd /home/ec2-user/opt/kafka/libs
+wget https://github.com/aws/aws-msk-iam-auth/releases/download/v1.1.1/aws-msk-iam-auth-1.1.1-all.jar
+
+chown -R ec2-user /home/ec2-user/opt
+chgrp -R ec2-user /home/ec2-user/opt
+
 cd /home/ec2-user
 wget https://bootstrap.pypa.io/get-pip.py
 su -c "python3.7 get-pip.py --user" -s /bin/sh ec2-user
 su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
-chown -R ec2-user ./opt
-chgrp -R ec2-user ./opt
+
+cat <<EOF > msk_serverless_client.properties
+security.protocol=SASL_SSL
+sasl.mechanism=AWS_MSK_IAM
+sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+EOF
+
+ln -nsf msk_serverless_client.properties client.properties
+chown -R ec2-user /home/ec2-user/msk_serverless_client.properties
+chown -R ec2-user /home/ec2-user/client.properties
+
+echo 'export PATH=$HOME/opt/kafka/bin:$PATH' >> .bash_profile
 '''
 
     msk_client_ec2_instance.user_data.add_commands(commands)
@@ -122,4 +138,10 @@ chgrp -R ec2-user ./opt
     cdk.CfnOutput(self, f'{self.stack_name}-EC2InstancePublicDNS',
       value=msk_client_ec2_instance.instance_public_dns_name,
       export_name=f'{self.stack_name}-EC2InstancePublicDNS')
+    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstanceId',
+      value=msk_client_ec2_instance.instance_id,
+      export_name=f'{self.stack_name}-EC2InstanceId')
+    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstanceAZ',
+      value=msk_client_ec2_instance.instance_availability_zone,
+      export_name=f'{self.stack_name}-EC2InstanceAZ')
 

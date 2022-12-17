@@ -7,12 +7,10 @@ import aws_cdk as cdk
 
 from cdk_stacks import (
   VpcStack,
-  KafkaClientIAMPolicyStack,
   KafkaClientEC2InstanceStack,
 )
 
 from aws_cdk import (
-  # Duration,
   Stack,
   aws_ec2,
   aws_msk
@@ -45,11 +43,7 @@ class MskServerlessStack(Stack):
       description='security group for Amazon MSK Cluster',
       security_group_name=MSK_CLUSTER_SG_NAME
     )
-    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(2181),
-      description='msk client security group')
-    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(9092),
-      description='msk client security group')
-    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(9094),
+    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(9098),
       description='msk client security group')
     cdk.Tags.of(sg_msk_cluster).add('Name', MSK_CLUSTER_SG_NAME)
 
@@ -86,18 +80,15 @@ msk_serverless_stack = MskServerlessStack(app, "MSKServerlessStack",
   vpc_stack.vpc,
   env=AWS_ENV
 )
+msk_serverless_stack.add_dependency(vpc_stack)
 
-msk_client_iam_policy = KafkaClientIAMPolicyStack(app, "KafkaClientIAMPolicyStack",
-  msk_serverless_stack.msk_cluster_name
-)
-
-KafkaClientEC2InstanceStack(app, "MSKClientEC2InstanceStack",
+kafka_client_ec2_stack = KafkaClientEC2InstanceStack(app, "MSKClientEC2InstanceStack",
   vpc_stack.vpc,
-  msk_client_iam_policy.kafka_client_iam_policy,
   msk_serverless_stack.sg_msk_client,
   msk_serverless_stack.msk_cluster_name,
   env=AWS_ENV
 )
+kafka_client_ec2_stack.add_dependency(msk_serverless_stack)
 
 app.synth()
 
