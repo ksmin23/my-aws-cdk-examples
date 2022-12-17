@@ -130,6 +130,7 @@ After MSK is succesfully created, you can now create topic, and produce and cons
    </pre>
 
 5. Produce and consume data
+
    **(1) To produce messages**
 
    Run the following command to create a console producer.
