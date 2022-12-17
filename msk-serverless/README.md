@@ -111,26 +111,16 @@ After MSK is succesfully created, you can now create topic, and produce and cons
    }
    </pre>
 
-3. Generate ssh key to access MSK client EC2 Host.
+3. Connect the MSK client EC2 Host.
 
-   ```
-   $ ssh-keygen
-   Generating public/private rsa key pair.
-   Enter file in which to save the key (~/.ssh/id_rsa): path/my-rsa-key
-   ```
-
-4. Send the ssh public key into your EC2 Host.
-
+   You can connect to an EC2 instance using the EC2 Instance Connect CLI.<br/>
+   Install `ec2instanceconnectcli` python package and Use the **mssh** command with the instance ID as follows.
    <pre>
-   $ aws ec2-instance-connect send-ssh-public-key \
-       --instance-id i-1234567890abcdef0 \
-       --instance-os-user ec2-user \
-       --availability-zone us-east-1a \
-       --ssh-public-key file://<i>path/my-rsa-key.pub</i>
-   $ ssh -i /path/my-rsa-key ec2-user@10.0.0.0
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh <i>i-001234a4bf70dec41EXAMPLE</i>
    </pre>
 
-5. Create an Apache Kafka topic
+4. Create an Apache Kafka topic
    After connect your EC2 Host, you use the client machine to create a topic on the serverless cluster.
    Run the following command to create a topic called `msk-serverless-tutorial`.
    <pre>
@@ -139,7 +129,7 @@ After MSK is succesfully created, you can now create topic, and produce and cons
    [ec2-user@ip-172-31-0-180 ~]$ kafka-topics.sh --bootstrap-server $BS --command-config client.properties --create --topic <i>msk-serverless-tutorial</i> --partitions 6 --replication-factor 2
    </pre>
 
-6. Produce and consume data
+5. Produce and consume data
    **(1) To produce messages**
 
    Run the following command to create a console producer.
@@ -190,3 +180,4 @@ Enjoy!
    $ sudo pip install ec2instanceconnectcli
    $ mssh <i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
    </pre>
+ * [ec2instanceconnectcli](https://pypi.org/project/ec2instanceconnectcli/): This Python CLI package handles publishing keys through EC2 Instance Connectand using them to connect to EC2 instances.
