@@ -133,5 +133,10 @@ $ bin/kafka-console-consumer.sh \
  * [Amazon MSK - Supported Apache Kafka versions](https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html)
  * [Getting Started Using Amazon MSK](https://docs.aws.amazon.com/msk/latest/developerguide/getting-started.html)
  * [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+ * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
+   <pre>
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh <i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
+   </pre>
 
 Enjoy!

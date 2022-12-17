@@ -185,3 +185,8 @@ Enjoy!
  * [Getting started using MSK Serverless clusters](https://docs.aws.amazon.com/msk/latest/developerguide/serverless-getting-started.html)
  * [Configuration for MSK Serverless clusters](https://docs.aws.amazon.com/msk/latest/developerguide/serverless-config.html)
  * [Analyze real-time streaming data in Amazon MSK with Amazon Athena (2022-12-15)](https://aws.amazon.com/ko/blogs/big-data/analyze-real-time-streaming-data-in-amazon-msk-with-amazon-athena/)
+ * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
+   <pre>
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh <i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
+   </pre>
