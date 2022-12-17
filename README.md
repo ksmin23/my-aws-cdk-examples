@@ -43,6 +43,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [lambda/lambda-custom-container](./lambda/lambda-custom-container/) | ![aws-lambda-custom-container](./lambda/lambda-custom-container/aws-lambda-custom-container.svg) | lambda, ecr, custom container |
 | [memorydb-for-redis](./memorydb/) | ![memorydb-for-redis](./memorydb/amazon-memorydb.svg) | memorydb |
 | [msk](./msk/) | ![msk-arch](./msk/msk-arch.svg) | msk(kafka) |
+| [msk-serverless](./msk-serverless/) | ![msk-serverless-arch](./msk-serverless/msk-serverless-arch.svg) | msk serverless(kafka) |
 | [mwaa(airflow)](./mwaa/) | ![mwaa-arch](./mwaa/mwaa-arch.svg) | mwaa(airflow) |
 | [neptune](./neptune/) | ![neptune-arch](./neptune/neptune-arch.svg) | sagemaker, neptune |
 | [rds/aurora_mysql](./rds/aurora_mysql/) | ![aurora_mysql](./rds/aurora_mysql/aurora_mysql-arch.svg) | aurora mysql, secrets manager |
