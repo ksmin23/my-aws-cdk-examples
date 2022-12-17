@@ -3,7 +3,7 @@
 
 ![msk-serverless-arch](./msk-serverless-arch.svg)
 
-This is a blank project for CDK development with Python.
+This is a MSK Serverless project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -59,43 +59,115 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
-## Run Tests
+## Run Test
+
+After MSK is succesfully created, you can now create topic, and produce and consume data on the topic in MSK as the following example.
+
+1. Get cluster information
+   <pre>
+   $ export MSK_SERVERLESS_CLUSTER_ARN=$(aws kafka list-clusters-v2 | jq -r '.ClusterInfoList[] | select(.ClusterName == "<i>your-msk-cluster-name</i>") | .ClusterArn')
+   $ aws kafka describe-cluster-v2 --cluster-arn $MSK_SERVERLESS_CLUSTER_ARN
+   {
+     "ClusterInfo": {
+       "ClusterType": "SERVERLESS",
+       "ClusterArn": "arn:aws:kafka:us-east-1:123456789012:cluster/<i>your-msk-cluster-name</i>/813876e5-2023-4882-88c4-58ad8599da5a-s2",
+       "ClusterName": "<i>your-msk-cluster-name</i>",
+       "CreationTime": "2022-12-16T02:26:31.369000+00:00",
+       "CurrentVersion": "K2EUQ1WTGCTBG2",
+       "State": "ACTIVE",
+       "Tags": {},
+       "Serverless": {
+         "VpcConfigs": [
+           {
+             "SubnetIds": [
+               "subnet-0113628395a293b98",
+               "subnet-090240f6a94a4b5aa",
+               "subnet-036e818e577297ddc"
+             ],
+             "SecurityGroupIds": [
+               "sg-0bd8f5ce976b51769",
+               "sg-0869c9987c033aaf1"
+             ]
+           }
+         ],
+         "ClientAuthentication": {
+           "Sasl": {
+             "Iam": {
+               "Enabled": true
+             }
+           }
+         }
+       }
+     }
+   }
+   </pre>
+
+2. Get booststrap brokers
+
+   <pre>
+   $ aws kafka get-bootstrap-brokers --cluster-arn $MSK_SERVERLESS_CLUSTER_ARN
+   {
+       "BootstrapBrokerStringSaslIam": "boot-deligu0c.c1.kafka-serverless.<i>{region}</i>.amazonaws.com:9098"
+   }
+   </pre>
+
+3. Generate ssh key to access MSK client EC2 Host.
+
+   ```
+   $ ssh-keygen
+   Generating public/private rsa key pair.
+   Enter file in which to save the key (~/.ssh/id_rsa): path/my-rsa-key
+   ```
+
+4. Send the ssh public key into your EC2 Host.
+
+   <pre>
+   $ aws ec2-instance-connect send-ssh-public-key \
+       --instance-id i-1234567890abcdef0 \
+       --instance-os-user ec2-user \
+       --availability-zone us-east-1a \
+       --ssh-public-key file://<i>path/my-rsa-key.pub</i>
+   $ ssh -i /path/my-rsa-key ec2-user@10.0.0.0
+   </pre>
+
+5. Create an Apache Kafka topic
+   After connect your EC2 Host, you use the client machine to create a topic on the serverless cluster.
+   Run the following command to create a topic called `msk-serverless-tutorial`.
+   <pre>
+   [ec2-user@ip-172-31-0-180 ~]$ export PATH=$HOME/opt/kafka/bin:$PATH
+   [ec2-user@ip-172-31-0-180 ~]$ export BS=<i>your-msk-broker-endpoint</i>
+   [ec2-user@ip-172-31-0-180 ~]$ kafka-topics.sh --bootstrap-server $BS --command-config client.properties --create --topic <i>msk-serverless-tutorial</i> --partitions 6 --replication-factor 2
+   </pre>
+
+6. Produce and consume data
+   **(1) To produce messages**
+
+   Run the following command to create a console producer.
+
+   <pre>
+   [ec2-user@ip-172-31-0-180 ~]$ kafka-console-producer.sh --broker-list $BS --producer.config client.properties --topic <i>msk-serverless-tutorial</i>
+   </pre>
+
+   Enter any message that you want, and press Enter. Repeat this step two or three times. Every time you enter a line and press Enter, that line is sent to your cluster as a separate message.
+
+   **(2) To consume messages**
+
+   Keep the connection to the client machine open, and then open a second, separate connection to that machine in a new window.
+
+   <pre>
+   [ec2-user@ip-172-31-0-180 ~]$ kafka-console-consumer.sh --bootstrap-server $BS --consumer.config client.properties --topic <i>msk-serverless-tutorial</i> --from-beginning
+   </pre>
+
+   You start seeing the messages you entered earlier when you used the console producer command.
+   Enter more messages in the producer window, and watch them appear in the consumer window.
+
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
 
 <pre>
-$ export MSK_SERVERLESS_CLUSTER_ARN=$(aws kafka list-clusters-v2 | jq -r '.ClusterInfoList[] | select(.ClusterName == "msk-serverless-tutorial-cluster") | .ClusterArn')
-$ aws kafka describe-cluster-v2 --cluster-arn $MSK_SERVERLESS_CLUSTER_ARN
-{
-    "ClusterInfo": {
-        "ClusterType": "SERVERLESS",
-        "ClusterArn": "arn:aws:kafka:us-east-1:123456789012:cluster/msk-serverless-tutorial-cluster/813876e5-2023-4882-88c4-58ad8599da5a-s2",
-        "ClusterName": "msk-serverless-tutorial-cluster",
-        "CreationTime": "2022-12-16T02:26:31.369000+00:00",
-        "CurrentVersion": "K2EUQ1WTGCTBG2",
-        "State": "ACTIVE",
-        "Tags": {},
-        "Serverless": {
-            "VpcConfigs": [
-                {
-                    "SubnetIds": [
-                        "subnet-0113628395a293b98",
-                        "subnet-090240f6a94a4b5aa",
-                        "subnet-036e818e577297ddc"
-                    ],
-                    "SecurityGroupIds": [
-                        "sg-5fa12d01"
-                    ]
-                }
-            ],
-            "ClientAuthentication": {
-                "Sasl": {
-                    "Iam": {
-                        "Enabled": true
-                    }
-                }
-            }
-        }
-    }
-}
+(.venv) $ cdk destroy --force --all
 </pre>
 
 ## Useful commands
@@ -111,4 +183,5 @@ Enjoy!
 ## References
 
  * [Getting started using MSK Serverless clusters](https://docs.aws.amazon.com/msk/latest/developerguide/serverless-getting-started.html)
+ * [Configuration for MSK Serverless clusters](https://docs.aws.amazon.com/msk/latest/developerguide/serverless-config.html)
  * [Analyze real-time streaming data in Amazon MSK with Amazon Athena (2022-12-15)](https://aws.amazon.com/ko/blogs/big-data/analyze-real-time-streaming-data-in-amazon-msk-with-amazon-athena/)
