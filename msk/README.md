@@ -3,7 +3,7 @@
 
 ![msk-arch](./msk-arch.svg)
 
-This is a sample project for Python development with CDK.
+This is a MSK project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -60,6 +60,8 @@ Use `cdk deploy` command to create the stack shown above,
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Run Test
 
 After MSK is succesfully created, you can now create topic, and produce and consume data on the topic in MSK as the following example.
 
