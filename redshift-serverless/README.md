@@ -1,6 +1,8 @@
 
 # Amzon Redshift Serverless CDK Python project!
 
+![redshift-serverless-arch](./redshift-serverless-arch.svg)
+
 This is a Amzon Redshift Serverless project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.

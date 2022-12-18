@@ -51,6 +51,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [rds/rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/) | ![rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/rds_proxy-aurora_mysql-arch.svg) | rds-proxy, aurora mysql, secrets manager |
 | [rds/mariadb](./rds/mariadb/) | ![mariadb-arch](./rds/mariadb/mariadb-arch.svg) | mariadb, secrets manager |
 | [rds/sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/) | ![sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/mysql-sagemaker-arch.svg) | rds-proxy, aurora mysql, secrets manager, sagemaker |
+| [redshift-serverless](./redshift-serverless/) | ![redshift-serverless-arch](./redshift-serverless/redshift-serverless-arch.svg) | redshift-serverless |
 | [sagemaker/notebook](./sagemaker/notebook/) | Launch an Amazon SageMaker Notebook Instance | sagemaker notebook instance |
 | [sagemaker/studio](./sagemaker/studio/) | Launch an Amazon SageMaker Studio | sagemaker studio |
 
