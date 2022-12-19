@@ -92,6 +92,9 @@ Enjoy!
 
  * [Automate Amazon Redshift Serverless data warehouse management using AWS CloudFormation and the AWS CLI (2022-10-19)](https://aws.amazon.com/ko/blogs/big-data/automate-amazon-redshift-serverless-data-warehouse-management-using-aws-cloudformation-and-the-aws-cli/)
  * [Introducing Amazon Redshift Serverless – Run Analytics At Any Scale Without Having to Manage Data Warehouse Infrastructure (2021-11-30)](https://aws.amazon.com/ko/blogs/aws/introducing-amazon-redshift-serverless-run-analytics-at-any-scale-without-having-to-manage-infrastructure/)
+
+## Learn More
+
  * [Easy analytics and cost-optimization with Amazon Redshift Serverless (2022-08-30)](https://aws.amazon.com/ko/blogs/big-data/easy-analytics-and-cost-optimization-with-amazon-redshift-serverless/)
  * [Develop an Amazon Redshift ETL serverless framework using RSQL, AWS Batch, and AWS Step Functions (2022-08-02)](https://aws.amazon.com/ko/blogs/big-data/develop-an-amazon-redshift-etl-serverless-framework-using-rsql-aws-batch-and-aws-step-functions/)
  * [Real-time analytics with Amazon Redshift streaming ingestion (2022-04-27)](https://aws.amazon.com/ko/blogs/big-data/real-time-analytics-with-amazon-redshift-streaming-ingestion/)
