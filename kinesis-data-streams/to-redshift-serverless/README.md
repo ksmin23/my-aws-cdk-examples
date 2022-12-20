@@ -94,14 +94,17 @@ Enjoy!
 
 These steps show you how to configure the materialized view to ingest data.
 
-1. Create an external schema to map the data from Kinesis to a Redshift object.
+1. Connect to the Redshift query editor v2
+   ![redshift-query-editor-v2-connection](./redshift-query-editor-v2-connection.png)
+
+2. Create an external schema to map the data from Kinesis to a Redshift object.
    <pre>
    CREATE EXTERNAL SCHEMA evdata FROM KINESIS
    IAM_ROLE 'arn:aws:iam::<i>{AWS-ACCOUNT-ID}</i>:role/RedshiftStreamingRole';
    </pre>
    For information about how to configure the IAM role, see [Getting started with streaming ingestion from Amazon Kinesis Data Streams](https://docs.aws.amazon.com/redshift/latest/dg/materialized-view-streaming-ingestion-getting-started.html).
 
-2. Create a materialized view to consume the stream data.
+3. Create a materialized view to consume the stream data.
    
    Note that Kinesis stream names are case-sensitive and can contain both uppercase and lowercase letters. To use case-sensitive identifiers, you can set the configuration setting `enable_case_sensitive_identifier` to true at either the session or cluster level.
    <pre>
@@ -134,7 +137,7 @@ These steps show you how to configure the materialized view to ingest data.
    </pre>
    The code above filters records larger than **65355** bytes. This is because `json_extract_path_text` is limited to varchar data type. The Materialized view should be defined so that there aren’t any type conversion errors.
 
-3. Refreshing materialized views for streaming ingestion
+4. Refreshing materialized views for streaming ingestion
    
    The materialized view is auto-refreshed as long as there is new data on the KDS stream. You can also disable auto-refresh and run a manual refresh or schedule a manual refresh using the Redshift Console UI.<br/>
    To update the data in a materialized view, you can use the `REFRESH MATERIALIZED VIEW` statement at any time.
