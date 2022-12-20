@@ -48,11 +48,14 @@ class MskStack(Stack):
     KAFA_VERSION = cdk.CfnParameter(self, 'KafkaVersion',
       type='String',
       description='Apache Kafka version',
-      default='2.6.2',
+      default='2.8.1',
       # Supported Apache Kafka versions
       # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
       allowed_values=[
-        '2.8.1',
+        '3.3.1',
+        '3.2.0',
+        '2.8.2',
+        '2.8.1', # recommended
         '2.8.0',
         '2.7.1',
         '2.6.2',
@@ -187,9 +190,9 @@ echo "export PATH=.local/bin:$PATH" >> .bash_profile
 
 mkdir -p opt
 cd opt
-wget https://archive.apache.org/dist/kafka/2.2.1/kafka_2.12-2.2.1.tgz
-tar -xzf kafka_2.12-2.2.1.tgz
-ln -nsf kafka_2.12-2.2.1 kafka
+wget https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz
+tar -xzf kafka_2.12-2.8.1.tgz
+ln -nsf kafka_2.12-2.8.1 kafka
 
 cd /home/ec2-user
 wget https://bootstrap.pypa.io/get-pip.py
