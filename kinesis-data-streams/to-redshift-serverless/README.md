@@ -95,6 +95,7 @@ Enjoy!
 These steps show you how to configure the materialized view to ingest data.
 
 1. Connect to the Redshift query editor v2
+
    ![redshift-query-editor-v2-connection](./redshift-query-editor-v2-connection.png)
 
 2. Create an external schema to map the data from Kinesis to a Redshift object.
