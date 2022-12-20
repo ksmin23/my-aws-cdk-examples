@@ -8,8 +8,7 @@ import aws_cdk as cdk
 from aws_cdk import (
   Stack,
   aws_ec2,
-  aws_redshiftserverless,
-  aws_secretsmanager
+  aws_redshiftserverless
 )
 from constructs import Construct
 
@@ -42,7 +41,7 @@ class RedshiftServerlessStack(Stack):
     #   }
     # )
 
-    sm_client = boto3.client('secretsmanager')
+    sm_client = boto3.client('secretsmanager', region_name=kwargs['env'].region)
     secret_name = self.node.try_get_context('aws_secret_name')
     secret_value = sm_client.get_secret_value(SecretId=secret_name)
     redshift_secret = json.loads(secret_value['SecretString'])

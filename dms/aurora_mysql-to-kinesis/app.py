@@ -78,7 +78,7 @@ class AuroraMysqlToKinesisStack(Stack):
       vpc_security_group_ids=[db_client_sg.security_group_id]
     )
 
-    sm_client = boto3.client('secretsmanager')
+    sm_client = boto3.client('secretsmanager', region_name=kwargs['env'].region)
     secret_name = self.node.try_get_context('aws_secret_name')
     secret_value = sm_client.get_secret_value(SecretId=secret_name)
     secret = json.loads(secret_value['SecretString'])
