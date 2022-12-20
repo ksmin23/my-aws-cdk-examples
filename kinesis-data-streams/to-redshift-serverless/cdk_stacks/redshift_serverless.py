@@ -19,7 +19,7 @@ class RedshiftServerlessStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    sm_client = boto3.client('secretsmanager', region_name=kwargs['env'].region)
+    sm_client = boto3.client('secretsmanager', region_name=vpc.env.region)
     secret_name = self.node.try_get_context('aws_secret_name')
     secret_value = sm_client.get_secret_value(SecretId=secret_name)
     redshift_secret = json.loads(secret_value['SecretString'])

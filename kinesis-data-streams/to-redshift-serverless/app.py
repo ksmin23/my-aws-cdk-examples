@@ -18,8 +18,7 @@ vpc_stack = VpcStack(app, 'KdsToRedshiftVpc',
   env=AWS_ENV)
 kds_stack = KdsStack(app, 'KdsToRedshift')
 redshift_stack = RedshiftServerlessStack(app, 'RedshiftStreamingStack',
-  vpc_stack.vpc,
-  env=AWS_ENV)
+  vpc_stack.vpc)
 redshift_stack.add_dependency(vpc_stack)
 
 app.synth()
