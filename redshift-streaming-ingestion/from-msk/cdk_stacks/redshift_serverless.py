@@ -73,7 +73,7 @@ class RedshiftServerlessStack(Stack):
     }))
 
     redshift_streaming_role = aws_iam.Role(self, 'RedshiftStreamingRole',
-      role_name='RedshiftStreamingRole-2022T1221', #FIXME
+      role_name='RedshiftStreamingRole',
       assumed_by=aws_iam.ServicePrincipal('redshift.amazonaws.com'),
       inline_policies={
         'MSKAccessPolicy': msk_access_policy_doc
