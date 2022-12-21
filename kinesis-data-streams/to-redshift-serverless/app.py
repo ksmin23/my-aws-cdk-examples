@@ -17,7 +17,7 @@ app = cdk.App()
 vpc_stack = VpcStack(app, 'KdsToRedshiftVpc',
   env=AWS_ENV)
 kds_stack = KdsStack(app, 'KdsToRedshift')
-redshift_stack = RedshiftServerlessStack(app, 'RedshiftStreamingStack',
+redshift_stack = RedshiftServerlessStack(app, 'RedshiftStreamingIngestionFromKDS',
   vpc_stack.vpc)
 redshift_stack.add_dependency(vpc_stack)
 

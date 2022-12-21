@@ -1,7 +1,7 @@
 {
   "db_name": "dev",
-  "namespace": "rss-streaming-demo-ns",
-  "workgroup": "rss-streaming-demo-wg",
+  "namespace": "rss-streaming-from-kds-ns",
+  "workgroup": "rss-streaming-from-kds-wg",
   "vpc_name": "default",
   "kinesis_stream_name": "ev_stream_data"
 }
