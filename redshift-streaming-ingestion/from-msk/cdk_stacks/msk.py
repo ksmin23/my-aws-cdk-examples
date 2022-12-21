@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
+import re
 import random
 import string
 
@@ -25,6 +26,7 @@ class MskStack(Stack):
 
     _MSK_DEFAULT_CLUSTER_NAME = 'MSK-{}'.format(''.join(random.choices((string.ascii_letters), k=5)))
     MSK_CLUSTER_NAME = msk_config.get('cluster_name', _MSK_DEFAULT_CLUSTER_NAME)
+    assert len(MSK_CLUSTER_NAME) <= 64 and re.fullmatch(r'[a-zA-Z]+[a-zA-Z0-9-]*', MSK_CLUSTER_NAME)
 
     # Supported Apache Kafka versions:
     #  https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html

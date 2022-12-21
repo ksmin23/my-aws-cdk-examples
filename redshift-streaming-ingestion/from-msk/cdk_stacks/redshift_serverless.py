@@ -32,7 +32,7 @@ class RedshiftServerlessStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for redshift client',
-      # security_group_name='redshift-client-sg'
+      security_group_name='redshift-client-sg'
     )
     cdk.Tags.of(sg_rs_client).add('Name', 'redshift-client-sg')
 
@@ -40,7 +40,7 @@ class RedshiftServerlessStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for redshift cluster nodes',
-      # security_group_name='redshift-cluster-sg'
+      security_group_name='redshift-cluster-sg'
     )
     sg_rs_cluster.add_ingress_rule(peer=sg_rs_client, connection=aws_ec2.Port.tcp(5439),
       description='redshift-client-sg')

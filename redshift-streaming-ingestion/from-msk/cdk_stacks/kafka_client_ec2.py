@@ -73,6 +73,7 @@ class KafkaClientEC2InstanceStack(Stack):
       assumed_by=aws_iam.ServicePrincipal('ec2.amazonaws.com'),
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSSMManagedInstanceCore'),
+        #XXX: EC2 instance should be able to access S3 for user data
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonS3ReadOnlyAccess')
       ]
     )

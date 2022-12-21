@@ -188,7 +188,7 @@ After MSK is succesfully created, you can now create topic, and produce on the t
    Run the following command to generate messages into the topic on the cluster.
 
    <pre>
-   [ec2-user@ip-172-31-0-180 ~]$ python gen_fake_kafka_data.py --bootstrap-servers $BS --topic <i>ev_stream_data</i>
+   [ec2-user@ip-172-31-0-180 ~]$ python3 gen_fake_kafka_data.py --bootstrap-servers $BS --topic <i>ev_stream_data</i>
    </pre>
 
    **(2) To consume messages**
@@ -212,7 +212,7 @@ These steps show you how to configure the materialized view to ingest data.
 
 2. Create an external schema to map the data from MSK to a Redshift object.
    <pre>
-   CREATE EXTERNAL SCHEMA evdata
+   CREATE EXTERNAL SCHEMA <i>evdata</i>
    FROM MSK
    IAM_ROLE 'arn:aws:iam::<i>{AWS-ACCOUNT-ID}</i>:role/RedshiftStreamingRole'
    AUTHENTICATION none
@@ -234,7 +234,7 @@ These steps show you how to configure the materialized view to ingest data.
    The following example defines a materialized view with JSON source data.<br/>
    Create the materialized view so it’s distributed on the UUID value from the stream and is sorted by the `refresh_time` value. The `refresh_time` is the start time of the materialized view refresh that loaded the record. The materialized view is set to auto refresh and will be refreshed as data keeps arriving in the stream.
    <pre>
-   CREATE MATERIALIZED VIEW ev_station_data_extract_kafka DISTKEY(6) sortkey(1) AUTO REFRESH YES AS
+   CREATE MATERIALIZED VIEW <i>ev_station_data_extract</i> DISTKEY(6) sortkey(1) AUTO REFRESH YES AS
      SELECT refresh_time,
        kafka_timestamp_type,
        kafka_timestamp,
@@ -250,7 +250,7 @@ These steps show you how to configure the materialized view to ingest data.
        json_extract_path_text(from_varbyte(kafka_value,'utf-8'),'spaceID',true)::varchar(100) as spaceID,
        json_extract_path_text(from_varbyte(kafka_value,'utf-8'),'timezone',true)::varchar(30)as timezone,
        json_extract_path_text(from_varbyte(kafka_value,'utf-8'),'userID',true)::varchar(30) as userID
-     FROM evdata.ev_stream_data
+     FROM <i>evdata.ev_stream_data</i>
      WHERE LENGTH(kafka_value) < 65355 AND CAN_JSON_PARSE(kafka_value);
    </pre>
    The code above filters records larger than **65355** bytes. This is because `json_extract_path_text` is limited to varchar data type. The Materialized view should be defined so that there aren’t any type conversion errors.
@@ -260,7 +260,7 @@ These steps show you how to configure the materialized view to ingest data.
    The materialized view is auto-refreshed as long as there is new data on the MSK stream. You can also disable auto-refresh and run a manual refresh or schedule a manual refresh using the Redshift Console UI.<br/>
    To update the data in a materialized view, you can use the `REFRESH MATERIALIZED VIEW` statement at any time.
    <pre>
-   REFRESH MATERIALIZED VIEW ev_station_data_extract;
+   REFRESH MATERIALIZED VIEW <i>ev_station_data_extract</i>;
    </pre>
 
 #### Query the stream
@@ -268,14 +268,14 @@ These steps show you how to configure the materialized view to ingest data.
 1. Query data in the materialized view.
    <pre>
    SELECT *
-   FROM ev_station_data_extract;
+   FROM <i>ev_station_data_extract</i>;
    </pre>
 2. Query the refreshed materialized view to get usage statistics.
    <pre>
    SELECT to_timestamp(connectionTime, 'YYYY-MM-DD HH24:MI:SS') as connectiontime
       ,SUM(kWhDelivered) AS Energy_Consumed 
       ,count(distinct userID) AS #Users
-   FROM ev_station_data_extract
+   FROM <i>ev_station_data_extract</i>
    GROUP BY to_timestamp(connectionTime, 'YYYY-MM-DD HH24:MI:SS')
    ORDER BY 1 DESC;
    </pre>
@@ -300,7 +300,7 @@ Enjoy!
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
-   $ mssh <i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
+   $ mssh <i>ec2-user</i>@<i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
    </pre>
  * [ec2instanceconnectcli](https://pypi.org/project/ec2instanceconnectcli/): This Python CLI package handles publishing keys through EC2 Instance Connectand using them to connect to EC2 instances.
  * [Mimesis: Fake Data Generator](https://mimesis.name/en/latest/index.html) - Mimesis is a high-performance fake data generator for Python, which provides data for a variety of purposes in a variety of languages
