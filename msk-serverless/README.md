@@ -1,5 +1,5 @@
 
-# MSK Serverless CDK Python project!
+# Amazon MSK Serverless CDK Python project!
 
 ![msk-serverless-arch](./msk-serverless-arch.svg)
 
@@ -107,7 +107,7 @@ After MSK is succesfully created, you can now create topic, and produce and cons
    <pre>
    $ aws kafka get-bootstrap-brokers --cluster-arn $MSK_SERVERLESS_CLUSTER_ARN
    {
-       "BootstrapBrokerStringSaslIam": "boot-deligu0c.c1.kafka-serverless.<i>{region}</i>.amazonaws.com:9098"
+     "BootstrapBrokerStringSaslIam": "boot-deligu0c.c1.kafka-serverless.<i>{region}</i>.amazonaws.com:9098"
    }
    </pre>
 
@@ -117,7 +117,7 @@ After MSK is succesfully created, you can now create topic, and produce and cons
    Install `ec2instanceconnectcli` python package and Use the **mssh** command with the instance ID as follows.
    <pre>
    $ sudo pip install ec2instanceconnectcli
-   $ mssh <i>i-001234a4bf70dec41EXAMPLE</i>
+   $ mssh ec2-user@<i>i-001234a4bf70dec41EXAMPLE</i>
    </pre>
 
 4. Create an Apache Kafka topic
@@ -133,7 +133,7 @@ After MSK is succesfully created, you can now create topic, and produce and cons
 
    **(1) To produce messages**
 
-   Run the following command to create a console producer.
+   Run the following command to start a console producer.
 
    <pre>
    [ec2-user@ip-172-31-0-180 ~]$ kafka-console-producer.sh --broker-list $BS --producer.config client.properties --topic <i>msk-serverless-tutorial</i>
@@ -179,6 +179,6 @@ Enjoy!
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
-   $ mssh <i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
+   $ mssh <i>ec2-user</i>@<i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
    </pre>
  * [ec2instanceconnectcli](https://pypi.org/project/ec2instanceconnectcli/): This Python CLI package handles publishing keys through EC2 Instance Connectand using them to connect to EC2 instances.
