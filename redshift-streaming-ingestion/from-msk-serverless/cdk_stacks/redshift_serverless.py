@@ -90,8 +90,7 @@ class RedshiftServerlessStack(Stack):
       role_name='RedshiftStreamingRole',
       assumed_by=aws_iam.ServicePrincipal('redshift.amazonaws.com'),
       inline_policies={
-        # 'MSKAccessPolicy': msk_access_policy_doc,
-        'MSKServerlessAccessPolicy': msk_serverless_access_policy_doc,
+        'MSKServerlessAccessPolicy': msk_serverless_access_policy_doc
       }
     )
 
