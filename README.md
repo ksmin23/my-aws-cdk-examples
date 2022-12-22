@@ -53,7 +53,8 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [rds/sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/) | ![sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/mysql-sagemaker-arch.svg) | rds-proxy, aurora mysql, secrets manager, sagemaker |
 | [redshift-serverless](./redshift-serverless/) | ![redshift-serverless-arch](./redshift-serverless/redshift-serverless-arch.svg) | redshift-serverless |
 | [redshift-streaming-ingestion/from-kinesis](./redshift-streaming-ingestion/from-kinesis/) | ![redshift_streaming_from_kds](./redshift-streaming-ingestion/from-kinesis/redshift_streaming_from_kds.svg) | redshift streaming ingestion from kinesis |
-| [redshift-streaming-ingestion/from-msk](./redshift-streaming-ingestion/from-msk/) | ![edshift_streaming_from_msk](./redshift-streaming-ingestion/from-msk/redshift_streaming_from_msk.svg) | redshift streaming ingestion from msk |
+| [redshift-streaming-ingestion/from-msk](./redshift-streaming-ingestion/from-msk/) | ![redshift_streaming_from_msk](./redshift-streaming-ingestion/from-msk/redshift_streaming_from_msk.svg) | redshift streaming ingestion from msk |
+| [redshift-streaming-ingestion/from-msk-serverless](./redshift-streaming-ingestion/from-msk-serverless/) | ![redshift_streaming_from_msk_serverless](./redshift-streaming-ingestion/from-msk-serverless/redshift_streaming_from_msk_serverless.svg) | redshift streaming ingestion from msk serverless |
 | [sagemaker/notebook](./sagemaker/notebook/) | Launch an Amazon SageMaker Notebook Instance | sagemaker notebook instance |
 | [sagemaker/studio](./sagemaker/studio/) | Launch an Amazon SageMaker Studio | sagemaker studio |
 

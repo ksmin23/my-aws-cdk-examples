@@ -1,0 +1,4 @@
+{
+  "vpc_name": "default",
+  "msk_cluster_name": "evdata-serverless"
+}
