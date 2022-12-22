@@ -3,7 +3,7 @@
 
 ![redshift_streaming_from_msk_serverless](./redshift_streaming_from_msk_serverless.svg)
 
-This is an Amazon Redshift Streaming Ingestion from MSK project for CDK development with Python.
+This is an Amazon Redshift Streaming Ingestion from MSK Serverless project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -175,7 +175,7 @@ After MSK Serverless is succesfully created, you can now create topic, and produ
    Keep the connection to the client machine open, and then open a second, separate connection to that machine in a new window.
 
    <pre>
-   [ec2-user@ip-172-31-0-180 ~]$ kafka-console-consumer.sh --bootstrap-server $BS --topic <i>ev_stream_data</i> --from-beginning
+   [ec2-user@ip-172-31-0-180 ~]$ kafka-console-consumer.sh --bootstrap-server $BS --consumer.config client.properties --topic <i>ev_stream_data</i> --from-beginning
    </pre>
 
    You start seeing the messages you entered earlier when you used the console producer command.
