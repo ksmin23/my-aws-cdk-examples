@@ -64,7 +64,7 @@ class MskServerlessStack(Stack):
     )
 
     self.sg_msk_client = sg_msk_client
-    self.msk_cluster_name = msk_cluster_name
+    self.msk_cluster_name = msk_serverless_cluster.cluster_name
 
 
 AWS_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
