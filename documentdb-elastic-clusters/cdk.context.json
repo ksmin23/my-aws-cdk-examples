@@ -1,0 +1,5 @@
+{
+  "vpc_name": "default",
+  "docdb_cluster_name": "testcluster",
+  "docdb_cluster_secret_name": "dev/docdbelastic/admin"
+}
