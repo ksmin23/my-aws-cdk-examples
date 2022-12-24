@@ -3,7 +3,7 @@
 
 ![redshift_streaming_ingestion_from_kinesis_data_streams](./redshift_streaming_from_kds.svg)
 
-This is a Amazon Redshift Streaming Ingestion from Kinesis Data Streams project for CDK development with Python.
+This is an Amazon Redshift Streaming Ingestion from Kinesis Data Streams project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -39,6 +39,15 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
+:information_source: Before you deploy this project, you should create an AWS Secret for your Redshift Serverless Admin user. You can create an AWS Secret like this:
+
+<pre>
+$ aws secretsmanager create-secret \
+    --name "<i>your_redshift_secret_name</i>" \
+    --description "<i>(Optional) description of the secret</i>" \
+    --secret-string '{"admin_username": "admin", "admin_user_password": "<i>password_of_at_last_8_characters</i>"}'
+</pre>
+
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
@@ -47,15 +56,6 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ cdk synth \
               -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c aws_secret_name='<i>your_redshift_secret_name</i>'
-</pre>
-
-:information_source: Before you deploy this project, you should create an AWS Secret for your Redshift Serverless Admin user. You can create an AWS Secret like this:
-
-<pre>
-$ aws secretsmanager create-secret \
-    --name "<i>your_redshift_secret_name</i>" \
-    --description "<i>(Optional) description of the secret</i>" \
-    --secret-string '{"admin_username": "admin", "admin_user_password": "<i>password_of_at_last_8_characters</i>"}'
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
@@ -75,7 +75,9 @@ command.
 Delete the CloudFormation stack by running the below command.
 
 <pre>
-(.venv) $ cdk --profile cdk_user destroy --force -c aws_secret_name=<i>your_redshift_secret_name</i>
+(.venv) $ cdk destroy --force \
+              -c vpc_name='<i>your-existing-vpc-name</i>' \
+              -c aws_secret_name='<i>your_redshift_secret_name</i>'
 </pre>
 
 ## Useful commands
