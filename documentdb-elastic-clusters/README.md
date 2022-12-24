@@ -39,7 +39,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
-:information_source: Before you deploy this project, you should create an AWS Secret for your RDS Admin user. You can create an AWS Secret like this:
+:information_source: Before you deploy this project, you should create an AWS Secret for your DocumentDB Admin user. You can create an AWS Secret like this:
 
 <pre>
 $ aws secretsmanager create-secret \
