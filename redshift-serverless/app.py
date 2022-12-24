@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import os
 import json
-import boto3
 
 import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
   aws_ec2,
-  aws_redshiftserverless
+  aws_redshiftserverless,
+  aws_secretsmanager
 )
 from constructs import Construct
 
@@ -25,7 +25,7 @@ class RedshiftServerlessStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    vpc_name = self.node.try_get_context("vpc_name")
+    vpc_name = self.node.try_get_context("vpc_name") or "default"
     vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
       is_default=True,
       vpc_name=vpc_name)
@@ -41,10 +41,10 @@ class RedshiftServerlessStack(Stack):
     #   }
     # )
 
-    sm_client = boto3.client('secretsmanager', region_name=vpc.env.region)
     secret_name = self.node.try_get_context('aws_secret_name')
-    secret_value = sm_client.get_secret_value(SecretId=secret_name)
-    redshift_secret = json.loads(secret_value['SecretString'])
+    rs_admin_user_secret = aws_secretsmanager.Secret.from_secret_name_v2(self,
+      'DocDBElasticAdminUserSecret',
+      secret_name)
 
     REDSHIFT_DB_NAME = self.node.try_get_context('db_name') or 'dev'
     REDSHIFT_NAMESPACE_NAME = self.node.try_get_context('namespace') or 'rss-demo-ns'
@@ -74,8 +74,8 @@ class RedshiftServerlessStack(Stack):
       namespace_name=REDSHIFT_NAMESPACE_NAME,
 
       # the properties below are optional
-      admin_username=redshift_secret['admin_username'],
-      admin_user_password=redshift_secret['admin_user_password'],
+      admin_username=rs_admin_user_secret.secret_value_from_json("admin_username").unsafe_unwrap(),
+      admin_user_password=rs_admin_user_secret.secret_value_from_json("admin_user_password").unsafe_unwrap(),
       db_name=REDSHIFT_DB_NAME,
       log_exports=['userlog', 'connectionlog', 'useractivitylog']
     )
