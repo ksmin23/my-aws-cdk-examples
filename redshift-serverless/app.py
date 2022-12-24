@@ -43,7 +43,7 @@ class RedshiftServerlessStack(Stack):
 
     secret_name = self.node.try_get_context('aws_secret_name')
     rs_admin_user_secret = aws_secretsmanager.Secret.from_secret_name_v2(self,
-      'DocDBElasticAdminUserSecret',
+      'RedshiftAdminUserSecret',
       secret_name)
 
     REDSHIFT_DB_NAME = self.node.try_get_context('db_name') or 'dev'
@@ -91,7 +91,7 @@ class RedshiftServerlessStack(Stack):
       security_group_ids=[sg_rs_cluster.security_group_id],
       subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
     )
-    cfn_rss_workgroup.add_depends_on(cfn_rss_namespace)
+    cfn_rss_workgroup.add_dependency(cfn_rss_namespace)
     cfn_rss_workgroup.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
  
     cdk.CfnOutput(self, f'{self.stack_name}-NamespaceName',
