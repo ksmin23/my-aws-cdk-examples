@@ -137,11 +137,11 @@ Enjoy!
    WriteResult({ "nInserted" : 1 })
    db.Employee.findOne()
    {
-   	"_id" : ObjectId("63a6983cd266b3c5163e2db4"),
-   	"Employeeid" : 1,
-   	"Name" : "Joe",
-   	"LastName" : "Bruin",
-   	"level" : 1
+      "_id" : ObjectId("63a6983cd266b3c5163e2db4"),
+      "Employeeid" : 1,
+      "Name" : "Joe",
+      "LastName" : "Bruin",
+      "level" : 1
    }
    mongos>
    </pre>
