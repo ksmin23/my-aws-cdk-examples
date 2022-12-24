@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 
-import json
-import boto3
-
 import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
   aws_ec2,
   aws_iam,
-  aws_redshiftserverless
+  aws_redshiftserverless,
+  aws_secretsmanager
 )
 from constructs import Construct
 
@@ -19,10 +17,10 @@ class RedshiftServerlessStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, sg_msk_client, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    sm_client = boto3.client('secretsmanager', region_name=vpc.env.region)
     secret_name = self.node.try_get_context('aws_secret_name')
-    secret_value = sm_client.get_secret_value(SecretId=secret_name)
-    redshift_secret = json.loads(secret_value['SecretString'])
+    rs_admin_user_secret = aws_secretsmanager.Secret.from_secret_name_v2(self,
+      'RedshiftAdminUserSecret',
+      secret_name)
 
     REDSHIFT_DB_NAME = self.node.try_get_context('db_name') or 'dev'
     REDSHIFT_NAMESPACE_NAME = self.node.try_get_context('namespace') or 'rss-streaming-from-msk-ns'
@@ -82,8 +80,8 @@ class RedshiftServerlessStack(Stack):
 
     cfn_rss_namespace = aws_redshiftserverless.CfnNamespace(self, 'RedshiftServerlessCfnNamespace',
       namespace_name=REDSHIFT_NAMESPACE_NAME,
-      admin_username=redshift_secret['admin_username'],
-      admin_user_password=redshift_secret['admin_user_password'],
+      admin_username=rs_admin_user_secret.secret_value_from_json("admin_username").unsafe_unwrap(),
+      admin_user_password=rs_admin_user_secret.secret_value_from_json("admin_user_password").unsafe_unwrap(),
       db_name=REDSHIFT_DB_NAME,
       iam_roles=[redshift_streaming_role.role_arn],
       log_exports=['userlog', 'connectionlog', 'useractivitylog']
@@ -98,7 +96,7 @@ class RedshiftServerlessStack(Stack):
       security_group_ids=[sg_rs_cluster.security_group_id, sg_msk_client.security_group_id],
       subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
     )
-    cfn_rss_workgroup.add_depends_on(cfn_rss_namespace)
+    cfn_rss_workgroup.add_dependency(cfn_rss_namespace)
     cfn_rss_workgroup.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
  
     cdk.CfnOutput(self, f'{self.stack_name}-NamespaceName',
