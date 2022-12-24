@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-import json
 
 import aws_cdk as cdk
 
