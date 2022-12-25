@@ -213,6 +213,7 @@ Enjoy!
  * [Getting Started with Amazon DocumentDB Elastic Clusters](https://docs.aws.amazon.com/documentdb/latest/developerguide/elastic-get-started.html)
  * [Announcing Amazon DocumentDB Elastic Clusters (2022-11-30)](https://aws.amazon.com/ko/blogs/aws/announcing-amazon-documentdb-elastic-clusters/)
  * [PyMongo Documentation](https://pymongo.readthedocs.io/en/stable/) - **PyMongo** is a Python distribution containing tools for working with MongoDB, and is the recommended way to work with `MongoDB` from Python.
+ * [MongoDB Documentation](https://www.mongodb.com/docs/manual/)
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
