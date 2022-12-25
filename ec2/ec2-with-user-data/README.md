@@ -65,6 +65,6 @@ Enjoy!
 
 ## References
 
- * [Amazon EC2 -Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
+ * [Amazon EC2 - Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
  * [Create EC2 Instance in new VPC with Systems Manager enabled](https://github.com/aws-samples/aws-cdk-examples/tree/master/python/ec2/instance)
 
