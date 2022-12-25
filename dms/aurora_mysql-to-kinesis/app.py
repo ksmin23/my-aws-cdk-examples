@@ -106,7 +106,7 @@ class AuroraMysqlToKinesisStack(Stack):
     }))
 
     dms_target_kinesis_access_role = aws_iam.Role(self, 'DMSTargetKinesisAccessRole',
-      role_name='DMSTargetS3AccessRole',
+      role_name='DMSTargetKinesisAccessRole',
       assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
       inline_policies={
         'KinesisAccessRole': dms_kinesis_access_role_policy_doc
