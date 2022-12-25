@@ -78,6 +78,9 @@ class AuroraMysqlToKinesisStack(Stack):
       vpc_security_group_ids=[db_client_sg.security_group_id]
     )
 
+    #XXX: If you use `aws_cdk.SecretValue.unsafe_unwrap()` to get any secret value,
+    # you may probably encounter ValueError; for example, invalid literal for int() with base 10: '${Token[TOKEN.228]}'
+    # So you should need to make the API call in order to access a secret inside it.
     sm_client = boto3.client('secretsmanager', region_name=vpc.env.region)
     secret_name = self.node.try_get_context('aws_secret_name')
     secret_value = sm_client.get_secret_value(SecretId=secret_name)
