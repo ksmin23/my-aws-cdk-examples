@@ -95,7 +95,7 @@ app = cdk.App()
 vpc_stack = VpcStack(app, 'DocDBElasticVpc',
   env=AWS_ENV)
 
-docdb_elastic_cluster_stack = DocumentDbElasticClustersStack(app, 'DocDBElasticStack-20221224',
+docdb_elastic_cluster_stack = DocumentDbElasticClustersStack(app, 'DocDBElasticStack',
   vpc_stack.vpc
 )
 docdb_elastic_cluster_stack.add_dependency(vpc_stack)

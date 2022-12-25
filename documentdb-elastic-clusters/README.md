@@ -95,7 +95,9 @@ Enjoy!
 
 ## Run Test
 
-1. Connect the DocumentDB Elastic Cluster client EC2 Host
+#### Connect the DocumentDB Elastic Cluster with MongoDB shell
+
+1. Connect the client EC2 Host
 
    You can connect to an EC2 instance using the EC2 Instance Connect CLI.<br/>
    Install `ec2instanceconnectcli` python package and Use the **mssh** command with the instance ID as follows.
@@ -104,7 +106,7 @@ Enjoy!
    $ mssh ec2-user@<i>i-001234a4bf70dec41EXAMPLE</i>
    </pre>
 
-2. Connect the MSK client EC2 Host
+2. Connect to your new Elastic Cluster
 
    On the [Amazon DocumentDB Management Console](https://console.aws.amazon.com/docdb), under Clusters, locate your cluster.<br/>
    Choose the cluster you created by selecting the cluster identifier. From Connectivity and Security, copy your endpoint and paste it into your EC2 Host.<br/>
@@ -121,11 +123,8 @@ Enjoy!
 
 3. Shard your collection; insert and query data
 
-   On the Amazon DocumentDB Management Console, under Clusters, locate your cluster.<br/>
-   Choose the cluster you created by selecting the cluster identifier. From Connectivity and Security, copy your endpoint and paste it into your EC2 Host.<br/>
-   Once connected, you should see the following output:
+   Elastic Clusters add support for sharding in Amazon DocumentDB. Now that you are connected to your cluster, you can shard the cluster, insert data and run a few queries.
    <pre>
-   [ec2-user@ip-172-31-15-68 ~]$ mongo mongodb://<i>{admin-user-name}</i>:<i>{admin-user-password}</i>@<i>cluster-name</i>-123456789012.us-east-1.docdb-elastic.amazonaws.com:27017 -ssl
    MongoDB shell version v4.0.28
    connecting to: mongodb://<i>cluster-name</i>-123456789012.us-east-1.docdb-elastic.amazonaws.com:27017/?gssapiServiceName=mongodb
    Implicit session: session { "id" : UUID("141dbc40-dfa0-46a0-8ab8-28cf56d89cb0") }
@@ -144,6 +143,69 @@ Enjoy!
       "level" : 1
    }
    mongos>
+   </pre>
+
+#### Connect the DocumentDB Elastic Cluster with PyMongo
+
+1. Connect the client EC2 Host
+
+   You can connect to an EC2 instance using the EC2 Instance Connect CLI.<br/>
+   Install `ec2instanceconnectcli` python package and Use the **mssh** command with the instance ID as follows.
+   <pre>
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh ec2-user@<i>i-001234a4bf70dec41EXAMPLE</i>
+   </pre>
+
+2. Connect to your new Elastic Cluster
+
+   On the [Amazon DocumentDB Management Console](https://console.aws.amazon.com/docdb), under Clusters, locate your cluster.<br/>
+   Choose the cluster you created by selecting the cluster identifier. From Connectivity and Security, copy your endpoint and paste it into your EC2 Host.<br/>
+   Once connected, you should see the following output:
+   <pre>
+   [ec2-user@ip-172-31-15-68 ~]$ pip3 list | grep pymongo
+   pymongo           4.3.3
+   [ec2-user@ip-172-31-15-68 ~]$ python3
+   Python 3.7.15 (default, Oct 31 2022, 22:44:31)
+   [GCC 7.3.1 20180712 (Red Hat 7.3.1-15)] on linux
+   Type "help", "copyright", "credits" or "license" for more information.
+   >>> from pymongo import MongoClient
+   >>> uri_str = 'mongodb://<i>{admin-user-name}</i>:<i>{admin-user-password}</i>@<i>cluster-name</i>-123456789012.us-east-1.docdb-elastic.amazonaws.com:27017/?ssl=true'
+   >>> client = MongoClient(uri_str)
+   >>>
+   </pre>
+
+3. Shard your collection; insert and query data
+
+   Elastic Clusters add support for sharding in Amazon DocumentDB. Now that you are connected to your cluster, you can shard the cluster, insert data and run a few queries.
+   <pre>
+   Python 3.7.15 (default, Oct 31 2022, 22:44:31)
+   [GCC 7.3.1 20180712 (Red Hat 7.3.1-15)] on linux
+   Type "help", "copyright", "credits" or "license" for more information.
+   >>> from pymongo import MongoClient
+   >>> uri_str = 'mongodb://<i>{admin-user-name}</i>:<i>{admin-user-password}</i>@<i>cluster-name</i>-123456789012.us-east-1.docdb-elastic.amazonaws.com:27017/?ssl=true'
+   >>> client = MongoClient(uri_str)
+   >>> db = client['db']
+   >>> collection = db['Employee']
+   >>> doc = {"Employeeid":1, "Name":"Joe", "LastName": "Bruin", "level": 1 }
+   >>> doc_id = collection.insert_one(doc).inserted_id
+   >>> doc_id
+   ObjectId('63a7aab0f82742ed22fc84a4')
+   >>> import pprint
+   >>> pprint.pprint(collection.find_one())
+   {'Employeeid': 1,
+    'LastName': 'Bruin',
+    'Name': 'Joe',
+    '_id': ObjectId('63a7aab0f82742ed22fc84a4'),
+    'level': 1}
+   >>> pprint.pprint(collection.find_one({"_id": doc_id}))
+   {'Employeeid': 1,
+    'LastName': 'Bruin',
+    'Name': 'Joe',
+    '_id': ObjectId('63a7aab0f82742ed22fc84a4'),
+    'level': 1}
+   >>> db.list_collection_names()
+   ['Employee']
+   >>>
    </pre>
 
 ## References
