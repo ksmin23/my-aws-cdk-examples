@@ -61,6 +61,9 @@ command.
 
 ## Set up to access Jupyter Notebook Server on Local MacOS PC
 
+The deployment might take about `10` minutes.
+After then, you can access to the jupyter server through the browser by the following instructions.
+
 #### Copy Jupter Notebook CA from EC2 instance
 
 - Copy certificate file for Jupyter notebook into your local computer (e.g. MacOS)
