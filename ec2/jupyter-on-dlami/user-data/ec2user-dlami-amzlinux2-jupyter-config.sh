@@ -5,20 +5,12 @@ export PATH=/home/ec2-user/anaconda3/bin:$PATH
 echo 'export PATH=$HOME/anaconda3/bin:$PATH' >> /home/ec2-user/.bash_profile
 
 my_region=$1
-echo "region is $my_region"
+echo "Region is ${my_region}"
 
 sudo yum update -y -q
-curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
-sudo yum install -y -q nodejs
 pip install --upgrade --quiet jupyter
-# pip install --quiet "jupyterlab>=2.2.9,<3.0.0"
 pip install --quiet "jupyterlab>=2.2.9"
 pip install --quiet aws-jupyter-proxy
-
-npm_version=`npm --version`
-node_version=`node --version`
-jupyterlab_version=`jupyter lab --version`
-echo "NODE VERISON : $node_version , NPM VERSION : $npm_version and JUPYTERLAB VERSION : $jupyter_version"
 
 echo "*********************Jupyter Version Info*********************"
 jupyter --version
@@ -60,7 +52,9 @@ echo "*********************Finished Writing Config File*********************"
 
 pip install --upgrade --quiet boto3
 pip install --upgrade --quiet awscli
-aws configure set region $my_region
+aws configure set region ${my_region}
+
 nohup jupyter lab --config=$JUPYTER_CONFIG_DIR/jupyter_notebook_config.py >/home/ec2-user/jupyter.log 2>&1 &
+
 df -h
 echo "********************Start running Juypter notebook********************"
