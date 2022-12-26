@@ -35,7 +35,7 @@ class CognitoProtectedDynamoDBApiStack(Stack):
     #   vpc_name=vpc_name
     # )
 
-    vpc = aws_ec2.Vpc(self, "ApiGatewayDynamoDBVPC",
+    vpc = aws_ec2.Vpc(self, "ApiGatewayDynamoDBCognitoVPC",
       max_azs=2,
       gateway_endpoints={
         "S3": aws_ec2.GatewayVpcEndpointOptions(

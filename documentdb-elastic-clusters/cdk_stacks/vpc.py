@@ -28,7 +28,7 @@ class VpcStack(Stack):
 
     #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    # vpc = aws_ec2.Vpc(self, "WebAnalyticsVPC",
+    # vpc = aws_ec2.Vpc(self, "DocDBElasticVPC",
     #   max_azs=2,
     #   gateway_endpoints={
     #     "S3": aws_ec2.GatewayVpcEndpointOptions(

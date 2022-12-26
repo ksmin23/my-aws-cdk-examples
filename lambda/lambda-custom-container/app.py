@@ -37,7 +37,7 @@ class LambdaCustomContainerStack(Stack):
       vpc_name=vpc_name
     )
 
-    # vpc = aws_ec2.Vpc(self, "AlbLambdaStackVPC",
+    # vpc = aws_ec2.Vpc(self, "LambdaCustomContainerVPC",
     #   max_azs=3,
     #   gateway_endpoints={
     #     "S3": aws_ec2.GatewayVpcEndpointOptions(

@@ -30,7 +30,7 @@ class ScheduledLambdaStack(Stack):
     #  vpc_name=vpc_name
     #)
 
-    # vpc = aws_ec2.Vpc(self, 'LambdaLayersVPC',
+    # vpc = aws_ec2.Vpc(self, 'ScheduledLambdaVPC',
     #   max_azs=3,
     #   gateway_endpoints={
     #     "S3": aws_ec2.GatewayVpcEndpointOptions(

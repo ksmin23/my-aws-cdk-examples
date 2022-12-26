@@ -47,7 +47,7 @@ class AuroraMysqlToKinesisStack(Stack):
       vpc_name=vpc_name
     )
 
-    # vpc = aws_ec2.Vpc(self, 'DMSAuroraMysqlToS3VPC',
+    # vpc = aws_ec2.Vpc(self, 'DMSAuroraMysqlToKinesisVPC',
     #   max_azs=3,
     #   gateway_endpoints={
     #     "S3": aws_ec2.GatewayVpcEndpointOptions(
