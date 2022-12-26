@@ -92,11 +92,11 @@ class DeepLearningAMIStack(Stack):
 
     work_dirname = os.path.dirname(__file__)
     cdk_asset = aws_s3_assets.Asset(self, "Asset",
-      path=os.path.join(work_dirname, "user-data/ec2user-jupyter-config.sh"))
+      path=os.path.join(work_dirname, "user-data/ec2user-dlami-amzlinux2-jupyter-config.sh"))
     local_path = dl_nb_instance.user_data.add_s3_download_command(
       bucket=cdk_asset.bucket,
       bucket_key=cdk_asset.s3_object_key,
-      local_file='/tmp/ec2user-jupyter-config.sh'
+      local_file='/tmp/ec2user-dlami-amzlinux2-jupyter-config.sh'
     )
 
     cdk_asset.grant_read(dl_nb_instance.role)
