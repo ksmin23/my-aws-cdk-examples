@@ -142,6 +142,7 @@ Enjoy!
    </pre>
  * [Deep Learning AMI - Set up a Jupyter Notebook Server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter.html)
  * [Running a jupyter notebook server](https://jupyter-notebook.readthedocs.io/en/stable/public_server.html)
+ * [Starting JupyterLab](https://jupyterlab.readthedocs.io/en/stable/getting_started/starting.html)
  * [How to Import and Export a Client Personal Authentication Certificate on Mac OS X Keychain Access](https://sectigo.com/faqs/detail/How-to-Import-and-Export-a-Client-Personal-Authentication-Certificate-on-Mac-OS-X-Keychain-Access/kA03l000000vFhu)
  * [Preparing data for ML models using AWS Glue DataBrew in a Jupyter notebook](https://aws.amazon.com/blogs/big-data/preparing-data-for-ml-models-using-aws-glue-databrew-in-a-jupyter-notebook/)
    * [AWS Glue Databrew Jupyter extension Github Repository](https://github.com/aws/aws-glue-databrew-jupyter-extension/tree/main/blogpost/cloudformation)
