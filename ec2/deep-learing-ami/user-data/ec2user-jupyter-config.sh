@@ -1,14 +1,18 @@
 #!/bin/bash
-export PATH=/opt/conda/bin:$PATH
-echo 'export PATH=/opt/conda/bin:$PATH' >> /home/ec2-user/.bash_profile
+
+# Set a right conda or anaconda3 path according to the Deep Learning AMIs
+export PATH=/home/ec2-user/anaconda3/bin:$PATH
+echo 'export PATH=$HOME/anaconda3/bin:$PATH' >> /home/ec2-user/.bash_profile
 
 my_region=$1
 echo "region is $my_region"
 
+sudo yum update -y -q
 curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
-sudo yum install -y nodejs
+sudo yum install -y -q nodejs
 pip install --upgrade --quiet jupyter
-pip install --quiet "jupyterlab>=2.2.9,<3.0.0"
+# pip install --quiet "jupyterlab>=2.2.9,<3.0.0"
+pip install --quiet "jupyterlab>=2.2.9"
 pip install --quiet aws-jupyter-proxy
 
 npm_version=`npm --version`
@@ -39,9 +43,14 @@ cat <<EOF >> "$JUPYTER_CONFIG_DIR/jupyter_notebook_config.py"
 # Set options for certfile, ip, password, and toggle off browser auto-opening
 c.NotebookApp.certfile = u'$CERTIFICATE_DIR/mycert.pem'
 c.NotebookApp.keyfile = u'$CERTIFICATE_DIR/mykey.key'
+from notebook.auth import passwd
+password = passwd("amazon_dlami")
+c.NotebookApp.password = password
+
 # Set ip to '*' to bind on all interfaces (ips) for the public server
 c.NotebookApp.ip = '*'
 c.NotebookApp.open_browser = False
+
 # It is a good idea to set a known, fixed port for server access
 c.NotebookApp.port = 8888
 EOF
@@ -52,6 +61,6 @@ echo "*********************Finished Writing Config File*********************"
 pip install --upgrade --quiet boto3
 pip install --upgrade --quiet awscli
 aws configure set region $my_region
-nohup jupyter notebook --config=$JUPYTER_CONFIG_DIR/jupyter_notebook_config.py >/home/ec2-user/jupyter.log 2>&1 &
+nohup jupyter lab --config=$JUPYTER_CONFIG_DIR/jupyter_notebook_config.py >/home/ec2-user/jupyter.log 2>&1 &
 df -h
-echo "*******************************************************************"
+echo "********************Start running Juypter notebook********************"

@@ -85,37 +85,43 @@ command.
 #### Configure a Linux or macOS Client
 1. Open a terminal.
 2. Add a ssh tunnel configuration to the ssh config file of the personal local PC as follows:
-<pre>
-# Jupyter Notebook Server Tunnel
-Host nbtunnel
-   HostName <i>EC2-Public-IP</i>
-   User ec2-user
-   IdentitiesOnly yes
-   IdentityFile <i>Path-to-SSH-Public-Key</i>
-   LocalForward 8888 <i>ec2-###-###-###-###.compute-1.amazonaws.com</i>:8888
-</pre>
+   <pre>
+   # Jupyter Notebook Server Tunnel
+   Host nbtunnel
+      HostName <i>EC2-Public-IP</i>
+      User ec2-user
+      IdentitiesOnly yes
+      IdentityFile <i>Path-to-SSH-Public-Key</i>
+      LocalForward 8888 <i>ec2-###-###-###-###.compute-1.amazonaws.com</i>:8888
+   </pre>
 
-ex)
+   ex)
 
-<pre>
-~$ ls -1 .ssh/
-config
-my-ec2-key-pair.pem
+   <pre>
+   ~$ ls -1 .ssh/
+   config
+   my-ec2-key-pair.pem
 
-~$ tail .ssh/config
-# Jupyter Notebook Server Tunnel
-Host nbtunnel
-   HostName 214.132.71.219
-   User ec2-user
-   IdentitiesOnly yes
-   IdentityFile ~/.ssh/my-ec2-key-pair.pem
-   LocalForward 8888 <i>ec2-214-132-71-219.compute-1.amazonaws.com</i>:8888
+   ~$ tail .ssh/config
+   \# Jupyter Notebook Server Tunnel
+   Host nbtunnel
+      HostName 214.132.71.219
+      User ec2-user
+      IdentitiesOnly yes
+      IdentityFile ~/.ssh/my-ec2-key-pair.pem
+      LocalForward 8888 <i>ec2-214-132-71-219.compute-1.amazonaws.com</i>:8888
 
-~$
-</pre>
+   ~$
+   </pre>
 
-3. In the address bar of your browser, type the following URL, or click on this link: [https://localhost:8888](https://localhost:8888)
-   For more information, see [Test by Logging in to the Jupyter notebook server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter-login.html)
+3. In the address bar of your browser, type the following URL, or click on this link: [https://localhost:8888](https://localhost:8888)<br/>
+   Because the Jupyter server is configured with a self-signed SSL certificate, your browser warns you and prompts you to avoid continuing to this website. But because you set this up yourself, it’s safe to continue.
+
+   (1) Choose **Advanced**.<br/>
+   (2) Choose **Proceed**.<br/>
+   (3) Use the password `amazon_dlami` to log in.<br/>
+
+   For more information, see [AWS Deep Learning AMI - Test by Logging in to the Jupyter notebook server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter-login.html)
 
 ## Useful commands
 
@@ -130,12 +136,15 @@ Enjoy!
 ## References
 
  * [Release Notes for Amazon DLAMI](https://docs.aws.amazon.com/dlami/latest/devguide/appendix-ami-release-notes.html)
+   * Query AMI-ID with AWSCLI (example region is `us-east-1`):
+   <pre>
+   $ aws ec2 describe-images --region us-east-1 --owners amazon --filters 'Name=name,Values=Deep Learning AMI (Amazon Linux 2) Version ??.?' 'Name=state,Values=available' --query 'reverse(sort_by(Images, &CreationDate))[:1].Name'
+   </pre>
  * [Deep Learning AMI - Set up a Jupyter Notebook Server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter.html)
+ * [Running a jupyter notebook server](https://jupyter-notebook.readthedocs.io/en/stable/public_server.html)
  * [How to Import and Export a Client Personal Authentication Certificate on Mac OS X Keychain Access](https://sectigo.com/faqs/detail/How-to-Import-and-Export-a-Client-Personal-Authentication-Certificate-on-Mac-OS-X-Keychain-Access/kA03l000000vFhu)
- * [주피터 (Jupyter Notebook) 설치하여 웹브라우저로 서버 관리 - 우분투](https://hithot.tistory.com/74)
  * [Preparing data for ML models using AWS Glue DataBrew in a Jupyter notebook](https://aws.amazon.com/blogs/big-data/preparing-data-for-ml-models-using-aws-glue-databrew-in-a-jupyter-notebook/)
-   * [AWS Glue Databrew Jupyter extension](https://github.com/aws/aws-glue-databrew-jupyter-extension/tree/main/blogpost/cloudformation)
- * [Jupyter Lab gets killed with message "received signal 15, stopping"](https://discourse.jupyter.org/t/jupyter-lab-gets-killed-with-message-received-signal-15-stopping/9512/4)
+   * [AWS Glue Databrew Jupyter extension Github Repository](https://github.com/aws/aws-glue-databrew-jupyter-extension/tree/main/blogpost/cloudformation)
  * [How can I send user-data output to the console logs on an EC2 instance running Amazon Linux or Amazon Linux 2?](https://aws.amazon.com/premiumsupport/knowledge-center/ec2-linux-log-user-data/)
    * The following is the line that redirects the user-data output:
      ```
