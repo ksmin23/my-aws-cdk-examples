@@ -24,6 +24,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [ec2/vpc](./ec2/vpc/) | ![aws-vpc](./ec2/vpc/aws-vpc.svg) | vpc |
 | [ec2/import-existing-vpc](./ec2/import-existing-vpc/) | ![aws-existing-vpc](./ec2/import-existing-vpc/aws-existing-vpc.svg) | vpc |
 | [ec2/jenkins-on-ec2](./ec2/jenkins-on-ec2/) | ![jenkins-on-ec2](./ec2/jenkins-on-ec2/jenkins-on-ec2.svg) | jenkins, ec2 |
+| [ec2/jupyter-on-dlami](./ec2/jupyter-on-dlami/) | Launch Jupyter Server on Amazon Deep Learning AMI | jupyter, ec2, DLAMI |
 | [elasticache/redis](./elasticache/redis/) | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) | redis, redis-cluster |
 | [elasticsearch](./elasticsearch/) | ![amazon-es-arch](./elasticsearch/amazon-es-arch.svg) | elasticsearch |
 | [opensearch/cfn-domain](./opensearch-service/cfn-domain) | ![amazon-es-arch](./opensearch-service/cfn-domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.CfnDomain construct |
