@@ -38,19 +38,21 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk -c dlami_name="<i>DLAMI-name</i>" \
-              synth \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>" \
-              --parameters JupyterNotebookInstanceType="<i>your-ec2-instance-type</i>"
+(.venv) $ cdk synth \
+              -c vpc_name="<i>your-existing-vpc-name</i>" \
+              -c dlami_name="<i>DLAMI-name</i>" \
+              -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" \
+              -c jupyter_notebook_instance_type="<i>your-ec2-instance-type</i>"
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk -c dlami_name="<i>DLAMI-name</i>" \
-              deploy \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name</i>" \
-              --parameters JupyterNotebookInstanceType="<i>your-ec2-instance-type</i>"
+(.venv) $ cdk deploy \
+              -c vpc_name="<i>your-existing-vpc-name</i>" \
+              -c dlami_name="<i>DLAMI-name</i>" \
+              -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" \
+              -c jupyter_notebook_instance_type="<i>your-ec2-instance-type</i>"
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -63,7 +65,7 @@ command.
 
 - Copy certificate file for Jupyter notebook into your local computer (e.g. MacOS)
   <pre>
-  $ scp -i ~/.ssh/<i>your-ec2-key-par-name</i> ec2-user@<i>jupyter-instance-ip</i>:/home/ec2-user/certificate/mycert.pem ./
+  $ scp -i ~/.ssh/<i>your-ec2-key-pair-name(include .pem extension)</i> ec2-user@<i>jupyter-instance-ip</i>:/home/ec2-user/certificate/mycert.pem ./jupytercert.pem
   </pre>
 
 #### Import Jupyter Certificate into a Mac OS using Keychain Access
@@ -93,6 +95,7 @@ Enjoy!
 ## References
 
  * [Release Notes for Amazon DLAMI](https://docs.aws.amazon.com/dlami/latest/devguide/appendix-ami-release-notes.html)
+ * [Deep Learning AMI - Set up a Jupyter Notebook Server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter.html)
  * [How to Import and Export a Client Personal Authentication Certificate on Mac OS X Keychain Access](https://sectigo.com/faqs/detail/How-to-Import-and-Export-a-Client-Personal-Authentication-Certificate-on-Mac-OS-X-Keychain-Access/kA03l000000vFhu)
  * [주피터 (Jupyter Notebook) 설치하여 웹브라우저로 서버 관리 - 우분투](https://hithot.tistory.com/74)
  * [Preparing data for ML models using AWS Glue DataBrew in a Jupyter notebook](https://aws.amazon.com/blogs/big-data/preparing-data-for-ml-models-using-aws-glue-databrew-in-a-jupyter-notebook/)

@@ -1,5 +1,6 @@
 #!/bin/bash
-export PATH=/home/ec2-user/anaconda3/bin:$PATH
+export PATH=/opt/conda/bin:$PATH
+echo 'export PATH=/opt/conda/bin:$PATH' >> /home/ec2-user/.bash_profile
 
 my_region=$1
 echo "region is $my_region"
@@ -40,9 +41,6 @@ c.NotebookApp.certfile = u'$CERTIFICATE_DIR/mycert.pem'
 c.NotebookApp.keyfile = u'$CERTIFICATE_DIR/mykey.key'
 # Set ip to '*' to bind on all interfaces (ips) for the public server
 c.NotebookApp.ip = '*'
-from IPython.lib import passwd
-password = passwd("databrew_demo")
-c.NotebookApp.password = password
 c.NotebookApp.open_browser = False
 # It is a good idea to set a known, fixed port for server access
 c.NotebookApp.port = 8888
@@ -51,11 +49,9 @@ EOF
 chown -R ec2-user $JUPYTER_CONFIG_DIR
 echo "*********************Finished Writing Config File*********************"
 
-jupyter labextension install aws_glue_databrew_jupyter
-
 pip install --upgrade --quiet boto3
 pip install --upgrade --quiet awscli
 aws configure set region $my_region
-jupyter notebook --config=$JUPYTER_CONFIG_DIR/jupyter_notebook_config.py >/home/ec2-user/jupyter.log 2>&1 &
+nohup jupyter notebook --config=$JUPYTER_CONFIG_DIR/jupyter_notebook_config.py >/home/ec2-user/jupyter.log 2>&1 &
 df -h
 echo "*******************************************************************"
