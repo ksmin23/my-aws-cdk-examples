@@ -1,0 +1,5 @@
+{
+  "jupyter_notebook_instance_type": "g4dn.xlarge",
+  "dlami_name": "Deep Learning AMI GPU PyTorch 1.13.0 (Amazon Linux 2) 20221221",
+  "vpc_name": "default"
+}
