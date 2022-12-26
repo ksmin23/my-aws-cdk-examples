@@ -65,7 +65,7 @@ command.
 
 - Copy certificate file for Jupyter notebook into your local computer (e.g. MacOS)
   <pre>
-  $ scp -i ~/.ssh/<i>your-ec2-key-pair-name(include .pem extension)</i> ec2-user@<i>jupyter-instance-ip</i>:/home/ec2-user/certificate/mycert.pem ./jupytercert.pem
+  $ scp -i ~/.ssh/<i>your-ec2-key-pair-name(include .pem extension)</i> ec2-user@<i>jupyter-instance-public-ip</i>:/home/ec2-user/certificate/mycert.pem ./mycert.pem
   </pre>
 
 #### Import Jupyter Certificate into a Mac OS using Keychain Access
@@ -81,6 +81,41 @@ command.
    The certificate will be installed and can be viewed by clicking **Category > My Certificates** in the Keychain Access utility.
 
    ![macos_keychain_access_import_items04](./resources/macos_keychain_access_import_items04.png)
+
+#### Configure a Linux or macOS Client
+1. Open a terminal.
+2. Add a ssh tunnel configuration to the ssh config file of the personal local PC as follows:
+<pre>
+# Jupyter Notebook Server Tunnel
+Host nbtunnel
+   HostName <i>EC2-Public-IP</i>
+   User ec2-user
+   IdentitiesOnly yes
+   IdentityFile <i>Path-to-SSH-Public-Key</i>
+   LocalForward 8888 <i>ec2-###-###-###-###.compute-1.amazonaws.com</i>:8888
+</pre>
+
+ex)
+
+<pre>
+~$ ls -1 .ssh/
+config
+my-ec2-key-pair.pem
+
+~$ tail .ssh/config
+# Jupyter Notebook Server Tunnel
+Host nbtunnel
+   HostName 214.132.71.219
+   User ec2-user
+   IdentitiesOnly yes
+   IdentityFile ~/.ssh/my-ec2-key-pair.pem
+   LocalForward 8888 <i>ec2-214-132-71-219.compute-1.amazonaws.com</i>:8888
+
+~$
+</pre>
+
+3. In the address bar of your browser, type the following URL, or click on this link: [https://localhost:8888](https://localhost:8888)
+   For more information, see [Test by Logging in to the Jupyter notebook server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter-login.html)
 
 ## Useful commands
 
@@ -107,37 +142,3 @@ Enjoy!
      exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
      ```
 
-## Deployment Test
-
- * Can we run automatically Juptyer Server on EC2 using Amazon DLAMI?
- * `Deep Learning AMI (Amazon Linux 2)` Version `36.0` ~ `49.0`: Success 
-    ```
-    ******************** Jupyter Version Info ********************
-    jupyter core     : 4.7.1
-    jupyter-notebook : 6.2.0
-    qtconsole        : 5.0.2
-    ipython          : 7.20.0
-    ipykernel        : 5.3.4
-    jupyter client   : 6.1.7
-    jupyter lab      : 2.3.2
-    nbconvert        : 6.0.7
-    ipywidgets       : 7.6.3
-    nbformat         : 5.1.2
-    traitlets        : 5.0.5
-    ```
-
- * `Deep Learning AMI (Amazon Linux 2)` Version >= `50.0`: Fail
-    ```
-    ******************** Jupyter Version Info ********************
-    jupyter core     : 4.7.1
-    jupyter-notebook : 6.4.3
-    qtconsole        : 5.0.2
-    ipython          : 7.20.0
-    ipykernel        : 5.3.4
-    jupyter client   : 6.1.7
-    jupyter lab      : 2.3.2
-    nbconvert        : 6.0.7
-    ipywidgets       : 7.6.3
-    nbformat         : 5.1.2
-    traitlets        : 5.0.5
-    ```
