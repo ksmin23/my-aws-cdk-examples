@@ -10,7 +10,7 @@ from aws_cdk import (
   aws_s3_assets
 )
 from constructs import Construct
-# from aws_cdk.aws_s3_assets import Asset
+
 
 class DeepLearningAMIStack(Stack):
 
