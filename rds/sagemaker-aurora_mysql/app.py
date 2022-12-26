@@ -50,7 +50,7 @@ class SagemakerAuroraMysqlStack(Stack):
     rds_subnet_group = aws_rds.SubnetGroup(self, 'RdsSubnetGroup',
       description='subnet group for mysql',
       subnet_group_name='aurora-mysql',
-      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS),
       vpc=vpc
     )
 
@@ -99,7 +99,7 @@ class SagemakerAuroraMysqlStack(Stack):
         'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
         'parameter_group': rds_db_param_group,
         'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PRIVATE_WITH_NAT
+          'subnet_type': aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
         },
         'vpc': vpc,
         'auto_minor_version_upgrade': False,
@@ -166,7 +166,7 @@ EOF
       notebook_instance_name='AuroraMySQLWorkbench',
       root_access='Disabled',
       security_group_ids=[sg_use_mysql.security_group_id],
-      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[0]
+      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids[0]
     )
 
     cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')

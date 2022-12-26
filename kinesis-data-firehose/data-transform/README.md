@@ -45,11 +45,12 @@ Before deployment, you should uplad zipped code files to s3 like this:
 (.venv) $ aws s3api create-bucket --bucket <i>your-s3-bucket-name-for-lambda-layer-code</i> --region <i>region-name</i>
 (.venv) $ ./build-aws-lambda-layer.sh <i>your-s3-bucket-name-for-lambda-layer-code</i>
 </pre>
+(:warning: Make sure you have **Docker** installed.)
 
 For example,
 <pre>
 (.venv) $ aws s3api create-bucket --bucket lambda-layer-resources --region us-east-1
-(.venv) $ ./build-aws-lambda-layer.sh lambda-layer-resources
+(.venv) $ ./build-aws-lambda-layer-package.sh lambda-layer-resources
 </pre>
 
 ### Deploy
@@ -226,8 +227,17 @@ command.
 
 ## References
 
- * [fastavro](https://fastavro.readthedocs.io/)
+ * [fastavro](https://fastavro.readthedocs.io/) - Fast read/write of `AVRO` files
  * [Apache Avro Specification](https://avro.apache.org/docs/current/spec.html)
- * [How do I create a Lambda layer using a simulated Lambda environment with Docker?](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
+ * [How to create a Lambda layer using a simulated Lambda environment with Docker](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
+   ```
+   $ cat <<EOF > requirements-Lambda-Layer.txt
+   > fastavro==1.6.1
+   > EOF
+   $ docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.9" /bin/sh -c "pip install -r requirements-Lambda-Layer.txt -t python/lib/python3.9/site-packages/; exit"
+   $ zip -r fastavro-lib.zip python > /dev/null
+   $ aws s3 mb s3://my-bucket-for-lambda-layer-packages
+   $ aws s3 cp fastavro-lib.zip s3://my-bucket-for-lambda-layer-packages/var/
+   ```
 
 Enjoy!

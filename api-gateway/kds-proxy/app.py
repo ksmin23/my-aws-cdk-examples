@@ -3,6 +3,7 @@ import os
 import json
 import random
 import string
+from datetime import datetime
 
 import aws_cdk as cdk
 
@@ -10,13 +11,12 @@ from aws_cdk import (
   Duration,
   Stack,
   aws_apigateway,
-  aws_ec2,
   aws_iam,
   aws_kinesis,
 )
 from constructs import Construct
 
-random.seed(31)
+random.seed(47)
 
 class KdsProxyStack(Stack):
 
@@ -28,29 +28,6 @@ class KdsProxyStack(Stack):
       description='kinesis data stream name',
       default='PUT-Firehose-{}'.format(''.join(random.sample((string.ascii_letters), k=5)))
     )
-
-    #XXX: For creating this CDK Stack in the existing VPC,
-    # remove comments from the below codes and
-    # comments out vpc = aws_ec2.Vpc(..) codes,
-    # then pass -c vpc_name=your-existing-vpc to cdk command
-    # for example,
-    # cdk -c vpc_name=your-existing-vpc syth
-    #
-    # vpc_name = self.node.try_get_context("vpc_name")
-    # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
-    #   is_default=True,
-    #   vpc_name=vpc_name)
-    #
-    #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
-    #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    # vpc = aws_ec2.Vpc(self, "EmrStudioVPC",
-    #   max_azs=2,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
-    # )
 
     source_kinesis_stream = aws_kinesis.Stream(self, "SourceKinesisStreams",
       retention_period=Duration.hours(24),
@@ -68,7 +45,7 @@ class KdsProxyStack(Stack):
     }))
 
     apigw_kds_role = aws_iam.Role(self, "APIGatewayRoleToAccessKinesisDataStreams",
-      role_name='APIGatewayRoleToAccessKinesisDataStreams',
+      role_name=f"APIGatewayRoleToAccessKinesisDataStreams-{datetime.utcnow().strftime('%Y%m%d')}",
       assumed_by=aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
       inline_policies={
         'KinesisWriteAccess': apigw_kds_access_role_policy_doc
@@ -89,7 +66,7 @@ class KdsProxyStack(Stack):
       },
       deploy=True,
       deploy_options=aws_apigateway.StageOptions(stage_name="v1"),
-      endpoint_export_name="KdsProxyAPIEndpoint"
+      endpoint_export_name="KdsProxyAPIEndpoint-{}".format(''.join(random.sample(string.ascii_letters, k=3)))
     )
 
     apigw_error_responses = [
@@ -276,7 +253,8 @@ class KdsProxyStack(Stack):
         ])
 
     cdk.CfnOutput(self, '{}_KinesisDataStreamName'.format(self.stack_name), 
-      value=source_kinesis_stream.stream_name, export_name='KinesisDataStreamName')
+      value=source_kinesis_stream.stream_name,
+      export_name=f"KinesisDataStreamName_{''.join(random.sample(string.ascii_uppercase, k=3))}")
 
 
 app = cdk.App()

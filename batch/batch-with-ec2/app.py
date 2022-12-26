@@ -58,7 +58,7 @@ class BatchWithEC2Stack(Stack):
       compute_environment_name='batch-compute-env',
       compute_resources=aws_batch.CfnComputeEnvironment.ComputeResourcesProperty(
         maxv_cpus=32,
-        subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
+        subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
         type='EC2',
 
         # the properties below are optional

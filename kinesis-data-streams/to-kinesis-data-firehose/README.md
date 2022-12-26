@@ -1,5 +1,5 @@
 
-# Welcome to your CDK Python project!
+# Ingesting data from Kinesis Data Streams to S3 through Kinesis Data Firehose
 
 ![kinesis_streams_to_firehose_to_s3](./kinesis_streams_to_firehose_to_s3.svg)
 

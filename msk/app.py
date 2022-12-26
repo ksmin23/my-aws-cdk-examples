@@ -23,12 +23,20 @@ class MskStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
+    #XXX: For creating this CDK Stack in the existing VPC,
+    # remove comments from the below codes and
+    # comments out vpc = aws_ec2.Vpc(..) codes,
+    # then pass -c vpc_name=your-existing-vpc to cdk command
+    # for example,
+    # cdk -c vpc_name=your-existing-vpc syth
+    #
     vpc_name = self.node.try_get_context('vpc_name')
     vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
       is_default=True,
       vpc_name=vpc_name)
 
-    #XXX: create new vpc for msk cluster
+    #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
+    #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
     # vpc = aws_ec2.Vpc(self, 'VpcStack',
     #   max_azs=3,
     #   gateway_endpoints={
@@ -48,11 +56,14 @@ class MskStack(Stack):
     KAFA_VERSION = cdk.CfnParameter(self, 'KafkaVersion',
       type='String',
       description='Apache Kafka version',
-      default='2.6.2',
+      default='2.8.1',
       # Supported Apache Kafka versions
       # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
       allowed_values=[
-        '2.8.1',
+        '3.3.1',
+        '3.2.0',
+        '2.8.2',
+        '2.8.1', # recommended
         '2.8.0',
         '2.7.1',
         '2.6.2',
@@ -97,11 +108,17 @@ class MskStack(Stack):
       description='security group for Amazon MSK Cluster',
       security_group_name=MSK_CLUSTER_SG_NAME
     )
+    # For more information about the numbers of the ports that Amazon MSK uses to communicate with client machines,
+    # see https://docs.aws.amazon.com/msk/latest/developerguide/port-info.html
     sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(2181),
-      description='msk client security group')
+      description='allow msk client to communicate with Apache ZooKeeper in plaintext')
+    sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(2182),
+      description='allow msk client to communicate with Apache ZooKeeper by using TLS encryption')
     sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9092),
-      description='msk client security group')
+      description='allow msk client to communicate with brokers in plaintext')
     sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9094),
+      description='allow msk client to communicate with brokers by using TLS encryption')
+    sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9098),
       description='msk client security group')
     cdk.Tags.of(sg_msk_cluster).add('Name', MSK_CLUSTER_SG_NAME)
 
@@ -112,7 +129,7 @@ class MskStack(Stack):
     )
     
     msk_broker_node_group_info = aws_msk.CfnCluster.BrokerNodeGroupInfoProperty(
-      client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
+      client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       instance_type=KAFA_BROKER_INSTANCE_TYPE.value_as_string,
       security_groups=[sg_use_msk.security_group_id, sg_msk_cluster.security_group_id],
       storage_info=msk_broker_storage_info
@@ -169,7 +186,7 @@ class MskStack(Stack):
         instance_size=aws_ec2.InstanceSize.MICRO),
       machine_image=amzn_linux,
       vpc=vpc,
-      availability_zone=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).availability_zones[0],
+      availability_zone=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).availability_zones[0],
       instance_name='KafkaClientInstance',
       role=kafka_client_ec2_instance_role,
       security_group=sg_kafka_client_ec2_instance,
@@ -183,13 +200,10 @@ yum install python3.7 -y
 yum install java-1.8.0-openjdk-devel -y
 
 cd /home/ec2-user
-echo "export PATH=.local/bin:$PATH" >> .bash_profile
-
-mkdir -p opt
-cd opt
-wget https://archive.apache.org/dist/kafka/2.2.1/kafka_2.12-2.2.1.tgz
-tar -xzf kafka_2.12-2.2.1.tgz
-ln -nsf kafka_2.12-2.2.1 kafka
+mkdir -p opt && cd opt
+wget https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz
+tar -xzf kafka_2.12-2.8.1.tgz
+ln -nsf kafka_2.12-2.8.1 kafka
 
 cd /home/ec2-user
 wget https://bootstrap.pypa.io/get-pip.py
@@ -198,6 +212,8 @@ su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
 
 chown -R ec2-user ./opt
 chgrp -R ec2-user ./opt
+
+echo 'export PATH=$HOME/.local/bin:$HOME/opt/kafka/bin:$PATH' >> .bash_profile
 '''
 
     msk_client_ec2_instance.user_data.add_commands(commands)

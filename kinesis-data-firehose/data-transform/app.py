@@ -114,6 +114,8 @@ class FirehoseDataTransformStack(Stack):
       description="Check if records have valid schema",
       code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), 'src/main/python')),
       timeout=cdk.Duration.minutes(5),
+      #XXX: set memory size appropriately
+      memory_size=256,
       layers=[lambda_lib_layer]
     )
 

@@ -1,0 +1,6 @@
+{
+  "db_name": "dev",
+  "namespace": "rss-demo-ns",
+  "workgroup": "rss-demo-wg",
+  "vpc_name": "default"
+}

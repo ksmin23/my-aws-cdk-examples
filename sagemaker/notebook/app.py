@@ -145,7 +145,7 @@ EOF
       notebook_instance_name='MySageMakerWorkbook',
       root_access='Disabled',
       security_group_ids=[sg_sagemaker_notebook_instance.security_group_id],
-      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[0]
+      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids[0]
     )
 
 

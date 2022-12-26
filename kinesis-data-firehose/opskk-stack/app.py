@@ -43,12 +43,25 @@ class OPSKKStack(Stack):
       description='Amazon EC2 Instance KeyPair name'
     )
 
+    #XXX: For creating this CDK Stack in the existing VPC,
+    # remove comments from the below codes and
+    # comments out vpc = aws_ec2.Vpc(..) codes,
+    # then pass -c vpc_name=your-existing-vpc to cdk command
+    # for example,
+    # cdk -c vpc_name=your-existing-vpc syth
+    #
+    # if you encounter an error such as:
+    #  jsii.errors.JavaScriptError:
+    #    Error: When providing vpc options you need to provide a subnet for each AZ you are using at new Domain
+    # check https://github.com/aws/aws-cdk/issues/12078
+    # This error occurs when ZoneAwarenessEnabled in aws_opensearch.Domain(..) is set `true`
+    #
     # vpc_name = self.node.try_get_context("vpc_name")
     # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
     #   is_default=True,
     #   vpc_name=vpc_name)
     #
-    vpc = aws_ec2.Vpc(self, "EKKStackVPC",
+    vpc = aws_ec2.Vpc(self, "OPSKKStackVPC",
       max_azs=3,
       gateway_endpoints={
         "S3": aws_ec2.GatewayVpcEndpointOptions(
@@ -155,9 +168,12 @@ class OPSKKStack(Stack):
       },
       use_unsigned_basic_auth=True,
       security_groups=[sg_opensearch_cluster],
-      automated_snapshot_start_hour=17, # 2 AM (GTM+9)
+      #XXX: For domains running OpenSearch or Elasticsearch 5.3 and later, OpenSearch Service takes hourly automated snapshots
+      # Only applies for Elasticsearch versions below 5.3
+      # automated_snapshot_start_hour=17, # 2 AM (GTM+9)
       vpc=vpc,
-      vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT)],
+      #XXX: az_count must be equal to vpc subnets count.
+      vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS)],
       removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
     )
     cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
@@ -242,7 +258,7 @@ class OPSKKStack(Stack):
     opensearch_dest_vpc_config = aws_kinesisfirehose.CfnDeliveryStream.VpcConfigurationProperty(
       role_arn=firehose_role.role_arn,
       security_group_ids=[sg_use_opensearch.security_group_id],
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
     )
 
     opensearch_dest_config = aws_kinesisfirehose.CfnDeliveryStream.ElasticsearchDestinationConfigurationProperty(
@@ -275,6 +291,10 @@ class OPSKKStack(Stack):
         "logStreamName": "ElasticsearchDelivery"
       },
       domain_arn=opensearch_domain.domain_arn,
+      #XXX: Index rotation appends a timestamp to the IndexName to facilitate the expiration of old data.
+      # For more information, see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-elasticsearch
+      # For more information about allowed values,
+      # see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-amazonopensearchservicedestinationconfiguration.html#cfn-kinesisfirehose-deliverystream-amazonopensearchservicedestinationconfiguration-indexrotationperiod
       index_rotation_period="NoRotation", # [NoRotation | OneDay | OneHour | OneMonth | OneWeek]
       retry_options={
         "durationInSeconds": 60

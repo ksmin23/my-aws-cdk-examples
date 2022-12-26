@@ -3,7 +3,7 @@
 
 ![msk-arch](./msk-arch.svg)
 
-This is a sample project for Python development with CDK.
+This is a MSK project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -60,6 +60,8 @@ Use `cdk deploy` command to create the stack shown above,
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Run Test
 
 After MSK is succesfully created, you can now create topic, and produce and consume data on the topic in MSK as the following example.
 
@@ -130,6 +132,12 @@ $ bin/kafka-console-consumer.sh \
 
  * [Amazon MSK - Supported Apache Kafka versions](https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html)
  * [Getting Started Using Amazon MSK](https://docs.aws.amazon.com/msk/latest/developerguide/getting-started.html)
+ * [Amazon MSK - Port information](https://docs.aws.amazon.com/msk/latest/developerguide/port-info.html)
  * [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+ * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
+   <pre>
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh <i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
+   </pre>
 
 Enjoy!

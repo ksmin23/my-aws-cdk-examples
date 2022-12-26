@@ -162,7 +162,7 @@ class MwaaStack(Stack):
     #XXX: NetworkConfiguration.SubnetIds: expected maximum item count: 2
     MAX_SUBNET_IDS = 2
     mwaa_network_conf= mwaa.CfnEnvironment.NetworkConfigurationProperty(
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[:MAX_SUBNET_IDS],
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids[:MAX_SUBNET_IDS],
       security_group_ids=[sg_mwaa.security_group_id]
     )
 

@@ -55,7 +55,7 @@ class DocumentdbStack(Stack):
       # instance_type=aws_ec2.InstanceType('r5.xlarge'),
       instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.MEMORY5, aws_ec2.InstanceSize.LARGE),
       instances=3,
-      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT),
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS),
       vpc=vpc,
       security_group=sg_docdb_server,
       preferred_maintenance_window='sun:18:00-sun:18:30',
@@ -110,7 +110,7 @@ EOF
       notebook_instance_name='DocDBWorkbench',
       root_access='Disabled',
       security_group_ids=[sg_use_docdb.security_group_id],
-      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids[0]
+      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids[0]
     )
 
     cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')

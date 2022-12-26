@@ -1,7 +1,7 @@
 
 # Creating EC2 Instance with a given .pem keyfile
 
-This is a blank project for Python development with CDK.
+This is a sample project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

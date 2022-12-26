@@ -1,0 +1,4 @@
+Faker==8.14.1
+
+#[[layers]]
+fastavro==1.4.5

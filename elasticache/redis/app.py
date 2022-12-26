@@ -44,7 +44,7 @@ class RedisStack(Stack):
 
     elasticache_subnet_group = aws_elasticache.CfnSubnetGroup(self, 'RedisSubnetGroup',
       description='subnet group for redis',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       cache_subnet_group_name='default-redis'
     )
 

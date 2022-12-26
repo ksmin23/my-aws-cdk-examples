@@ -99,7 +99,8 @@ def lambda_handler(firehose_records_input, context):
     # Create output Firehose record and add modified payload and record ID to it.
     firehose_record_output = {
       'recordId': firehose_record_input['recordId'],
-      'data': firehose_record_input['data'],
+      #XXX: convert JSON to JSONLine
+      'data': base64.b64encode(payload.rstrip(b'\n') + b'\n'),
 
       # The status of the data transformation of the record.
       # The possible values are: 

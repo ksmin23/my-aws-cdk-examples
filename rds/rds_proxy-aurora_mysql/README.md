@@ -235,7 +235,7 @@ Enjoy!
 
     Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-    mysql> show databases;
+    mysql> SHOW DATABASES;
     +--------------------+
     | Database           |
     +--------------------+
@@ -246,7 +246,7 @@ Enjoy!
     +--------------------+
     4 rows in set (0.01 sec)
 
-    mysql> create database test;
+    mysql> CREATE DATABASE test;
     ERROR 1290 (HY000): The MySQL server is running with the --read-only option so it cannot execute this statement
     mysql>
     </pre>

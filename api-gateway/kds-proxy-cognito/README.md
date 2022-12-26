@@ -241,6 +241,7 @@ Enjoy!
    </div>
  * [Serverless Patterns Collection](https://serverlessland.com/patterns)
  * [aws-samples/serverless-patterns](https://github.com/aws-samples/serverless-patterns)
+ * [Building fine-grained authorization using Amazon Cognito, API Gateway, and IAM](https://aws.amazon.com/ko/blogs/security/building-fine-grained-authorization-using-amazon-cognito-api-gateway-and-iam/)
  * [Curl Cookbook](https://catonmat.net/cookbooks/curl)
 
 ## Trouble Shooting

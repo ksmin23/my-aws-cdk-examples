@@ -53,6 +53,16 @@ class SageMakerStudioStack(Stack):
     sg_sm_instance.add_ingress_rule(peer=sg_sm_instance, connection=aws_ec2.Port.all_traffic(), description='sagemaker studio security group')
     cdk.Tags.of(sg_sm_instance).add('Name', 'sagemaker-studio-sg')
 
+    sagemaker_execution_policy_doc = aws_iam.PolicyDocument()
+    sagemaker_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:s3:::*"],
+      "actions": ["s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"]
+    }))
+
     sagemaker_emr_execution_policy_doc = aws_iam.PolicyDocument()
     sagemaker_emr_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
@@ -94,13 +104,14 @@ class SageMakerStudioStack(Stack):
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       path='/',
       inline_policies={
+        'sagemaker-execution-policy': sagemaker_execution_policy_doc,
         #XXX: add additional IAM Policy to use EMR in SageMaker Studio
         # https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-studio-notebooks-backed-by-spark-in-amazon-emr/
         'sagemaker-emr': sagemaker_emr_execution_policy_doc
       },
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonS3ReadOnlyAccess')
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerCanvasFullAccess')
       ]
     )
 
@@ -112,16 +123,24 @@ class SageMakerStudioStack(Stack):
     sagemaker_studio_domain = aws_sagemaker.CfnDomain(self, 'SageMakerStudioDomain',
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
-      domain_name='StudioDomain',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_NAT).subnet_ids,
+      domain_name='sm-studio-workshop',
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       vpc_id=vpc.vpc_id,
       app_network_access_type='VpcOnly' # [PublicInternetOnly | VpcOnly]
     )
 
-    aws_sagemaker.CfnUserProfile(self, 'SageMakerStudioUserProfile',
+    sagemaker_user_profile = aws_sagemaker.CfnUserProfile(self, 'SageMakerStudioUserProfile',
       domain_id=sagemaker_studio_domain.attr_domain_id,
-      user_profile_name='studio-user'
+      user_profile_name='default-user'
     )
+
+    sagemaker_cfn_app = aws_sagemaker.CfnApp(self, 'SageMakerDefaultCfnApp',
+      app_name='default-app',
+      app_type='JupyterServer', # [JupyterServer | KernelGateway | RSessionGateway | RStudioServerPro | TensorBoard | Canvas]
+      domain_id=sagemaker_studio_domain.attr_domain_id,
+      user_profile_name=sagemaker_user_profile.user_profile_name
+    )
+    sagemaker_cfn_app.add_depends_on(sagemaker_user_profile)
 
 
 app = cdk.App()

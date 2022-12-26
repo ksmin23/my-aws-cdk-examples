@@ -6,13 +6,11 @@ import string
 import aws_cdk as cdk
 
 from aws_cdk import (
-  # Duration,
   Stack,
   aws_iam,
   aws_s3 as s3,
   aws_kinesis,
-  aws_kinesisfirehose,
-  aws_logs
+  aws_kinesisfirehose
 )
 
 from constructs import Construct
