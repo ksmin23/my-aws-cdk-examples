@@ -42,14 +42,14 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
               -c collection_name='<i>collection-name</i>'
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy --all \
               -c collection_name='<i>collection-name</i>'
 </pre>
 
@@ -62,7 +62,7 @@ command.
 Delete the CloudFormation stack by running the below command.
 
 <pre>
-(.venv) $ cdk destroy --force \
+(.venv) $ cdk destroy --force --all \
               -c collection_name='<i>collection-name</i>'
 </pre>
 
