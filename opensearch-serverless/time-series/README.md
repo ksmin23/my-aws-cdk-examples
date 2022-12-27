@@ -1,5 +1,5 @@
 
-# Amazon OpenSearch Serverless CDK Python project!
+# Amazon OpenSearch Serverless CDK Python project for Time Series usecase!
 
 This is an Amazon OpenSearch Serverless project for CDK development with Python.
 
