@@ -30,3 +30,5 @@ class OpsAdminIAMUserStack(Stack):
     self.user_arn = user.user_arn
     self.user_name = user.user_name
 
+    cdk.CfnOutput(self, f'{self.stack_name}-UserName', value=self.user_name)
+
