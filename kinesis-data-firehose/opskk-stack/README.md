@@ -210,3 +210,5 @@ Check the following questions before using Kinesis Data Firehose to ingest docum
 7. [How do I troubleshoot CloudWatch Logs so that it streams to my Amazon OpenSearch Service domain?](https://aws.amazon.com/premiumsupport/knowledge-center/opensearch-troubleshoot-cloudwatch-logs/)
 8. [Build a Log Analytics Solution on AWS](https://aws.amazon.com/getting-started/hands-on/build-log-analytics-solution/)
 9. [Hands-on guide to Build a Log Analytics Solution on AWS](https://d1.awsstatic.com/Projects/P4113850/aws-projects_build-log-analytics-solution-on-aws.pdf)
+10. [Amazon Kinesis Data Firehose Immersion Day](https://catalog.us-east-1.prod.workshops.aws/workshops/32e6bc9a-5c03-416d-be7c-4d29f40e55c4/en-US) - Lab 4 - Data delivery to different targets > 4.1 - Amazon OpenSearch as destination
+
