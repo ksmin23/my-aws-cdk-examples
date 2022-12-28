@@ -34,7 +34,7 @@ s3_stack = KinesisFirehoseS3Stack(app, "FirehoseS3Stack",
 )
 
 firehose_stack = KinesisFirehoseStack(app, "FirehoseToOpsServerlessStack",
-  firehose_role_stack.firehose_role,
+  firehose_role_stack.firehose_role_arn,
   ops_serverless_stack.opensearch_endpoint,
   s3_stack.s3_bucket,
   env=AWS_ENV

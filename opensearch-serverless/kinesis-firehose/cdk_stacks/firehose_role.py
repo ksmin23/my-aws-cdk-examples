@@ -102,5 +102,5 @@ class KinesisFirehoseRoleStack(Stack):
       }
     )
 
-    self.firehose_role = firehose_role
+    self.firehose_role_arn = firehose_role.role_arn
     self.firehose_role_name = firehose_role.role_name

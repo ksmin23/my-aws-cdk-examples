@@ -19,7 +19,7 @@ random.seed(47)
 
 class KinesisFirehoseStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, firehose_role, opensearch_endpoint, s3_bucket, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, firehose_role_arn, opensearch_endpoint, s3_bucket, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     FIREHOSE_DEFAULT_STREAM_NAME = 'PUT-AOS-{}'.format(''.join(random.sample((string.ascii_letters), k=5)))
@@ -34,10 +34,10 @@ class KinesisFirehoseStack(Stack):
 
     opensearch_serverless_dest_config = aws_kinesisfirehose.CfnDeliveryStream.AmazonOpenSearchServerlessDestinationConfigurationProperty(
       index_name=OPENSEARCH_INDEX_NAME,
-      role_arn=firehose_role.role_arn,
+      role_arn=firehose_role_arn,
       s3_configuration={
         "bucketArn": s3_bucket.bucket_arn,
-        "roleArn": firehose_role.role_arn,
+        "roleArn": firehose_role_arn,
         "bufferingHints": {
           "intervalInSeconds": FIREHOSE_BUFFER_INTERVAL,
           "sizeInMBs": FIREHOSE_BUFFER_SIZE
@@ -77,5 +77,5 @@ class KinesisFirehoseStack(Stack):
     )
 
     cdk.CfnOutput(self, f'{self.stack_name}-S3DestBucket'.format(self.stack_name), value=s3_bucket.bucket_name)
-    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseRoleArn', value=firehose_role.role_arn)
+    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseRoleArn', value=firehose_role_arn)
 
