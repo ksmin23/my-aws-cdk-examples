@@ -43,6 +43,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 (.venv) $ cdk synth --all \
+              -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c collection_name='<i>collection-name</i>' \
               -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
@@ -51,6 +52,7 @@ Use `cdk deploy` command to create the stack shown above.
 
 <pre>
 (.venv) $ cdk deploy --all \
+             -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c collection_name='<i>collection-name</i>' \
               -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
@@ -65,6 +67,7 @@ Delete the CloudFormation stack by running the below command.
 
 <pre>
 (.venv) $ cdk destroy --force --all \
+             -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c collection_name='<i>collection-name</i>' \
               -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
