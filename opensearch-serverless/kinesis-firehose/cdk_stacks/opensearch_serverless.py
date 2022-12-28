@@ -12,7 +12,7 @@ from constructs import Construct
 
 class OpsServerlessTimeSeriesStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, admin_user_arn, firehose_role, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, admin_user_arn, firehose_role_name, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     collection_name = self.node.try_get_context('collection_name') or "log-analysis"
@@ -98,8 +98,8 @@ class OpsServerlessTimeSeriesStack(Stack):
           }
         ],
         "Principal": [
-          f"{admin_user_arn}"
-          # firhose IAM
+          f"{admin_user_arn}",
+          f"arn:aws:sts::{cdk.Aws.ACCOUNT_ID}:assumed-role/firehose_role_name/*"
         ],
         "Description": "data-access-rule"
       }

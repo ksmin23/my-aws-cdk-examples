@@ -23,7 +23,7 @@ firehose_role_stack = KinesisFirehoseRoleStack(app, "FirehoseRole")
 
 ops_serverless_stack = OpsServerlessTimeSeriesStack(app, "OpsServerlessTSStack",
   ops_admin_user.user_arn,
-  firehose_role_stack.firehose_role,
+  firehose_role_stack.firehose_role_name,
   env=AWS_ENV
 )
 ops_serverless_stack.add_dependency(ops_admin_user)
