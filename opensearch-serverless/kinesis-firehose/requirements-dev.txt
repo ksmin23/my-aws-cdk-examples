@@ -1,0 +1,3 @@
+boto3==1.26.38
+botocore==1.29.38
+mimesis==7.0.0
