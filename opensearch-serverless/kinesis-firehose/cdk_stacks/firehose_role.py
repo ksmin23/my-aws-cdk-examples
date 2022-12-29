@@ -1,40 +1,26 @@
 #!/usr/bin/env python3
 
-import random
-import string
-
 import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
-  aws_ec2,
   aws_iam,
-  aws_s3 as s3,
-  aws_kinesisfirehose
 )
 from constructs import Construct
-
-random.seed(47)
 
 
 class KinesisFirehoseRoleStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, s3_bucket_arn, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     firehose_config = self.node.try_get_context('firehose')
     OPENSEARCH_INDEX_NAME = firehose_config['opensearch_index_name']
 
-    S3_BUCKET_SUFFIX = ''.join(random.sample((string.ascii_lowercase + string.digits), k=7))
-    s3_bucket = s3.Bucket(self, "s3bucket",
-      removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: core.RemovalPolicy.RETAIN - The bucket will be orphaned
-      bucket_name="firehose-to-ops-{region}-{suffix}".format(
-        region=cdk.Aws.REGION, suffix=S3_BUCKET_SUFFIX))
-
     firehose_role_policy_doc = aws_iam.PolicyDocument()
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
-      "resources": [s3_bucket.bucket_arn, "{}/*".format(s3_bucket.bucket_arn)],
+      "resources": [s3_bucket_arn, "{}/*".format(s3_bucket_arn)],
       "actions": ["s3:AbortMultipartUpload",
         "s3:GetBucketLocation",
         "s3:GetObject",
@@ -55,33 +41,6 @@ class KinesisFirehoseRoleStack(Stack):
         "ec2:CreateNetworkInterfacePermission",
         "ec2:DeleteNetworkInterface"]
     ))
-
-    # firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
-    #   effect=aws_iam.Effect.ALLOW,
-    #   resources=["*"],
-    #   actions=["es:DescribeElasticsearchDomain",
-    #     "es:DescribeElasticsearchDomains",
-    #     "es:DescribeElasticsearchDomainConfig",
-    #     "es:ESHttpPost",
-    #     "es:ESHttpPut"]
-    # ))
-
-    # firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
-    #   effect=aws_iam.Effect.ALLOW,
-    #   #XXX: https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-data-firehose-delivery-failure/
-    #   resources=[
-    #     ops_domain_arn,
-    #     f"{ops_domain_arn}/_all/_settings",
-    #     f"{ops_domain_arn}/_cluster/stats",
-    #     f"{ops_domain_arn}/{OPENSEARCH_INDEX_NAME}*/_mapping/%FIREHOSE_POLICY_TEMPLATE_PLACEHOLDER%",
-    #     f"{ops_domain_arn}/_nodes",
-    #     f"{ops_domain_arn}/_nodes/stats",
-    #     f"{ops_domain_arn}/_nodes/*/stats",
-    #     f"{ops_domain_arn}/_stats",
-    #     f"{ops_domain_arn}/{OPENSEARCH_INDEX_NAME}*/_stats"
-    #   ],
-    #   actions=["es:ESHttpGet"]
-    # ))
 
     firehose_log_group_name = f"/aws/kinesisfirehose/{OPENSEARCH_INDEX_NAME}"
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
@@ -104,3 +63,6 @@ class KinesisFirehoseRoleStack(Stack):
 
     self.firehose_role_arn = firehose_role.role_arn
     self.firehose_role_name = firehose_role.role_name
+
+    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseRoleArn', value=self.firehose_role_arn)
+    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseRoleName', value=self.firehose_role_name)

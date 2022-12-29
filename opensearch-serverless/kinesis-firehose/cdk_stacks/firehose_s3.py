@@ -25,4 +25,9 @@ class KinesisFirehoseS3Stack(Stack):
       bucket_name="firehose-to-ops-{region}-{suffix}".format(
         region=cdk.Aws.REGION, suffix=S3_BUCKET_SUFFIX))
 
-    self.s3_bucket = s3_bucket
+    self.s3_bucket_name = s3_bucket.bucket_name
+    self.s3_bucket_arn = s3_bucket.bucket_arn
+
+    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseS3DestBucketName', value=self.s3_bucket_name)
+    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseS3DestBucketArn', value=self.s3_bucket_arn)
+

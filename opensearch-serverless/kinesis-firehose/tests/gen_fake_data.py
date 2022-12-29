@@ -40,7 +40,7 @@ def main():
 
   parser.add_argument('--stream-name', help='Kinesis Data Firsehose Stream name')
   parser.add_argument('--region', default='us-east-1', help='Region name')
-  parser.add_argument('--num', default=15, type=int, help='Number of messages to send, default is 15')
+  parser.add_argument('--max-count', default=15, type=int, help='Number of messages to send, default is 15')
   parser.add_argument('--dry-run', action='store_true')
 
   options = parser.parse_args()
@@ -62,7 +62,7 @@ def main():
     firehose = boto3.client('firehose', region_name=options.region)
 
   sent = 0
-  for record in schema.iterator(options.num):
+  for record in schema.iterator(options.max_count):
     msg = json.dumps(record)
     if options.dry_run:
       print(msg)

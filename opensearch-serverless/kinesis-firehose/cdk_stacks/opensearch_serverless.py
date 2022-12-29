@@ -99,7 +99,7 @@ class OpsServerlessTimeSeriesStack(Stack):
         ],
         "Principal": [
           f"{admin_user_arn}",
-          f"arn:aws:sts::{cdk.Aws.ACCOUNT_ID}:assumed-role/firehose_role_name/*"
+          f"arn:aws:sts::{cdk.Aws.ACCOUNT_ID}:assumed-role/{firehose_role_name}/*"
         ],
         "Description": "data-access-rule"
       }
