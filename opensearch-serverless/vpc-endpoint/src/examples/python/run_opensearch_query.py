@@ -70,8 +70,7 @@ def _index_document(client, index_name):
   response = client.index(
     index = index_name,
     body = document,
-    id = doc_id,
-    refresh = True
+    id = doc_id
   )
   print('\nAdding document:')
   print(response)

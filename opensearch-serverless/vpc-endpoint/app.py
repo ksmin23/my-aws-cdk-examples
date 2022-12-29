@@ -4,6 +4,7 @@ import os
 from cdk_stacks import (
   VpcStack,
   OpsAdminIAMUserStack,
+  OpssVpcEndpointStack,
   OpsServerlessInVPCStack,
   OpsClientEC2InstanceStack,
 )
@@ -21,16 +22,22 @@ vpc_stack = VpcStack(app, "OpenSearchServerlessVpc",
 
 ops_admin_user = OpsAdminIAMUserStack(app, "OpsAdminIAMUser")
 
+vpc_endpoint_stack = OpssVpcEndpointStack(app, "OpenSearchServerlessVpcEndpoint",
+  vpc=vpc_stack.vpc,
+  env=AWS_ENV
+)
+vpc_endpoint_stack.add_dependency(vpc_stack)
+
 ops_serverless_in_vpc_stack = OpsServerlessInVPCStack(app, "OpenSearchServerlessInVpcStack",
   ops_admin_user.user_arn,
-  vpc_stack.vpc,
+  vpc_endpoint_stack.vpc_endpoint_id,
   env=AWS_ENV)
 ops_serverless_in_vpc_stack.add_dependency(ops_admin_user)
-ops_serverless_in_vpc_stack.add_dependency(vpc_stack)
+ops_serverless_in_vpc_stack.add_dependency(vpc_endpoint_stack)
 
 ops_client_instance = OpsClientEC2InstanceStack(app, "OpenSearchCleintInstance",
   vpc_stack.vpc,
-  ops_serverless_in_vpc_stack.opensearch_client_sg,
+  vpc_endpoint_stack.opensearch_client_sg,
   env=AWS_ENV)
 ops_client_instance.add_dependency(ops_serverless_in_vpc_stack)
 
