@@ -27,8 +27,12 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [ec2/jupyter-on-dlami](./ec2/jupyter-on-dlami/) | Launch Jupyter Server on Amazon Deep Learning AMI | jupyter, ec2, DLAMI |
 | [elasticache/redis](./elasticache/redis/) | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) | redis, redis-cluster |
 | [elasticsearch](./elasticsearch/) | ![amazon-es-arch](./elasticsearch/amazon-es-arch.svg) | elasticsearch |
-| [opensearch/cfn-domain](./opensearch-service/cfn-domain) | ![amazon-es-arch](./opensearch-service/cfn-domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.CfnDomain construct |
-| [opensearch/domain](./opensearch-service/domain) | ![amazon-es-arch](./opensearch-service/domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.Domain construct |
+| [opensearch/cfn-domain](./opensearch-service/cfn-domain) | ![amazon-opensearch-arch](./opensearch-service/cfn-domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.CfnDomain construct |
+| [opensearch/domain](./opensearch-service/domain) | ![amazon-opensearch-arch](./opensearch-service/domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.Domain construct |
+| [opensearch-serverless/search](./opensearch-serverless/search) | ![opensearch-serverless-search-type](./opensearch-serverless/search/opensearch-serverless-search-type.svg) | opensearch serverless for search usecases |
+| [opensearch-serverless/time-series](./opensearch-serverless/time-series) | ![opensearch-serverless-timeseries-arch](./opensearch-serverless/time-series/opensearch-serverless-timeseries-arch.svg) | opensearch serverless for time series analysis |
+| [opensearch-serverless/vpc-endpoint](./opensearch-serverless/vpc-endpoint) | ![opensearch-serverless-vpc-endpoint-arch](./opensearch-serverless/vpc-endpoint/opensearch-serverless-vpc-endpoint-arch.svg) | opensearch serverless in VPC |
+| [opensearch-serverless/kinesis-firehose](./opensearch-serverless/kinesis-firehose) | ![opensearch-serverless-firehose-arch](./opensearch-serverless/kinesis-firehose/opensearch-serverless-firehose-arch.svg) | data ingestion to opensearch serverless using kinesis firehose |
 | [emr](./emr/) | Launch an Amazon EMR cluster | emr, Hive, Spark, JupyterHub, Hudi, Iceberg  |
 | [emr-serverless](./emr-serverless/) | Launch an Amazon EMR Serverless Applation | emr serverless |
 | [emr-studio](./emr-studio/) | Launch an Amazon EMR Studio | emr studio |
