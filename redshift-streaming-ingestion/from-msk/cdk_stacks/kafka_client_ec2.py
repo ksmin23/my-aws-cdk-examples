@@ -74,7 +74,7 @@ class KafkaClientEC2InstanceStack(Stack):
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSSMManagedInstanceCore'),
         #XXX: EC2 instance should be able to access S3 for user data
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonS3ReadOnlyAccess')
+        # aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonS3ReadOnlyAccess')
       ]
     )
 
@@ -104,6 +104,7 @@ class KafkaClientEC2InstanceStack(Stack):
     # test data generator script in S3 as Asset
     user_data_asset = aws_s3_assets.Asset(self, 'KafkaClientEC2UserData',
       path=os.path.join(os.path.dirname(__file__), '../src/main/python/gen_fake_kafka_data.py'))
+    user_data_asset.grant_read(msk_client_ec2_instance.role)
 
     USER_DATA_LOCAL_PATH = msk_client_ec2_instance.user_data.add_s3_download_command(
       bucket=user_data_asset.bucket,
