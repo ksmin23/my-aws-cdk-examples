@@ -101,7 +101,7 @@ def _search(client, index_name, keyword, limit=5):
     'query': {
       'multi_match': {
         'query': keyword,
-        # 'fields': ['title^2', 'director']
+        'fields': ['title^2', 'director']
       }
     }
   }
