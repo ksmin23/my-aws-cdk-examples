@@ -1,6 +1,8 @@
 
 # Amazon OpenSearch Serverless CDK Python project for Search usecase!
 
+![opensearch-serverless-search-type](./opensearch-serverless-search-type.svg)
+
 This is an Amazon OpenSearch Serverless project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.

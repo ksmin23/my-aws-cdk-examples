@@ -1,6 +1,8 @@
 
 # Creating Amazon OpenSearch Serverless in VPC!
 
+![opensearch-serverless-vpc-endpoint-arch](./opensearch-serverless-vpc-endpoint-arch.svg)
+
 This CDK project launches an Amazon OpenSearch Serverless in VPC.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.

@@ -1,6 +1,8 @@
 
 # Amazon OpenSearch Serverless CDK Python project for Time Series usecase!
 
+![opensearch-serverless-timeseries-arch](./opensearch-serverless-timeseries-arch.svg)
+
 This is an Amazon OpenSearch Serverless project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
