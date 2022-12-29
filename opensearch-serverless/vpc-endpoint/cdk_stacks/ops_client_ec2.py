@@ -2,12 +2,15 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
+import os
+
 import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
   aws_ec2,
-  aws_iam
+  aws_iam,
+  aws_s3_assets
 )
 from constructs import Construct
 
@@ -38,7 +41,7 @@ class OpsClientEC2InstanceStack(Stack):
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSSMManagedInstanceCore'),
         #XXX: EC2 instance should be able to access S3 for user data
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonS3ReadOnlyAccess')
+        # aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonS3ReadOnlyAccess')
       ]
     )
 
@@ -52,6 +55,35 @@ class OpsClientEC2InstanceStack(Stack):
       key_name=EC2_KEY_PAIR_NAME
     )
     bastion_host.add_security_group(opensearch_client_sg)
+
+    # test script in S3 as Asset
+    user_data_asset = aws_s3_assets.Asset(self, 'OpsClientEC2UserData',
+      path=os.path.join(os.path.dirname(__file__), '../src/examples/python/run_opensearch_query.py'))
+    user_data_asset.grant_read(bastion_host.role)
+
+    USER_DATA_LOCAL_PATH = bastion_host.user_data.add_s3_download_command(
+      bucket=user_data_asset.bucket,
+      bucket_key=user_data_asset.s3_object_key,
+      local_file='/tmp/run_opensearch_query.py'
+    )
+
+    commands = '''
+yum update -y
+yum install python3.7 -y
+yum install -y jq
+
+cd /home/ec2-user
+wget https://bootstrap.pypa.io/get-pip.py
+su -c "python3.7 get-pip.py --user" -s /bin/sh ec2-user
+su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
+'''
+
+    commands += f'''
+su -c "/home/ec2-user/.local/bin/pip3 install opensearch-py==2.0.1 requests==2.28.1 requests-aws4auth==1.1.2 --user" -s /bin/sh ec2-user
+cp {USER_DATA_LOCAL_PATH} /home/ec2-user/run_opensearch_query.py & chown -R ec2-user /home/ec2-user/run_opensearch_query.py
+'''
+
+    bastion_host.user_data.add_commands(commands)
 
     cdk.CfnOutput(self, f'{self.stack_name}-EC2InstancePublicDNS',
       value=bastion_host.instance_public_dns_name,

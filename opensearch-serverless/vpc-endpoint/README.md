@@ -84,6 +84,85 @@ Delete the CloudFormation stack by running the below command.
 
 Enjoy!
 
+## Run Test
+
+#### Prerequisites
+
+* In order to upload and search data, log into the opensearch client machine by `ssh`.
+  <pre>
+  $ ssh -i ~/.ssh/<i>your-ssh-key.pem</i> ec2-user@<i>ec2-instance-public-ip</i>
+  </pre>
+
+* Configure aws credentials for the Opensearch IAM User.
+  <pre>
+  [ec2-user@ip-172-31-0-19 ~]$ aws configure --profile opensearch
+  AWS Access Key ID [None]: ****************46FI
+  AWS Secret Access Key [None]: ****************FdsE
+  Default region name [None]: us-east-1
+  Default output format [None]:
+  </pre>
+
+* At this point, you can run queries to the opensearch endpoint.<br/>
+  The followings are examples using `run_opensearch_query.py` in the opensearch client machine.
+  <pre>
+  [ec2-user@ip-172-31-0-19 ~]$ aws configure --profile opensearch
+  get-pip.py
+  run_opensearch_query.py
+  </pre>
+
+#### Upload and search data
+
+* Create a single index called `movies-index`
+  <pre>
+  python3 run_opensearch_query.py \
+    --host <i>1csodkhc1h7yj93iekof</i>.us-east-1.aoss.amazonaws.com \
+    --region us-east-1 \
+    --profile opensearch \
+    --create-index \
+    --index-name movies-index
+  </pre>
+
+* Adding a document to an index
+  <pre>
+  python3 run_opensearch_query.py \
+    --host <i>1csodkhc1h7yj93iekof</i>.us-east-1.aoss.amazonaws.com \
+    --region us-east-1 \
+    --profile opensearch \
+    --index-name movies-index \
+    --put-doc
+  </pre>
+
+* Upload Data using Bulk API
+  <pre>
+  python3 run_opensearch_query.py \
+    --host <i>1csodkhc1h7yj93iekof</i>.us-east-1.aoss.amazonaws.com \
+    --region us-east-1 \
+    --profile opensearch \
+    --index-name movies-index \
+    --bulk-load
+  </pre>
+
+* List all the documents in the index
+  <pre>
+  python3 run_opensearch_query.py \
+    --host <i>1csodkhc1h7yj93iekof</i>.us-east-1.aoss.amazonaws.com \
+    --region us-east-1 \
+    --profile opensearch \
+    --index-name movies-index \
+    --search-all
+  </pre>
+
+* Searching for a document
+  <pre>
+  python3 run_opensearch_query.py \
+    --host <i>1csodkhc1h7yj93iekof</i>.us-east-1.aoss.amazonaws.com \
+    --region us-east-1 \
+    --profile opensearch \
+    --index-name movies-index \
+    --search \
+    --keyword miller
+  </pre>
+
 ## References
 
  * [Getting started with Amazon OpenSearch Serverless](https://catalog.us-east-1.prod.workshops.aws/workshops/f8d2c175-634d-4c5d-94cb-d83bbc656c6a/en-US)
