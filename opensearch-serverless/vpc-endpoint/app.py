@@ -7,6 +7,7 @@ from cdk_stacks import (
   OpssVpcEndpointStack,
   OpsServerlessInVPCStack,
   OpsClientEC2InstanceStack,
+  OpenSearchSecurityGroupStack
 )
 
 import aws_cdk as cdk
@@ -22,11 +23,18 @@ vpc_stack = VpcStack(app, "OpenSearchServerlessVpc",
 
 ops_admin_user = OpsAdminIAMUserStack(app, "OpsAdminIAMUser")
 
+ops_security_groups = OpenSearchSecurityGroupStack(app, "OpenSearchSecurityGroups",
+  vpc_stack.vpc,
+  env=AWS_ENV)
+ops_security_groups.add_dependency(vpc_stack)
+
+ops_security_groups.add_dependency(vpc_stack)
 vpc_endpoint_stack = OpssVpcEndpointStack(app, "OpenSearchServerlessVpcEndpoint",
-  vpc=vpc_stack.vpc,
+  vpc_stack.vpc,
+  ops_security_groups.opensearch_cluster_sg,
   env=AWS_ENV
 )
-vpc_endpoint_stack.add_dependency(vpc_stack)
+vpc_endpoint_stack.add_dependency(ops_security_groups)
 
 ops_serverless_in_vpc_stack = OpsServerlessInVPCStack(app, "OpenSearchServerlessInVpcStack",
   ops_admin_user.user_arn,
@@ -37,7 +45,7 @@ ops_serverless_in_vpc_stack.add_dependency(vpc_endpoint_stack)
 
 ops_client_instance = OpsClientEC2InstanceStack(app, "OpenSearchCleintInstance",
   vpc_stack.vpc,
-  vpc_endpoint_stack.opensearch_client_sg,
+  ops_security_groups.opensearch_client_sg,
   env=AWS_ENV)
 ops_client_instance.add_dependency(ops_serverless_in_vpc_stack)
 
