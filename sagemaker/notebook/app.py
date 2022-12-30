@@ -109,7 +109,8 @@ make
 sudo make install
 popd
 
-for each in python3 pytorch_latest_p36
+# You can list all discoverable environments with `conda info --envs`.
+for each in python3 pytorch_p38
 do
     source /home/ec2-user/anaconda3/bin/activate ${{each}}
     pip install --upgrade pretty_errors
@@ -134,7 +135,7 @@ EOF
     )
 
     sagemaker_lifecycle_config = aws_sagemaker.CfnNotebookInstanceLifecycleConfig(self, 'SageMakerNotebookLifeCycleConfig',
-      notebook_instance_lifecycle_config_name='SageMakerNotebookLifeCycleConfig',
+      notebook_instance_lifecycle_config_name=f'{self.stack_name}-NotebookLCC',
       on_start=[sagemaker_lifecycle_config_prop]
     )
 
@@ -143,6 +144,7 @@ EOF
       role_arn=sagemaker_notebook_role.role_arn,
       lifecycle_config_name=sagemaker_lifecycle_config.notebook_instance_lifecycle_config_name,
       notebook_instance_name='MySageMakerWorkbook',
+      platform_identifier="notebook-al2-v2", # JupyterLab3
       root_access='Disabled',
       security_group_ids=[sg_sagemaker_notebook_instance.security_group_id],
       subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids[0]
