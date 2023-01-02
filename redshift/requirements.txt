@@ -1,0 +1,3 @@
+aws-cdk-lib==2.58.1
+aws-cdk.aws-redshift-alpha==2.58.1a0
+constructs>=10.0.0,<11.0.0
