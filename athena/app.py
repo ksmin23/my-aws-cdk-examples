@@ -109,7 +109,7 @@ SELECT COUNT(*) FROM mydatabase.web_log_json;
       name="Create Web Log table (json) with partitions",
       work_group=athena_cfn_work_group.name
     )    
-    athena_cfn_named_query.add_depends_on(athena_cfn_work_group)
+    athena_cfn_named_query.add_dependency(athena_cfn_work_group)
 
     query = '''/* Create your database */
 CREATE DATABASE IF NOT EXISTS mydatabase;
@@ -157,7 +157,7 @@ SELECT COUNT(*) FROM mydatabase.web_log_parquet;
       name="Create Web Log table (parquet) with partitions",
       work_group=athena_cfn_work_group.name
     )
-    athena_cfn_named_query.add_depends_on(athena_cfn_work_group)
+    athena_cfn_named_query.add_dependency(athena_cfn_work_group)
 
     query = '''SELECT * FROM mydatabase.web_log_json
 WHERE year=? AND month=? AND day=? AND hour >=? LIMIT 5
@@ -171,7 +171,7 @@ WHERE year=? AND month=? AND day=? AND hour >=? LIMIT 5
       # the properties below are optional
       description="Prepare statement"
     )
-    athena_cfn_prepare_statment.add_depends_on(athena_cfn_work_group)
+    athena_cfn_prepare_statment.add_dependency(athena_cfn_work_group)
     athena_cfn_prepare_statment.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
     cdk.CfnOutput(self, 'f{self.stack_name}_AthenaWorkGroupName', value=athena_cfn_work_group.name,

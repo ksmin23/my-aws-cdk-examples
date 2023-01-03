@@ -14,8 +14,8 @@
       "property_group_id": "KafkaSink",
       "property_map": {
         "topic": "Your-Kafka-Sink-Topic",
-        "bootstrap.servers": "Your-Kafka-Broker-Servers"
-        "transaction.timeout.ms": 30000
+        "bootstrap.servers": "Your-Kafka-Broker-Servers",
+        "transaction.timeout.ms": "30000"
       }
     }
   ]

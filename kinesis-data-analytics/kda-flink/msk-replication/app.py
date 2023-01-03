@@ -22,7 +22,6 @@ class MskReplicationStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    # The code that defines your stack goes here
     vpc_name = self.node.try_get_context('vpc_name')
     vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
       is_default=True,
@@ -182,7 +181,7 @@ class MskReplicationStack(Stack):
       application_name=kda_app.application_name,
       cloud_watch_logging_option=aws_kda_flink.CfnApplicationCloudWatchLoggingOptionV2.CloudWatchLoggingOptionProperty(log_stream_arn=kda_app_log_stream_arn)
     )
-    kda_app_cw_log.add_depends_on(kda_app)
+    kda_app_cw_log.add_dependency(kda_app)
 
 
 app = cdk.App()

@@ -79,7 +79,7 @@ class RedisStack(Stack):
         cdk.CfnTag(key='desc', value='primary only redis')]
     )
     #XXX: Subnet group must exist before ElastiCache is created 
-    redis_primary_only.add_depends_on(elasticache_subnet_group)
+    redis_primary_only.add_dependency(elasticache_subnet_group)
  
     redis_with_replicas = aws_elasticache.CfnReplicationGroup(self, 'RedisCacheWithReplicas',
       cache_node_type='cache.t3.small',
@@ -99,7 +99,7 @@ class RedisStack(Stack):
       tags=[cdk.CfnTag(key='Name', value='redis-with-replicas'),
         cdk.CfnTag(key='desc', value='primary-replica redis')]
     )
-    redis_with_replicas.add_depends_on(elasticache_subnet_group)
+    redis_with_replicas.add_dependency(elasticache_subnet_group)
 
     redis_cluster_param_group = aws_elasticache.CfnParameterGroup(self, 'RedisClusterParamGroup',
       cache_parameter_group_family='redis5.0',
@@ -130,7 +130,7 @@ class RedisStack(Stack):
       tags=[cdk.CfnTag(key='Name', value='redis-cluster'),
         cdk.CfnTag(key='desc', value='primary-replica redis')]
     )
-    redis_cluster.add_depends_on(elasticache_subnet_group)
+    redis_cluster.add_dependency(elasticache_subnet_group)
 
 
 app = cdk.App()
