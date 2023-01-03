@@ -39,6 +39,26 @@ class RedshiftStack(Stack):
     #   }
     # )
 
+    sg_rs_client = aws_ec2.SecurityGroup(self, 'RedshiftClientSG',
+      vpc=vpc,
+      allow_all_outbound=True,
+      description='security group for redshift client',
+      security_group_name='redshift-client-sg'
+    )
+    cdk.Tags.of(sg_rs_client).add('Name', 'redshift-client-sg')
+
+    sg_rs_cluster = aws_ec2.SecurityGroup(self, 'RedshiftClusterSG',
+      vpc=vpc,
+      allow_all_outbound=True,
+      description='security group for redshift cluster nodes',
+      security_group_name='redshift-cluster-sg'
+    )
+    sg_rs_cluster.add_ingress_rule(peer=sg_rs_client, connection=aws_ec2.Port.tcp(5439),
+      description='redshift-client-sg')
+    sg_rs_cluster.add_ingress_rule(peer=sg_rs_cluster, connection=aws_ec2.Port.all_tcp(),
+      description='redshift-cluster-sg')
+    cdk.Tags.of(sg_rs_cluster).add('Name', 'redshift-cluster-sg')
+
     redshift_cluster = aws_redshift_alpha.Cluster(self, "Redshift",
       master_user=aws_redshift_alpha.Login(
         master_username="admin"
@@ -47,7 +67,8 @@ class RedshiftStack(Stack):
       enhanced_vpc_routing=True,
       node_type=aws_redshift_alpha.NodeType.RA3_XLPLUS,
       preferred_maintenance_window="Sun:03:00-Sun:04:00",
-      removal_policy=cdk.RemovalPolicy.DESTROY
+      security_groups=[sg_rs_cluster],
+      # removal_policy=cdk.RemovalPolicy.DESTROY
     )
     redshift_cluster.add_to_parameter_group("enable_user_activity_logging", "true")
 
