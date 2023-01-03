@@ -7,7 +7,6 @@ from aws_cdk import (
   Stack,
   aws_ec2,
   aws_iam,
-  #aws_cloud9_alpha as cloud9
   aws_cloud9 as cloud9
 )
 from constructs import Construct
