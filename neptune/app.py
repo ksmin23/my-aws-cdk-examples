@@ -64,7 +64,7 @@ class NeptuneStack(Stack):
       preferred_maintenance_window='sun:18:00-sun:18:30',
       vpc_security_group_ids=[sg_graph_db.security_group_id]
     )
-    graph_db.add_depends_on(graph_db_subnet_group)
+    graph_db.add_dependency(graph_db_subnet_group)
 
     graph_db_instance = aws_neptune.CfnDBInstance(self, 'NeptuneHolInstance',
       db_instance_class='db.r5.large',
@@ -75,7 +75,7 @@ class NeptuneStack(Stack):
       db_instance_identifier='neptune-hol',
       preferred_maintenance_window='sun:18:00-sun:18:30'
     )
-    graph_db_instance.add_depends_on(graph_db)
+    graph_db_instance.add_dependency(graph_db)
 
     graph_db_replica_instance = aws_neptune.CfnDBInstance(self, 'NeptuneHolReplicaInstance',
       db_instance_class='db.r5.large',
@@ -86,8 +86,8 @@ class NeptuneStack(Stack):
       db_instance_identifier='neptune-hol-replica',
       preferred_maintenance_window='sun:18:00-sun:18:30'
     )
-    graph_db_replica_instance.add_depends_on(graph_db)
-    graph_db_replica_instance.add_depends_on(graph_db_instance)
+    graph_db_replica_instance.add_dependency(graph_db)
+    graph_db_replica_instance.add_dependency(graph_db_instance)
 
     sagemaker_notebook_role_policy_doc = aws_iam.PolicyDocument()
     sagemaker_notebook_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{

@@ -69,7 +69,7 @@ Delete the CloudFormation stack by running the below command.
 
 <pre>
 (.venv) $ cdk destroy --force --all \
-             -c vpc_name='<i>your-existing-vpc-name</i>' \
+              -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c collection_name='<i>collection-name</i>' \
               -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>

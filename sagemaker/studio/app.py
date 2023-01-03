@@ -140,7 +140,7 @@ class SageMakerStudioStack(Stack):
       domain_id=sagemaker_studio_domain.attr_domain_id,
       user_profile_name=sagemaker_user_profile.user_profile_name
     )
-    sagemaker_cfn_app.add_depends_on(sagemaker_user_profile)
+    sagemaker_cfn_app.add_dependency(sagemaker_user_profile)
 
 
 app = cdk.App()

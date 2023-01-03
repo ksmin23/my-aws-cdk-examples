@@ -75,7 +75,7 @@ class BatchWithEC2Stack(Stack):
       service_role=batch_service_role.role_arn,
       state='ENABLED'
     )
-    batch_compute_env.add_depends_on(ecs_instance_profile_role)
+    batch_compute_env.add_dependency(ecs_instance_profile_role)
 
     batch_job_queue = aws_batch.CfnJobQueue(self, 'BatchJobQueue',
       compute_environment_order=[aws_batch.CfnJobQueue.ComputeEnvironmentOrderProperty(
@@ -88,7 +88,7 @@ class BatchWithEC2Stack(Stack):
       job_queue_name='batch-job-queue',
       state='ENABLED'
     )
-    batch_job_queue.add_depends_on(batch_compute_env)
+    batch_job_queue.add_dependency(batch_compute_env)
 
 
 app = cdk.App()
