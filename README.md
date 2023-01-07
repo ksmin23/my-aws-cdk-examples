@@ -63,6 +63,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [redshift-streaming-ingestion/from-msk-serverless](./redshift-streaming-ingestion/from-msk-serverless/) | ![redshift_streaming_from_msk_serverless](./redshift-streaming-ingestion/from-msk-serverless/redshift_streaming_from_msk_serverless.svg) | redshift streaming ingestion from msk serverless |
 | [sagemaker/notebook](./sagemaker/notebook/) | Launch an Amazon SageMaker Notebook Instance | sagemaker notebook instance |
 | [sagemaker/studio](./sagemaker/studio/) | Launch an Amazon SageMaker Studio | sagemaker studio |
+| [sagemaker/fsx-lustre](./sagemaker/fsx-lustre/) | Training Jobs with FileSystemInput using Amazon FSx for Lustre | sagemaker studio, FSx for Lustre (FSxLustre) |
 
 Enjoy!
 
