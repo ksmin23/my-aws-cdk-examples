@@ -58,6 +58,7 @@ For example, if we try to set `JupyterLab3` to the default JupyterLab in `us-eas
 (.venv) $ cdk deploy -c vpc_name=default \
               -c sagmaker_image_arn='arn:aws:sagemaker:<i>us-east-1:081325390199:image/jupyter-server-3</i>'
 </pre>
+
 For more information about the available JupyterLab versions for each Region, see [Amazon SageMaker - Setting a default JupyterLab version](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set)
 
 To add additional dependencies, for example other CDK libraries, just add

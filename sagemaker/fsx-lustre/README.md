@@ -47,7 +47,8 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ cdk synth --all \
               -c vpc_name=<i>your-existing-vpc-name</i> \
               -c data_repository_path="s3://<i>{bucket}</i>/<i>{prefix}</i>" \
-              -c file_system_path="/<i>your-file-system-path-to-be-associated-data-repository</i>"
+              -c file_system_path="/<i>your-file-system-path-to-be-associated-data-repository</i>" \
+              -c sagmaker_image_arn="<i>sagemaker-image-arn</i>"
 </pre>
 
 For example,
@@ -56,12 +57,26 @@ For example,
 (.venv) $ cdk synth --all \
               -c vpc_name=<i>default</i> \
               -c data_repository_path="s3://<i>sagemaker-us-east-1-123456789012</i>/<i>sagemaker</i>/" \
-              -c file_system_path="/<i>ns1</i>"
+              -c file_system_path="/<i>ns1</i>" \
+              -c sagmaker_image_arn="arn:aws:sagemaker:<i>us-east-1:081325390199:image/jupyter-server-3</i>"
 </pre>
+
+Otherwise, you can pass context varialbes by `cdk.contex.json` file. Here is an example:
+<pre>
+(.venv) $ cat cdk.context.json
+{
+  "vpc_name": "default",
+  "data_repository_path": "s3://<i>sagemaker-us-east-1-123456789012</i>/<i>sagemaker</i>/",
+  "file_system_path": "/ns1",
+  "sagmaker_image_arn": "arn:aws:sagemaker:us-east-1:081325390199:image/jupyter-server-3"
+}
+</pre>
+
+For more information about the available JupyterLab versions for each Region, see [Amazon SageMaker - Setting a default JupyterLab version](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set)
 
 ## Run Test
 
-#### (Step 1) Check cdk stacks
+#### (Step 1) Check cdk stacks and context variables
   Before deploying CDK stacks, let's check the list of stacks with `cdk list` command.
    <pre>
    (.venv) $ cdk list
@@ -69,6 +84,17 @@ For example,
    SageMakerStudioWithFSxLustre
    FSxLustreForSageMakerStack
    FSxLustreDataRepositoryForSageMakerStack
+   </pre>
+
+  Create `cdk.context.json` for context variables like this:
+   <pre>
+   (.venv) $ cdk cdk.context.json
+   {
+     "vpc_name": "default",
+     "data_repository_path": "s3://<i>sagemaker-us-east-1-123456789012</i>/<i>sagemaker</i>/",
+     "file_system_path": "/ns1",
+     "sagmaker_image_arn": "arn:aws:sagemaker:us-east-1:081325390199:image/jupyter-server-3"
+   }
    </pre>
 
 #### (Step 2) Deploy SageMaker Studio Stack.
@@ -162,6 +188,7 @@ Enjoy!
 
 ## References
 
+ * [Amazon SageMaker - Setting a default JupyterLab version](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set)
  * [Amazon SageMaker - Configure Data Input Channel to Use Amazon FSx for Lustre](https://docs.aws.amazon.com/sagemaker/latest/dg/model-access-training-data.html#model-access-training-data-fsx)
  * [Amazon FSx for Lustre - Linking your file system to an S3 bucket](https://docs.aws.amazon.com/fsx/latest/LustreGuide/create-dra-linked-data-repo.html)
  * [Choose the best data source for your Amazon SageMaker training job (2022-02-23)](https://aws.amazon.com/ko/blogs/machine-learning/choose-the-best-data-source-for-your-amazon-sagemaker-training-job/)
