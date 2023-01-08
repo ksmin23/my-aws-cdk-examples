@@ -48,7 +48,7 @@ At this point you can now synthesize the CloudFormation template for this code.
               -c vpc_name=<i>your-existing-vpc-name</i> \
               -c data_repository_path="s3://<i>{bucket}</i>/<i>{prefix}</i>" \
               -c file_system_path="/<i>your-file-system-path-to-be-associated-data-repository</i>" \
-              -c sagmaker_image_arn="<i>sagemaker-image-arn</i>"
+              -c sagmaker_jupyterlab_arn="<i>default-JupterLab-image-arn</i>"
 </pre>
 
 For example,
@@ -58,7 +58,7 @@ For example,
               -c vpc_name=<i>default</i> \
               -c data_repository_path="s3://<i>sagemaker-us-east-1-123456789012</i>/<i>sagemaker</i>/" \
               -c file_system_path="/<i>ns1</i>" \
-              -c sagmaker_image_arn="arn:aws:sagemaker:<i>us-east-1:081325390199:image/jupyter-server-3</i>"
+              -c sagmaker_jupyterlab_arn="arn:aws:sagemaker:<i>us-east-1:081325390199:image/jupyter-server-3</i>"
 </pre>
 
 Otherwise, you can pass context varialbes by `cdk.contex.json` file. Here is an example:
@@ -68,7 +68,7 @@ Otherwise, you can pass context varialbes by `cdk.contex.json` file. Here is an 
   "vpc_name": "default",
   "data_repository_path": "s3://<i>sagemaker-us-east-1-123456789012</i>/<i>sagemaker</i>/",
   "file_system_path": "/ns1",
-  "sagmaker_image_arn": "arn:aws:sagemaker:us-east-1:081325390199:image/jupyter-server-3"
+  "sagmaker_jupyterlab_arn": "arn:aws:sagemaker:us-east-1:081325390199:image/jupyter-server-3"
 }
 </pre>
 
@@ -93,7 +93,7 @@ For more information about the available JupyterLab versions for each Region, se
      "vpc_name": "default",
      "data_repository_path": "s3://<i>sagemaker-us-east-1-123456789012</i>/<i>sagemaker</i>/",
      "file_system_path": "/ns1",
-     "sagmaker_image_arn": "arn:aws:sagemaker:us-east-1:081325390199:image/jupyter-server-3"
+     "sagmaker_jupyterlab_arn": "arn:aws:sagemaker:us-east-1:081325390199:image/jupyter-server-3"
    }
    </pre>
 
@@ -127,15 +127,17 @@ For more information about the available JupyterLab versions for each Region, se
   
    Then we can get `MountName` by running `aws fsx describe-file-systems` command like this:
    <pre>
-   (.venv) $ aws fsx describe-file-systems | jq -r '.FileSystems[] | select(.FileSystemId == "fs-0e88d71f9fa89bedc") | {FileSystemId, "MountName": .LustreConfiguration.MountName }'
+   (.venv) $ aws fsx describe-file-systems | jq -r '.FileSystems[] | select(.FileSystemId == "<i>fs-0e88d71f9fa89bedc</i>") | {FileSystemId, "MountName": .LustreConfiguration.MountName }'
    {
      "FileSystemId": "fs-0e88d71f9fa89bedc",
      "MountName": "yyd2zbev"
    }
    </pre>
+   In the above and following commands, replace `fs-0e88d71f9fa89bedc` with your **FileSystemId**.
+
    For `DataRepositoryPath`, we can get it with the following command:
    <pre>
-   (.venv) $ aws fsx describe-data-repository-associations | jq -r '.Associations[] | select(.FileSystemId=="fs-0e88d71f9fa89bedc") | {FileSystemId, FileSystemPath, DataRepositoryPath, Lifecycle}'
+   (.venv) $ aws fsx describe-data-repository-associations | jq -r '.Associations[] | select(.FileSystemId=="<i>fs-0e88d71f9fa89bedc</i>") | {FileSystemId, FileSystemPath, DataRepositoryPath, Lifecycle}'
    {
     "FileSystemId": "fs-0e88d71f9fa89bedc",
     "FileSystemPath": "/ns1",
@@ -154,7 +156,7 @@ For more information about the available JupyterLab versions for each Region, se
    So we need the subnet ids and the security group id for FSx for Lustre.
    We can get the subnet id by running the following command:
    <pre>
-   (.venv) $ aws fsx describe-file-systems | jq -r '.FileSystems[] | select(.FileSystemId == "fs-0e88d71f9fa89bedc") | {FileSystemId, SubnetIds, NetworkInterfaceIds}'
+   (.venv) $ aws fsx describe-file-systems | jq -r '.FileSystems[] | select(.FileSystemId == "<i>fs-0e88d71f9fa89bedc</i>") | {FileSystemId, SubnetIds, NetworkInterfaceIds}'
    {
     "FileSystemId": "fs-0e88d71f9fa89bedc",
     "SubnetIds": [
@@ -167,9 +169,11 @@ For more information about the available JupyterLab versions for each Region, se
    </pre>
    In case of the security group id, we can get it with the network interface id like this:
    <pre>
-   (.venv) $ aws ec2 describe-network-interfaces | jq -r '.NetworkInterfaces[] | select(.NetworkInterfaceId=="eni-007bf92bd02ca08ce") | .Groups[0].GroupId'
+   (.venv) $ aws ec2 describe-network-interfaces | jq -r '.NetworkInterfaces[] | select(.NetworkInterfaceId=="<i>eni-007bf92bd02ca08ce</i>") | .Groups[0].GroupId'
    sg-0eba387326aad81de
    </pre>
+   In the above command, replace `eni-007bf92bd02ca08ce` with one of your **NetworkInterfaceIds**.
+
    With the subnet id and security group id, we create the SageMaker Training Job.
    ![07-create-estimator](./assets/07-create-estimator.png)
    Then we can run the training job.

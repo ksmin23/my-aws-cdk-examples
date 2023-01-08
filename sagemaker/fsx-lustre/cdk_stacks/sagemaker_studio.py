@@ -23,7 +23,7 @@ class SageMakerStudioStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='Security group with no ingress rule',
-      # security_group_name='sagemaker-studio-sg'
+      security_group_name='sagemaker-studio-sg'
     )
     sg_sm_instance.add_ingress_rule(peer=sg_sm_instance, connection=aws_ec2.Port.all_traffic(), description='sagemaker studio security group')
     cdk.Tags.of(sg_sm_instance).add('Name', 'sagemaker-studio-sg')
@@ -75,7 +75,7 @@ class SageMakerStudioStack(Stack):
     }))
 
     sagemaker_emr_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
-      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=str(kwargs['env'].account)[5:]),
+      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=''.join(random.choices((string.digits), k=5))),
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       path='/',
       inline_policies={
@@ -105,14 +105,14 @@ class SageMakerStudioStack(Stack):
     )
 
     #XXX: https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set
-    sagmaker_image_arn = self.node.try_get_context('sagmaker_image_arn')
+    sagmaker_jupyerlab_arn = self.node.try_get_context('sagmaker_jupyterlab_arn')
 
     default_user_settings = aws_sagemaker.CfnUserProfile.UserSettingsProperty(
       jupyter_server_app_settings=aws_sagemaker.CfnUserProfile.JupyterServerAppSettingsProperty(
         default_resource_spec=aws_sagemaker.CfnUserProfile.ResourceSpecProperty(
           #XXX: JupyterServer apps only support the system value.
           instance_type="system",
-          sage_maker_image_arn=sagmaker_image_arn
+          sage_maker_image_arn=sagmaker_jupyerlab_arn
         )
       ),
       security_groups=[sg_sm_instance.security_group_id]
@@ -124,14 +124,5 @@ class SageMakerStudioStack(Stack):
       user_settings=default_user_settings
     )
 
-    # sagemaker_cfn_app = aws_sagemaker.CfnApp(self, 'SageMakerDefaultCfnApp',
-    #   app_name='default-app',
-    #   app_type='JupyterServer', # [JupyterServer | KernelGateway | RSessionGateway | RStudioServerPro | TensorBoard | Canvas]
-    #   domain_id=sagemaker_studio_domain.attr_domain_id,
-    #   user_profile_name=sagemaker_user_profile.user_profile_name
-    # )
-    # sagemaker_cfn_app.add_dependency(sagemaker_user_profile)
-
     cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
     cdk.CfnOutput(self, f'{self.stack_name}-UserProfileName', value=sagemaker_user_profile.user_profile_name)
-    # cdk.CfnOutput(self, f'{self.stack_name}-AppName', value=sagemaker_cfn_app.app_name)
