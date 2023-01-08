@@ -1,4 +1,5 @@
 import random
+import string
 
 import aws_cdk as cdk
 
@@ -74,7 +75,7 @@ class SageMakerStudioStack(Stack):
     }))
 
     sagemaker_emr_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
-      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=str(kwargs['env'].account)[-5:]),
+      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=''.join(random.choices((string.digits), k=5))),
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       path='/',
       inline_policies={
@@ -103,18 +104,25 @@ class SageMakerStudioStack(Stack):
       app_network_access_type='VpcOnly' # [PublicInternetOnly | VpcOnly]
     )
 
+    #XXX: https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set
+    sagmaker_jupyerlab_arn = self.node.try_get_context('sagmaker_jupyterlab_arn')
+
+    default_user_settings = aws_sagemaker.CfnUserProfile.UserSettingsProperty(
+      jupyter_server_app_settings=aws_sagemaker.CfnUserProfile.JupyterServerAppSettingsProperty(
+        default_resource_spec=aws_sagemaker.CfnUserProfile.ResourceSpecProperty(
+          #XXX: JupyterServer apps only support the system value.
+          instance_type="system",
+          sage_maker_image_arn=sagmaker_jupyerlab_arn
+        )
+      ),
+      security_groups=[sg_sm_instance.security_group_id]
+    )
+
     sagemaker_user_profile = aws_sagemaker.CfnUserProfile(self, 'SageMakerStudioUserProfile',
       domain_id=sagemaker_studio_domain.attr_domain_id,
-      user_profile_name='default-user'
+      user_profile_name='default-user',
+      user_settings=default_user_settings
     )
 
-    sagemaker_cfn_app = aws_sagemaker.CfnApp(self, 'SageMakerDefaultCfnApp',
-      app_name='default-app',
-      app_type='JupyterServer', # [JupyterServer | KernelGateway | RSessionGateway | RStudioServerPro | TensorBoard | Canvas]
-      domain_id=sagemaker_studio_domain.attr_domain_id,
-      user_profile_name=sagemaker_user_profile.user_profile_name
-    )
-    sagemaker_cfn_app.add_dependency(sagemaker_user_profile)
-
-    # cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_cfn_app.domain_id)
-    # cdk.CfnOutput(self, f'{self.stack_name}-AppName', value=sagemaker_cfn_app.app_name)
+    cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
+    cdk.CfnOutput(self, f'{self.stack_name}-UserProfileName', value=sagemaker_user_profile.user_profile_name)
