@@ -57,6 +57,8 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [rds/rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/) | ![rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/rds_proxy-aurora_mysql-arch.svg) | rds-proxy, aurora mysql, secrets manager |
 | [rds/mariadb](./rds/mariadb/) | ![mariadb-arch](./rds/mariadb/mariadb-arch.svg) | mariadb, secrets manager |
 | [rds/sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/) | ![sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/mysql-sagemaker-arch.svg) | rds-proxy, aurora mysql, secrets manager, sagemaker |
+| [redshift/cfn](./redshift/cfn) | ![redshift-cfn-arch](./redshift/cfn/redshift-cfn-arch.svg) | redshift |
+| [redshift/alpha](./redshift/redshift_alpha/) | ![redshift-cfn-arch](./redshift/redshift_alpha/redshift-alpha-arch.svg) | redshift |
 | [redshift-serverless](./redshift-serverless/) | ![redshift-serverless-arch](./redshift-serverless/redshift-serverless-arch.svg) | redshift-serverless |
 | [redshift-streaming-ingestion/from-kinesis](./redshift-streaming-ingestion/from-kinesis/) | ![redshift_streaming_from_kds](./redshift-streaming-ingestion/from-kinesis/redshift_streaming_from_kds.svg) | redshift streaming ingestion from kinesis |
 | [redshift-streaming-ingestion/from-msk](./redshift-streaming-ingestion/from-msk/) | ![redshift_streaming_from_msk](./redshift-streaming-ingestion/from-msk/redshift_streaming_from_msk.svg) | redshift streaming ingestion from msk |
