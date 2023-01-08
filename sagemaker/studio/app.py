@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import random
+import string
 
 import aws_cdk as cdk
 
@@ -100,7 +101,7 @@ class SageMakerStudioStack(Stack):
     }))
 
     sagemaker_emr_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
-      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=str(kwargs['env'].account)[-5:]),
+      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=''.join(random.choices((string.digits), k=5))),
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       path='/',
       inline_policies={
@@ -130,33 +131,26 @@ class SageMakerStudioStack(Stack):
     )
 
     #XXX: https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set
-    sagmaker_image_arn = self.node.try_get_context('sagmaker_image_arn')
-    # AppType allowed values: [JupyterServer | KernelGateway | RSessionGateway | RStudioServerPro | TensorBoard | Canvas]
-    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-app.html#cfn-sagemaker-app-apptype
-    sagemaker_app_type = self.node.try_get_context('sagemaker_app_type') or 'JupyterServer'
+    sagmaker_jupyerlab_arn = self.node.try_get_context('sagmaker_jupyterlab_arn')
 
-    #XXX: JupyterServer apps only support the system value.
-    sagmaker_app_instance_type = self.node.try_get_context('sagmaker_app_instance_type') or 'system'
+    default_user_settings = aws_sagemaker.CfnUserProfile.UserSettingsProperty(
+      jupyter_server_app_settings=aws_sagemaker.CfnUserProfile.JupyterServerAppSettingsProperty(
+        default_resource_spec=aws_sagemaker.CfnUserProfile.ResourceSpecProperty(
+          #XXX: JupyterServer apps only support the system value.
+          instance_type="system",
+          sage_maker_image_arn=sagmaker_jupyerlab_arn
+        )
+      ),
+      security_groups=[sg_sm_instance.security_group_id]
+    )
 
     sagemaker_user_profile = aws_sagemaker.CfnUserProfile(self, 'SageMakerStudioUserProfile',
       domain_id=sagemaker_studio_domain.attr_domain_id,
-      user_profile_name='default-user'
+      user_profile_name='default-user',
+      user_settings=default_user_settings
     )
-
-    sagemaker_cfn_app = aws_sagemaker.CfnApp(self, 'SageMakerDefaultCfnApp',
-      app_name='default',
-      app_type=sagemaker_app_type,
-      domain_id=sagemaker_studio_domain.attr_domain_id,
-      user_profile_name=sagemaker_user_profile.user_profile_name,
-      resource_spec=aws_sagemaker.CfnApp.ResourceSpecProperty(
-        instance_type=sagmaker_app_instance_type,
-        sage_maker_image_arn=sagmaker_image_arn
-      )
-    )
-    sagemaker_cfn_app.add_dependency(sagemaker_user_profile)
 
     cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
-    cdk.CfnOutput(self, f'{self.stack_name}-AppName', value=sagemaker_cfn_app.app_name)
     cdk.CfnOutput(self, f'{self.stack_name}-UserProfileName', value=sagemaker_user_profile.user_profile_name)
 
 

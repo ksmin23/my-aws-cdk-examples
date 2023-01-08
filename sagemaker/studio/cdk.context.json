@@ -1,5 +1,3 @@
 {
-  "vpc_name": "default",
-  "sagmaker_app_instance_type": "system",
-  "sagemaker_app_type": "JupyterServer"
+  "vpc_name": "default"
 }
