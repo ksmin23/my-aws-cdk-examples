@@ -39,7 +39,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 (.venv) $ pip install -r requirements.txt
 ```
 
-Before synthesizing the CloudFormation, **you first set up Apache Iceberg connector for AWS Glue to use Apache Iceberg with AWS Glue jobs.** (For more information, see [References](#references) (1), (2), or (3))
+`AWS Glue 4.0` added support for Apache Iceberg natively, so no Apache Iceberg connector for AWS Glue from marketplace is needed.
 
 Then you should set approperly the cdk context configuration.
 For example:
@@ -51,13 +51,11 @@ For example:
   "glue_job_input_arguments": {
     "--raw_s3_path": "s3://aws-glue-input-parquet-atq4q5u/full-load",
     "--iceberg_s3_path": "s3://aws-glue-output-iceberg-atq4q5u",
-    "--catalog": "glue_catalog",
     "--database": "human_resources",
     "--partition_key": "department",
     "--primary_key": "emp_no",
     "--table_name": "employee_details"
-  },
-  "glue_connections_name": "iceberg-connection",
+  }
 }
 </pre>
 
@@ -83,8 +81,7 @@ command.
 
 ## Test
 
-1. Set up Apache Iceberg connector for AWS Glue to use Apache Iceberg with AWS Glue jobs.
-2. Generate fake parquet files
+1. Generate fake parquet files
    <pre>
    (.venv) $ pwd
    ~/my-aws-cdk-examples/glue
@@ -123,13 +120,13 @@ command.
     cdc-load-20220730173650.parquet
     full-load-20220730173650.parquet
    </pre>
-3. Create S3 bucket for input and oput data and Copy fake parquet files into input S3 bucket
+2. Create S3 bucket for input and oput data and Copy fake parquet files into input S3 bucket
    <pre>
    (.venv) $ aws mb <i>s3://aws-glue-input-parquet-atq4q5u</i> --region <i>us-east-1</i>
    (.venv) $ aws cp full-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet</i>
    (.venv) $ aws mb <i>s3://aws-glue-output-iceberg-atq4q5u</i> --region <i>us-east-1</i>
    </pre>
-4. Create an Iceberg table using Athena - To create an Iceberg table in the AWS Glue Data Catalog, open the Athena console and run the following queries in sequence:
+3. Create an Iceberg table using Athena - To create an Iceberg table in the AWS Glue Data Catalog, open the Athena console and run the following queries in sequence:
    <pre>
    -- Create database for the demo
    CREATE DATABASE human_resources;
@@ -149,50 +146,50 @@ command.
       'table_type'='iceberg'
    );
    </pre>
-5. Deply glue job using `cdk deploy`
+4. Deply glue job using `cdk deploy`
    <pre>
    (.venv) $ ls src/main/python/etl/
     employee-details-cdc-etl.py
-   (.venv) $ aws mb <i>s3://aws-glue-assets-12345678912-us-east-1</i> --region <i>us-east-1</i>
+   (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
    (.venv) $ aws cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py</i>
    (.venv) $ cdk deploy --require-approval never
    </pre>
-6. Make sure the glue job to access the Iceberg tables in the database, otherwise grant the glue job to permissions
+5. Make sure the glue job to access the Iceberg tables in the database, otherwise grant the glue job to permissions
    <pre>
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>account-id</i>:role/<i>GlueJobRole</i> \
-               --permissions SELECT INSERT DELETE DESCRIBE \
+               --permissions SELECT INSERT DELETE DESCRIBE ALTER \
                --resource '{ "Table": {"DatabaseName": "<i>human_resources</i>", "TableWildcard": {}} }'
    </pre>
-7. Run glue job to fully load data into the Iceberg table
+6. Run glue job to fully load data into the Iceberg table
    <pre>
    (.venv) $ aws glue start-job-run --job-name <i>employee-details-cdc-etl</i>
    </pre>
-8. Check the output logs of the glue job and results in S3
+7. Check the output logs of the glue job and results in S3
    <pre>
    (.venv) $ aws s3 ls <i>s3://aws-glue-output-iceberg-atq4q5u/human_resources/employee_details_iceberg/</i>
                            PRE data/
                            PRE metadata/
    </pre>
-9. Query the Iceberg table using Athena - After you have successfully run the AWS Glue job, you can validate the output in Athena with the following SQL query:
+8. Query the Iceberg table using Athena - After you have successfully run the AWS Glue job, you can validate the output in Athena with the following SQL query:
    <pre>
    SELECT * FROM human_resources.employee_details_iceberg LIMIT 10;
    </pre>
-10. Upload incremental (CDC) data for further processing - After processing the initial full load file, let’s upload the following incremental files, which include insert, update, and delete records.
+9.  Upload incremental (CDC) data for further processing - After processing the initial full load file, let’s upload the following incremental files, which include insert, update, and delete records.
     <pre>
     (.venv) $ aws cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
     </pre>
-11. Run the AWS Glue job again to process incremental files
+10. Run the AWS Glue job again to process incremental files
     <pre>
     (.venv) $ aws glue start-job-run \
                 --job-name <i>employee-details-cdc-etl</i> \
                 --arguments='--raw_s3_path="s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/"'
     </pre>
-12. Query the Iceberg table using Athena, after incremental data processing - After incremental data processing is complete, you can run the same SELECT statement again
+11. Query the Iceberg table using Athena, after incremental data processing - After incremental data processing is complete, you can run the same SELECT statement again
     <pre>
     SELECT * FROM human_resources.employee_details_iceberg LIMIT 10;
     </pre>
-13. Query the previous version of data with Iceberg’s time travel feature - You can run the following SQL query in Athena that uses the AS OF TIME statement of Iceberg to query the previous version of the data:
+12. Query the previous version of data with Iceberg’s time travel feature - You can run the following SQL query in Athena that uses the AS OF TIME statement of Iceberg to query the previous version of the data:
     <pre>
     -- Replace the timestamp with an appropriate one
     SELECT * FROM iceberg_demo.iceberg_output FOR SYSTEM_TIME AS OF TIMESTAMP '2022-07-30 17:36:00'
@@ -212,19 +209,20 @@ Enjoy!
 
 ## References
 
-- (1) [Apache Iceberg Connector for AWS Glue를 이용하여 데이터레이크 CRUD 하기 \(2022-07-08\)](https://aws.amazon.com/ko/blogs/tech/transactional-datalake-using-apache-iceberg-connector-for-aws-glue/)
-- (2) [Use the AWS Glue connector to read and write Apache Iceberg tables with ACID transactions and perform time travel \(2022-06-21\)](https://aws.amazon.com/ko/blogs/big-data/use-the-aws-glue-connector-to-read-and-write-apache-iceberg-tables-with-acid-transactions-and-perform-time-travel/)
-- (3) [Implement a CDC-based UPSERT in a data lake using Apache Iceberg and AWS Glue \(2022-06-15\)](https://aws.amazon.com/ko/blogs/big-data/implement-a-cdc-based-upsert-in-a-data-lake-using-apache-iceberg-and-aws-glue/)
+- (1) [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
+- (2) [Apache Iceberg Connector for AWS Glue를 이용하여 데이터레이크 CRUD 하기 \(2022-07-08\)](https://aws.amazon.com/ko/blogs/tech/transactional-datalake-using-apache-iceberg-connector-for-aws-glue/)
+- (3) [Use the AWS Glue connector to read and write Apache Iceberg tables with ACID transactions and perform time travel \(2022-06-21\)](https://aws.amazon.com/ko/blogs/big-data/use-the-aws-glue-connector-to-read-and-write-apache-iceberg-tables-with-acid-transactions-and-perform-time-travel/)
+- (4) [Implement a CDC-based UPSERT in a data lake using Apache Iceberg and AWS Glue \(2022-06-15\)](https://aws.amazon.com/ko/blogs/big-data/implement-a-cdc-based-upsert-in-a-data-lake-using-apache-iceberg-and-aws-glue/)
   - This blog post contains the PySpark script that is expected to deduplicate the input data before merging to the target Iceberg table.
-- (4) [Process Apache Hudi, Delta Lake, Apache Iceberg datasets at scale, part 1: AWS Glue Studio Notebook \(2022-07-18\)](https://aws.amazon.com/ko/blogs/big-data/part-1-integrate-apache-hudi-delta-lake-apache-iceberg-datasets-at-scale-aws-glue-studio-notebook/)
-- (5) [Apache Iceberg Connector for AWS Glue](https://aws.amazon.com/marketplace/pp/prodview-iicxofvpqvsio)
-- (6) [Introduction to AWS Glue and Glue Databrew](https://catalog.us-east-1.prod.workshops.aws/workshops/aaaabcab-5e1e-4bff-b604-781a804763e1/en-US)
-- (7) [AWS Glue Immersion day](https://catalog.us-east-1.prod.workshops.aws/workshops/ee59d21b-4cb8-4b3d-a629-24537cf37bb5/en-US)
-- (8) [Amazon Athena Workshop - ACID Transactions with Iceberg](https://catalog.us-east-1.prod.workshops.aws/workshops/9981f1a1-abdc-49b5-8387-cb01d238bb78/en-US/90-athena-acid)
-- (9) [Querying Iceberg table data and performing time travel](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-table-data.html)
-- (10) [AWS Lake Formation - Granting Data Catalog permissions using the named resource method](https://docs.aws.amazon.com/lake-formation/latest/dg/granting-cat-perms-named-resource.html)
-- (11) [Configuring AWS Glue interactive sessions for Jupyter and AWS Glue Studio notebooks](https://docs.aws.amazon.com/glue/latest/dg/interactive-sessions-magics.html)
-- (12) [Troubleshooting errors in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/glue-troubleshooting-errors.html)
+- (5) [Process Apache Hudi, Delta Lake, Apache Iceberg datasets at scale, part 1: AWS Glue Studio Notebook \(2022-07-18\)](https://aws.amazon.com/ko/blogs/big-data/part-1-integrate-apache-hudi-delta-lake-apache-iceberg-datasets-at-scale-aws-glue-studio-notebook/)
+- (6) [Apache Iceberg Connector for AWS Glue](https://aws.amazon.com/marketplace/pp/prodview-iicxofvpqvsio)
+- (7) [Introduction to AWS Glue and Glue Databrew](https://catalog.us-east-1.prod.workshops.aws/workshops/aaaabcab-5e1e-4bff-b604-781a804763e1/en-US)
+- (8) [AWS Glue Immersion day](https://catalog.us-east-1.prod.workshops.aws/workshops/ee59d21b-4cb8-4b3d-a629-24537cf37bb5/en-US)
+- (9) [Amazon Athena Workshop - ACID Transactions with Iceberg](https://catalog.us-east-1.prod.workshops.aws/workshops/9981f1a1-abdc-49b5-8387-cb01d238bb78/en-US/90-athena-acid)
+- (10) [Querying Iceberg table data and performing time travel](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg-table-data.html)
+- (11) [AWS Lake Formation - Granting Data Catalog permissions using the named resource method](https://docs.aws.amazon.com/lake-formation/latest/dg/granting-cat-perms-named-resource.html)
+- (12) [Configuring AWS Glue interactive sessions for Jupyter and AWS Glue Studio notebooks](https://docs.aws.amazon.com/glue/latest/dg/interactive-sessions-magics.html)
+- (13) [Troubleshooting errors in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/glue-troubleshooting-errors.html)
 
 ## Troubleshooting
 
@@ -233,3 +231,8 @@ Enjoy!
    <pre>
    An error occurred while calling o100.getCatalogSource. Insufficient Lake Formation permission(s) on <i>your-table-name</i> (Service: AWSGlue; Status Code: 400; Error Code: AccessDeniedException; Request ID: 2623b59f-b5d2-497b-bed6-a7b2bcc32ba8; Proxy: null)
    </pre>
+- How do I resolve "MalformedPolicyDocument" errors in AWS CloudFormation?
+  <pre>
+  PM 1:46:58 | CREATE_FAILED        | AWS::IAM::Policy   | GlueJobRoleDefaultPolicy94EFA0CF IAM resource arn:aws:iam:us-east-1:123456789012:role/GlueJobRole cannot contain region information. (Service: AmazonIdentityManagement; Status Code: 400; Error Code: MalformedPolicyDocument; Request ID: 4e64e3c1-555f-44d1-b7e6-a170514e1ce6; Proxy: null)
+   </pre>
+   See [cdk.Arn.format: adds region automatically for services not requiring one](https://github.com/aws/aws-cdk/issues/13104]

@@ -103,7 +103,7 @@ class GlueJobStack(Stack):
       "effect": aws_iam.Effect.ALLOW,
       #XXX: The ARN will be formatted as follows:
       # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
-      "resources": [self.format_arn(service="iam", resource="role", resource_name=glue_job_role.role_name)],
+      "resources": [self.format_arn(service="iam", region="", resource="role", resource_name=glue_job_role.role_name)],
       "conditions": {
         "StringLike": {
           "iam:PassedToService": [
@@ -129,12 +129,13 @@ class GlueJobStack(Stack):
       "--job-bookmark-option": "job-bookmark-enable",
       "--job-language": "python",
       "--spark-event-logs-path": "s3://{glue_assets}/sparkHistoryLogs/".format(
-        glue_assets=glue_assets_s3_bucket_name)
+        glue_assets=glue_assets_s3_bucket_name),
+      #XXX: enable the Iceberg framework.
+      # For more informatio, see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format-iceberg.html#aws-glue-programming-etl-format-iceberg-enable
+      "--datalake-formats": "iceberg"
     }
 
     glue_job_default_arguments.update(glue_job_input_arguments)
-
-    glue_connections_name = self.node.try_get_context('glue_connections_name')
 
     glue_job_name = self.node.try_get_context('glue_job_name')
 
@@ -153,15 +154,13 @@ class GlueJobStack(Stack):
       #XXX: Set only AllocatedCapacity or MaxCapacity
       # Do not set Allocated Capacity if using Worker Type and Number of Workers
       # allocated_capacity=2,
-      connections=aws_glue.CfnJob.ConnectionsListProperty(
-        connections=[glue_connections_name]
-      ),
       default_arguments=glue_job_default_arguments,
       description="This job loads the data from employee_details dataset and creates the Iceberg Table.",
       execution_property=aws_glue.CfnJob.ExecutionPropertyProperty(
         max_concurrent_runs=1
       ),
-      glue_version="3.0",
+      #XXX: check AWS Glue Version in https://docs.aws.amazon.com/glue/latest/dg/add-job.html#create-job
+      glue_version="4.0",
       #XXX: Do not set Max Capacity if using Worker Type and Number of Workers
       # max_capacity=2,
       max_retries=0,

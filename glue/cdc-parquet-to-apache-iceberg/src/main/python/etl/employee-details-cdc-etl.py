@@ -4,6 +4,7 @@
 
 import sys
 from datetime import datetime
+import traceback
 
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
@@ -46,7 +47,7 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
 
 # Set variables
 RAW_S3_PATH = args.get("raw_s3_path")
-CATALOG = args.get("catalog")
+CATALOG = 'glue_catalog'
 ICEBERG_S3_PATH = args.get("iceberg_s3_path")
 DATABASE = args.get("database")
 TABLE_NAME = args.get("table_name")
@@ -58,13 +59,13 @@ DYNAMODB_LOCK_TABLE = args.get("lock_table_name")
 def set_spark_iceberg_conf() -> SparkConf:
   conf = SparkConf()
 
-  conf.set(f"spark.sql.catalog.{CATALOG}", "org.apache.iceberg.spark.SparkCatalog")
-  conf.set(f"spark.sql.catalog.{CATALOG}.warehouse", ICEBERG_S3_PATH)
-  conf.set(f"spark.sql.catalog.{CATALOG}.catalog-impl", "org.apache.iceberg.aws.glue.GlueCatalog")
-  conf.set(f"spark.sql.catalog.{CATALOG}.io-impl", "org.apache.iceberg.aws.s3.S3FileIO")
-  conf.set(f"spark.sql.catalog.{CATALOG}.lock-impl", "org.apache.iceberg.aws.glue.DynamoLockManager")
-  conf.set(f"spark.sql.catalog.{CATALOG}.lock.table", DYNAMODB_LOCK_TABLE)
   conf.set("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
+  conf.set(f"spark.sql.catalog.glue_catalog", "org.apache.iceberg.spark.SparkCatalog")
+  conf.set(f"spark.sql.catalog.glue_catalog.warehouse", ICEBERG_S3_PATH)
+  conf.set(f"spark.sql.catalog.glue_catalog.catalog-impl", "org.apache.iceberg.aws.glue.GlueCatalog")
+  conf.set(f"spark.sql.catalog.glue_catalog.io-impl", "org.apache.iceberg.aws.s3.S3FileIO")
+  conf.set(f"spark.sql.catalog.glue_catalog.lock-impl", "org.apache.iceberg.aws.glue.DynamoLockManager")
+  conf.set(f"spark.sql.catalog.glue_catalog.lock.table", DYNAMODB_LOCK_TABLE)
   conf.set("spark.sql.iceberg.handle-timestamp-without-timezone","true")
 
   return conf
@@ -132,12 +133,16 @@ else:
     upsertedDF = finalInputDF.filter("Op != 'D'").drop(*dropColumnList)
     if upsertedDF.count() > 0:
       upsertedDF.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
-      print(f"Table {TABLE_NAME} is upserting...")
-      spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
-        USING {TABLE_NAME}_upsert s ON s.{PK} = t.{PK}
-        WHEN MATCHED THEN UPDATE SET *
-        WHEN NOT MATCHED THEN INSERT *
-        """)
+      print(f"Table '{TABLE_NAME}' is upserting...")
+      try:
+        spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
+          USING {TABLE_NAME}_upsert s ON s.{PK} = t.{PK}
+          WHEN MATCHED THEN UPDATE SET *
+          WHEN NOT MATCHED THEN INSERT *
+          """)
+      except Exception as ex:
+        traceback.print_exc()
+        raise ex
     else:
       print("No data to insert or update.")
 
@@ -145,11 +150,15 @@ else:
     deletedDF = finalInputDF.filter("Op = 'D'").drop(*dropColumnList)
     if deletedDF.count() > 0:
       deletedDF.createOrReplaceTempView(f"{TABLE_NAME}_delete")
-      print(f"Table {TABLE_NAME} is deleting...")
-      spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
-        USING {TABLE_NAME}_delete s ON s.{PK} = t.{PK}
-        WHEN MATCHED THEN DELETE
-        """)
+      print(f"Table '{TABLE_NAME}' is deleting...")
+      try:
+        spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
+          USING {TABLE_NAME}_delete s ON s.{PK} = t.{PK}
+          WHEN MATCHED THEN DELETE
+          """)
+      except Exception as ex:
+        traceback.print_exc()
+        raise ex
     else:
       print("No data to delete.")
 
