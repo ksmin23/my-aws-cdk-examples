@@ -192,7 +192,7 @@ command.
 12. Query the previous version of data with Iceberg’s time travel feature - You can run the following SQL query in Athena that uses the AS OF TIME statement of Iceberg to query the previous version of the data:
     <pre>
     -- Replace the timestamp with an appropriate one
-    SELECT * FROM iceberg_demo.iceberg_output FOR SYSTEM_TIME AS OF TIMESTAMP '2022-07-30 17:36:00'
+    SELECT * FROM human_resources.employee_details_iceberg FOR SYSTEM_TIME AS OF TIMESTAMP '2022-07-30 17:36:00'
     </pre>
 
 
