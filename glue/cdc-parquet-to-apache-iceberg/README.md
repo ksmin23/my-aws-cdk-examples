@@ -235,4 +235,4 @@ Enjoy!
   <pre>
   PM 1:46:58 | CREATE_FAILED        | AWS::IAM::Policy   | GlueJobRoleDefaultPolicy94EFA0CF IAM resource arn:aws:iam:us-east-1:123456789012:role/GlueJobRole cannot contain region information. (Service: AmazonIdentityManagement; Status Code: 400; Error Code: MalformedPolicyDocument; Request ID: 4e64e3c1-555f-44d1-b7e6-a170514e1ce6; Proxy: null)
    </pre>
-   See [cdk.Arn.format: adds region automatically for services not requiring one](https://github.com/aws/aws-cdk/issues/13104]
+   See [cdk.Arn.format: adds region automatically for services not requiring one](https://github.com/aws/aws-cdk/issues/13104)
