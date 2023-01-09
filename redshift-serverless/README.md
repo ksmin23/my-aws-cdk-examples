@@ -97,6 +97,7 @@ Enjoy!
 
 ## Learn More
 
+ * [Amazon Redshift Immersion Labs](https://catalog.us-east-1.prod.workshops.aws/workshops/9f29cdba-66c0-445e-8cbb-28a092cb5ba7/en-US)
  * [Easy analytics and cost-optimization with Amazon Redshift Serverless (2022-08-30)](https://aws.amazon.com/ko/blogs/big-data/easy-analytics-and-cost-optimization-with-amazon-redshift-serverless/)
  * [Develop an Amazon Redshift ETL serverless framework using RSQL, AWS Batch, and AWS Step Functions (2022-08-02)](https://aws.amazon.com/ko/blogs/big-data/develop-an-amazon-redshift-etl-serverless-framework-using-rsql-aws-batch-and-aws-step-functions/)
  * [Real-time analytics with Amazon Redshift streaming ingestion (2022-04-27)](https://aws.amazon.com/ko/blogs/big-data/real-time-analytics-with-amazon-redshift-streaming-ingestion/)

@@ -82,4 +82,5 @@ Enjoy!
 ## References
 
  * [Amazon Redshift Management Guide](https://docs.aws.amazon.com/redshift/latest/mgmt/welcome.html)
+ * [Amazon Redshift Immersion Labs](https://catalog.us-east-1.prod.workshops.aws/workshops/9f29cdba-66c0-445e-8cbb-28a092cb5ba7/en-US)
 
