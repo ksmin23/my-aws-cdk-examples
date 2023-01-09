@@ -86,4 +86,9 @@ Before cleaning up the emr cluster, you need to tunrn off EMR `Termination prote
  * [aws emr create-default-roles](https://docs.aws.amazon.com/cli/latest/reference/emr/create-default-roles.html)
  * [When I create an Amazon EMR cluster, I get an "EMR_DefaultRole is invalid" or "EMR_EC2_DefaultRole is invalid" error](https://aws.amazon.com/premiumsupport/knowledge-center/emr-default-role-invalid/)
 
+## Further Readings
+
+ * [(video) Modern Data Lake Storage Layers - Hudi vs. Iceberg vs. DeltaLake](https://youtu.be/fryfx0Zg7KA)
+ * [An Introduction to Modern Data Lake Storage Layers - Hudi vs. Iceberg vs. DeltaLake](https://dacort.dev/posts/modern-data-lake-storage-layers/)
+
 Enjoy!

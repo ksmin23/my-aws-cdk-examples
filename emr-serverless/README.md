@@ -123,3 +123,7 @@ Enjoy!
  * [Tutorials for Amazon EMR Serverless](https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/tutorials.html)
  * :movie_camera: [Amazon EMR Serverless로 시작하는 쉬운 빅데이터 분석](https://youtu.be/TZHnLhCqdNg)
 
+## Further Readings
+
+ * [(video) Modern Data Lake Storage Layers - Hudi vs. Iceberg vs. DeltaLake](https://youtu.be/fryfx0Zg7KA)
+ * [An Introduction to Modern Data Lake Storage Layers - Hudi vs. Iceberg vs. DeltaLake](https://dacort.dev/posts/modern-data-lake-storage-layers/)

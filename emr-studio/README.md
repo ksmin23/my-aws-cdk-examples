@@ -107,4 +107,9 @@ Do the following steps to run your notebook.
 
  * [Use an Amazon EMR Studio](https://docs.aws.amazon.com/emr/latest/ManagementGuide/use-an-emr-studio.html)
 
+## Further Readings
+
+ * [(video) Modern Data Lake Storage Layers - Hudi vs. Iceberg vs. DeltaLake](https://youtu.be/fryfx0Zg7KA)
+ * [An Introduction to Modern Data Lake Storage Layers - Hudi vs. Iceberg vs. DeltaLake](https://dacort.dev/posts/modern-data-lake-storage-layers/)
+
 Enjoy!
