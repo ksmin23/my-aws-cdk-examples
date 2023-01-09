@@ -41,7 +41,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 
 `AWS Glue 4.0` added support for Apache Iceberg natively, so no Apache Iceberg connector for AWS Glue from marketplace is needed.
 
-Then you should set approperly the cdk context configuration.
+Then you should set approperly the cdk context configuration file, `cdk.context.json`.
 For example:
 <pre>
 {
