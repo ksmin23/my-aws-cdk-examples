@@ -113,6 +113,22 @@ command.
       </pre>
       After you run this command, the data is ready for querying.
 
+      Instead of `MSCK REPAIR TABLE` command, you can use the `ALTER TABLE ADD PARTITION` command to add each partition manually.
+
+      For example, to load the data in `s3://aws-glue-streaming-output-parquet-xxxxx/ventilator_metrics/ingest_year=2023/ingest_month=01/ingest_day=10/ingest_hour=06/`, you can run the following query.
+      <pre>
+      ALTER TABLE ventilatordb.ventilators_parquet ADD IF NOT EXISTS
+      PARTITION (ingest_year='2023', ingest_month='01', ingest_day='10', ingest_hour='06')
+      LOCATION 's3://aws-glue-streaming-output-parquet-<i>xxxxx</i>/ventilator_metrics/ingest_year=2023/ingest_month=01/ingest_day=10/ingest_hour=06/';
+      </pre>
+
+    * (Optional) (step 4) Check partitions
+
+      Run the following query to list all the partitions in an Athena table in unsorted order.
+      <pre>
+      SHOW PARTITIONS ventilatordb.ventilators_parquet;
+      </pre>
+
 3. Run test query
 
    Enter the following SQL statement and execute the query.
