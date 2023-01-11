@@ -21,7 +21,7 @@ def main():
   parser.add_argument('--region-name', action='store', default='us-east-1',
     help='aws region name (default: us-east-1)')
   parser.add_argument('--stream-name', help='The name of the stream to put the data record into.')
-  parser.add_argument('--max-count', default=10, type=int, help='The max number of records to put.')
+  parser.add_argument('--max-count', default=10, type=int, help='The max number of records to put (default: 10).')
   parser.add_argument('--dry-run', action='store_true')
 
   options = parser.parse_args()

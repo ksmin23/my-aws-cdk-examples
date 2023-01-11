@@ -29,5 +29,5 @@ class KdsStack(Stack):
 
     self.kinesis_stream = source_kinesis_stream
 
-    cdk.CfnOutput(self, '{}_KinesisDataStreamName'.format(self.stack_name), value=self.kinesis_stream.stream_name)
+    cdk.CfnOutput(self, f'{self.stack_name}_KinesisDataStreamName', value=self.kinesis_stream.stream_name)
 

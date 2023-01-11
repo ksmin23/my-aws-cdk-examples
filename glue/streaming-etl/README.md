@@ -45,11 +45,32 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
+Then you should set approperly the cdk context configuration file, `cdk.context.json`.
+For example:
+<pre>
+{
+  "kinesis_stream_name": "ventilatorstream",
+  "glue_assets_s3_bucket_name": "aws-glue-assets-123456789012-us-east-1",
+  "glue_job_script_file_name": "glue_streaming_from_kds_to_s3.py",
+  "glue_job_name": "glue_streaming_from_kds_to_s3",
+  "glue_job_input_arguments": {
+    "--aws_region": "us-east-1",
+    "--output_path": "s3://aws-glue-streaming-output-parquet-atq4q5u/",
+    "--glue_database": "ventilatordb",
+    "--glue_table_name": "ventilators_table",
+    "stream_starting_position": "LATEST"
+  }
+}
+</pre>
+
+:warning: **You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket.**
 At this point you can now synthesize the CloudFormation template for this code.
 
-```
-$ cdk synth
-```
+<pre>
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk synth --all
+</pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
@@ -57,13 +78,79 @@ command.
 
 ## Run Test
 
-1. Check the access logs in S3
+1. Create a Kinesis data stream
+   <pre>
+   (.venv) $ cdk deploy KinesisStreamForGlueStreamingJob
+   </pre>
+2. Define a schema for the streaming data
+   <pre>
+   (.venv) $ cdk deploy GlueSchemaOnKinesisStream
+   </pre>
+
+   (1) On the AWS Glue console, choose **Data Catalog**.<br/>
+   (2) Choose **Databases**.<br/>
+   (3) Click **Add database**.<br/>
+   (4) Create a database with the name `ventilatordb`.<br/>
+   (5) Choose **Tables**.<br/>
+   (6) Click **Add Table**.<br/>
+   (7) For the table name, enter `ventilators_table`.<br/>
+   (8) Select `ventilatordb` as a database.<br/>
+   (9) Choose **Kinesis** as the type of source.<br/>
+   (10) Enter the name of the stream.<br/>
+   (11) For the classification, choose **JSON**.<br/>
+   (12) Define the schema according to the following table.<br/>
+    | Column name | Data type |
+    |-------------|-----------|
+    | ventilatorid	| int |
+    | eventtime | string |
+    | serialnumber | string |
+    | pressurecontrol | int |
+    | o2stats | int |
+    | minutevolume | int |
+    | manufacturer | string |
+   (10) Choose **Finish**
+
+3. create Glue Streaming Job
+   <pre>
+   (.venv) $ ls src/main/python/
+    glue_streaming_from_kds_to_s3.py
+   (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
+   (.venv) $ aws cp src/main/python/glue_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
+   (.venv) $ cdk deploy GlueStreamingSinkToS3
+   </pre>
+4. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
+
+   Wec can get permissions by running the following command:
+   <pre>
+   (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole"))'
+   </pre>
+   Also, we can grant the glue job to required permissions by running the following command:
+   <pre>
+   (.venv) $ aws lakeformation grant-permissions \
+               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole</i> \
+               --permissions SELECT DESCRIBE \
+               --resource '{ "Table": {"DatabaseName": "<i>ventilatordb</i>", "TableWildcard": {}} }'
+   </pre>
+5. Run glue job to load data from Kinesis Data Streams into S3
+   <pre>
+   (.venv) $ aws glue start-job-run --job-name <i>glue-streaming-from-kds-to-s3</i>
+   </pre>
+6. Generate streaming data
+
+   We can synthetically generate ventilator data in JSON format using a simple Python application.
+   <pre>
+   (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
+               --region-name <i>us-east-1</i> \
+               --stream-name <i>your-stream-name</i> \
+               --max-count 1000
+   </pre>
+7. Check the access logs in S3
 
    After 5~10 minutes, you can see that the access logs have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
 
    ![glue-streaming-data-in-s3](./assets/glue-streaming-data-in-s3.png)
 
-2. Creating and loading a table with partitioned data in Amazon Athena
+8. Create and load a table with partitioned data in Amazon Athena
 
    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
    * (step 1) Create a database
@@ -129,7 +216,7 @@ command.
       SHOW PARTITIONS ventilatordb.ventilators_parquet;
       </pre>
 
-3. Run test query
+9. Run test query
 
    Enter the following SQL statement and execute the query.
    <pre>
