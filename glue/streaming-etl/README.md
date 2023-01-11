@@ -112,7 +112,7 @@ command.
     | manufacturer | string |
    (10) Choose **Finish**
 
-3. create Glue Streaming Job
+3. Create Glue Streaming Job
    <pre>
    (.venv) $ ls src/main/python/
     glue_streaming_from_kds_to_s3.py
