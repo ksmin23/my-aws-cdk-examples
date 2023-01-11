@@ -110,7 +110,8 @@ command.
     | o2stats | int |
     | minutevolume | int |
     | manufacturer | string |
-   (10) Choose **Finish**
+
+   (13) Choose **Finish**
 
 3. Create Glue Streaming Job
    <pre>
