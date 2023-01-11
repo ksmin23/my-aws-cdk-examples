@@ -87,6 +87,8 @@ command.
    (.venv) $ cdk deploy GlueSchemaOnKinesisStream
    </pre>
 
+   Running `cdk deploy GlueSchemaOnKinesisStream` command is like that we create a schema manually using the AWS Glue Data Catalog as the following steps:
+
    (1) On the AWS Glue console, choose **Data Catalog**.<br/>
    (2) Choose **Databases**.<br/>
    (3) Click **Add database**.<br/>
