@@ -90,17 +90,15 @@ command.
    Running `cdk deploy GlueSchemaOnKinesisStream` command is like that we create a schema manually using the AWS Glue Data Catalog as the following steps:
 
    (1) On the AWS Glue console, choose **Data Catalog**.<br/>
-   (2) Choose **Databases**.<br/>
-   (3) Click **Add database**.<br/>
-   (4) Create a database with the name `ventilatordb`.<br/>
-   (5) Choose **Tables**.<br/>
-   (6) Click **Add Table**.<br/>
-   (7) For the table name, enter `ventilators_table`.<br/>
-   (8) Select `ventilatordb` as a database.<br/>
-   (9) Choose **Kinesis** as the type of source.<br/>
-   (10) Enter the name of the stream.<br/>
-   (11) For the classification, choose **JSON**.<br/>
-   (12) Define the schema according to the following table.<br/>
+   (2) Choose **Databases**, and click **Add database**.<br/>
+   (3) Create a database with the name `ventilatordb`.<br/>
+   (4) On the **Data Catalog** menu, Choose **Tables**, and click **Add Table**.<br/>
+   (5) For the table name, enter `ventilators_table`.<br/>
+   (6) Select `ventilatordb` as a database.<br/>
+   (7) Choose **Kinesis** as the type of source.<br/>
+   (8) Enter the name of the stream.<br/>
+   (9) For the classification, choose **JSON**.<br/>
+   (10) Define the schema according to the following table.<br/>
     | Column name | Data type |
     |-------------|-----------|
     | ventilatorid	| int |
@@ -111,7 +109,7 @@ command.
     | minutevolume | int |
     | manufacturer | string |
 
-   (13) Choose **Finish**
+   (11) Choose **Finish**
 
 3. Create Glue Streaming Job
    <pre>
@@ -237,6 +235,7 @@ command.
 
 ## References
 
+ * [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
  * [Crafting serverless streaming ETL jobs with AWS Glue](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
  * [aws-samples/aws-glue-streaming-etl-blog](https://github.com/aws-samples/aws-glue-streaming-etl-blog)
  * [Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
