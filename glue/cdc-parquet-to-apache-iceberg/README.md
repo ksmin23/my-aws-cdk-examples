@@ -46,7 +46,7 @@ For example:
 <pre>
 {
   "vpc_name": "default",
-  "glue_assets_s3_bucket_name": "aws-glue-assets-12345678912-us-east-1",
+  "glue_assets_s3_bucket_name": "aws-glue-assets-123456789012-us-east-1",
   "glue_job_script_file_name": "employee-details-full-etl.py",
   "glue_job_input_arguments": {
     "--raw_s3_path": "s3://aws-glue-input-parquet-atq4q5u/full-load",
@@ -122,9 +122,9 @@ command.
    </pre>
 2. Create S3 bucket for input and oput data and Copy fake parquet files into input S3 bucket
    <pre>
-   (.venv) $ aws mb <i>s3://aws-glue-input-parquet-atq4q5u</i> --region <i>us-east-1</i>
-   (.venv) $ aws cp full-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet</i>
-   (.venv) $ aws mb <i>s3://aws-glue-output-iceberg-atq4q5u</i> --region <i>us-east-1</i>
+   (.venv) $ aws s3 mb <i>s3://aws-glue-input-parquet-atq4q5u</i> --region <i>us-east-1</i>
+   (.venv) $ aws s3 cp full-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/full-load/human_resources/employee_details/full-load-20220730173650.parquet</i>
+   (.venv) $ aws s3 mb <i>s3://aws-glue-output-iceberg-atq4q5u</i> --region <i>us-east-1</i>
    </pre>
 3. Create an Iceberg table using Athena - To create an Iceberg table in the AWS Glue Data Catalog, open the Athena console and run the following queries in sequence:
    <pre>
@@ -150,8 +150,8 @@ command.
    <pre>
    (.venv) $ ls src/main/python/etl/
     employee-details-cdc-etl.py
-   (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
-   (.venv) $ aws cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py</i>
+   (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
+   (.venv) $ aws s3 cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py</i>
    (.venv) $ cdk deploy --require-approval never
    </pre>
 5. Make sure the glue job to access the Iceberg tables in the database, otherwise grant the glue job to permissions
@@ -177,7 +177,7 @@ command.
    </pre>
 9.  Upload incremental (CDC) data for further processing - After processing the initial full load file, let’s upload the following incremental files, which include insert, update, and delete records.
     <pre>
-    (.venv) $ aws cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
+    (.venv) $ aws s3 cp cdc-load-20220730173650.parquet <i>s3://aws-glue-input-parquet-atq4q5u/cdc-load/human_resources/employee_details/cdc-load-20220730173650.parquet</i>
     </pre>
 10. Run the AWS Glue job again to process incremental files
     <pre>
