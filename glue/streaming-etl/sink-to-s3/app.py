@@ -7,8 +7,7 @@ from cdk_stacks import (
   KdsStack,
   GlueJobRoleStack,
   GlueStreamDataSchemaStack,
-  GlueStreamingJobStack,
-  DataLakePermissionsStack
+  GlueStreamingJobStack
 )
 
 APP_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
