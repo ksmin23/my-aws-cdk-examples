@@ -192,7 +192,7 @@ command.
 
 10. Load partitioned data into Amazon Athena table
 
-   Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
+    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
     * (step 1) Load the partition data
 
       We can use the `ALTER TABLE ADD PARTITION` command to add each partition manually.
@@ -217,11 +217,11 @@ command.
 
 11. Run test query
 
-   Enter the following SQL statement and execute the query.
-   <pre>
-   SELECT COUNT(*)
-   FROM hudi_demo_db.hudi_demo_table_cow;
-   </pre>
+    Enter the following SQL statement and execute the query.
+    <pre>
+    SELECT COUNT(*)
+    FROM hudi_demo_db.hudi_demo_table_cow;
+    </pre>
 
 ## Useful commands
 
