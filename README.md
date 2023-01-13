@@ -37,6 +37,7 @@ This repository contains a set of example projects for the [AWS Cloud Developmen
 | [emr-serverless](./emr-serverless/) | Launch an Amazon EMR Serverless Applation | emr serverless |
 | [emr-studio](./emr-studio/) | Launch an Amazon EMR Studio | emr studio |
 | [glue/cdc-parquet-to-apache-iceberg](./glue/cdc-parquet-to-apache-iceberg/) | ![glue-job-cdc-parquet-to-iceberg-arch](./glue/cdc-parquet-to-apache-iceberg/glue-job-cdc-parquet-to-iceberg-arch.svg) | aws glue, Apache Iceberg, Parquet |
+| [glue/streaming-etl/sink-to-s3](./glue/streaming-etl/sink-to-s3/) | ![glue-streaming-ingestion-from-kinesis-to-s3-arch](./glue/streaming-etl/sink-to-s3/glue-streaming-to-s3.svg) | aws glue, kinesis data streams, s3, parquet |
 | [kinesis-data-firehose/data-transform](./kinesis-data-firehose/data-transform/) | ![firehose_data_transform](./kinesis-data-firehose/data-transform/firehose_data_transform.svg) | kinesis firehose, lambda, s3, schema-validation |
 | [kinesis-data-firehose/dynamic-partitioning/inline](./kinesis-data-firehose/dynamic-partitioning/inline/) | ![firehose_dynamic_partition_with_inline](./kinesis-data-firehose/dynamic-partitioning/inline/firehose_dynamic_partition_with_inline.svg) | kinesis firehose, s3, dynamic-partitioning, jq |
 | [kinesis-data-firehose/dynamic-partitioning/lambda](./kinesis-data-firehose/dynamic-partitioning/lambda/) | ![firehose_dynamic_partition_with_lambda](./kinesis-data-firehose/dynamic-partitioning/lambda/firehose_dynamic_partition_with_lambda.svg) | kinesis firehose, s3, dynamic-partitioning, lambda |
