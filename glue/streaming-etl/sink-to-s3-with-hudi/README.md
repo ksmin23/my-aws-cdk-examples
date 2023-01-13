@@ -125,29 +125,10 @@ command.
    <pre>
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole</i> \
-               --permissions SELECT DESCRIBE \
+               --permissions SELECT DESCRIBE ALTER INSERT DELETE \
                --resource '{ "Table": {"DatabaseName": "<i>hudi_demo_db</i>", "TableWildcard": {}} }'
    </pre>
-6. Run glue job to load data from Kinesis Data Streams into S3
-   <pre>
-   (.venv) $ aws glue start-job-run --job-name <i>hudi-streaming-from-kds-to-s3</i>
-   </pre>
-7. Generate streaming data
-
-   We can synthetically generate ventilator data in JSON format using a simple Python application.
-   <pre>
-   (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
-               --region-name <i>us-east-1</i> \
-               --stream-name <i>your-stream-name</i> \
-               --max-count 1000
-   </pre>
-8. Check streaming data in S3
-
-   After 5~10 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
-
-   ![glue-streaming-data-in-s3-with-hudi](./assets/glue-streaming-data-in-s3-with-hudi.png)
-
-9. Create and load a table with partitioned data in Amazon Athena
+6. Create a table with partitioned data in Amazon Athena
 
    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
    * (step 1) Create a database
@@ -190,7 +171,30 @@ command.
 
       If you get an error, check if (a) you have updated the `LOCATION` to the correct S3 bucket name, (b) you have mydatabase selected under the Database dropdown, and (c) you have `AwsDataCatalog` selected as the **Data source**.
 
-    * (step 3) Load the partition data
+7. Run glue job to load data from Kinesis Data Streams into S3
+   <pre>
+   (.venv) $ aws glue start-job-run --job-name <i>hudi-streaming-from-kds-to-s3</i>
+   </pre>
+8. Generate streaming data
+
+   We can synthetically generate ventilator data in JSON format using a simple Python application.
+   <pre>
+   (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
+               --region-name <i>us-east-1</i> \
+               --stream-name <i>your-stream-name</i> \
+               --max-count 1000
+   </pre>
+9. Check streaming data in S3
+
+   After 5~10 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+
+   ![glue-streaming-data-in-s3-with-hudi](./assets/glue-streaming-data-in-s3-with-hudi.png)
+
+10. Load partitioned data into Amazon Athena table
+
+   Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
+
+    * (step 1) Load the partition data
 
       We can use the `ALTER TABLE ADD PARTITION` command to add each partition manually.
       For example, to load the data in `s3://hudi-demo-bucket-xxxxxx/hudi_stuff/hudi_demo_table_cow/name=Person1/year=2023/month=01/day=10`, you can run the following query.
@@ -205,14 +209,14 @@ command.
       </pre>
       After you run this command, the data is ready for querying.
 
-    * (Optional) (step 4) Check partitions
+    * (Optional) (step 2) Check partitions
 
       Run the following query to list all the partitions in an Athena table in unsorted order.
       <pre>
       SHOW PARTITIONS hudi_demo_db.hudi_demo_table_cow;
       </pre>
 
-10. Run test query
+11. Run test query
 
    Enter the following SQL statement and execute the query.
    <pre>
