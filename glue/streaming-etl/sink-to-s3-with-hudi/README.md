@@ -193,7 +193,6 @@ command.
 10. Load partitioned data into Amazon Athena table
 
    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
-
     * (step 1) Load the partition data
 
       We can use the `ALTER TABLE ADD PARTITION` command to add each partition manually.
