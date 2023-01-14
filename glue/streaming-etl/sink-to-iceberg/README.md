@@ -185,23 +185,23 @@ command.
       :information_source: If you fail to create the table, give Athena users access permissions on `iceberg_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home)
 
 8. Run glue job to load data from Kinesis Data Streams into S3
-   <pre>
-   (.venv) $ aws glue start-job-run --job-name <i>streaming_data_from_kds_into_iceberg_table</i>
-   </pre>
+    <pre>
+    (.venv) $ aws glue start-job-run --job-name <i>streaming_data_from_kds_into_iceberg_table</i>
+    </pre>
 9.  Generate streaming data
 
-   We can synthetically generate ventilator data in JSON format using a simple Python application.
-   <pre>
-   (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
+    We can synthetically generate ventilator data in JSON format using a simple Python application.
+    <pre>
+    (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
                --region-name <i>us-east-1</i> \
                --stream-name <i>your-stream-name</i> \
                --max-count 1000
-   </pre>
+    </pre>
 10. Check streaming data in S3
 
-   After 5~10 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+    After 5~10 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
 
-   ![glue-streaming-data-in-iceberg-table](./assets/glue-streaming-data-in-iceberg-table.png)
+    ![glue-streaming-data-in-iceberg-table](./assets/glue-streaming-data-in-iceberg-table.png)
 
 11. Run test query
 
