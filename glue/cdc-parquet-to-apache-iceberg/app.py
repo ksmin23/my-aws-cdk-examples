@@ -57,6 +57,7 @@ class GlueJobStack(Stack):
         "dynamodb:BatchWriteItem",
         "dynamodb:CreateTable",
         "dynamodb:DeleteTable",
+        "dynamodb:DeleteItem",
         "dynamodb:UpdateTable",
         "dynamodb:UpdateItem",
         "dynamodb:PutItem"
