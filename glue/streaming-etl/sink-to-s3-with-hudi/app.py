@@ -17,7 +17,7 @@ app = cdk.App()
 
 kds_stack = KdsStack(app, 'KinesisStreamAsGlueStreamingJobDataSource')
 
-glue_job_role = GlueJobRoleStack(app, 'GlueStreamingSinkToS3JobRole')
+glue_job_role = GlueJobRoleStack(app, 'GlueStreamingSinkToHudiJobRole')
 glue_job_role.add_dependency(kds_stack)
 
 glue_stream_schema = GlueStreamDataSchemaStack(app, 'GlueSchemaOnKinesisStream',
@@ -26,7 +26,7 @@ glue_stream_schema = GlueStreamDataSchemaStack(app, 'GlueSchemaOnKinesisStream',
 )
 glue_stream_schema.add_dependency(glue_stream_schema)
 
-glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToS3',
+glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToHudi',
   glue_job_role.glue_job_role
 )
 glue_streaming_job.add_dependency(glue_stream_schema)

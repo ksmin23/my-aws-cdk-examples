@@ -87,7 +87,7 @@ command.
 1. Set up **Apache Hudi connector for AWS Glue** to use Apache Hudi with AWS Glue jobs.
 2. Create a Kinesis data stream
    <pre>
-   (.venv) $ cdk deploy KinesisStreamForGlueStreamingJob
+   (.venv) $ cdk deploy KinesisStreamAsGlueStreamingJobDataSource
    </pre>
 3. Define a schema for the streaming data
    <pre>
@@ -111,9 +111,9 @@ command.
    <pre>
    (.venv) $ ls src/main/python/
     glue_hudi_streaming_from_kds_to_s3.py
-   (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
-   (.venv) $ aws cp src/main/python/glue_hudi_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
-   (.venv) $ cdk deploy GlueStreamingSinkToS3
+   (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
+   (.venv) $ aws s3 cp src/main/python/glue_hudi_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
+   (.venv) $ cdk deploy GlueStreamingSinkToHudi
    </pre>
 5. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
