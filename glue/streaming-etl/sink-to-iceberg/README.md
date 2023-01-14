@@ -1,0 +1,232 @@
+
+# AWS Glue Streaming ETL Job with Apace Iceberg CDK Python project!
+
+![glue-streaming-data-to-iceberg-table](./glue-streaming-data-to-iceberg-table.svg)
+
+This is an examplary AWS Glue Streaming ETL Job project for CDK development with Python.
+
+In this project, we create a streaming ETL job in AWS Glue to integrate Iceberg with a streaming use case and create an in-place updatable data lake on Amazon S3.
+
+After ingested to Amazon S3, you can query the data with [Amazon Athena](http://aws.amazon.com/athena).
+
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
+
+This project is set up like a standard Python project.  The initialization
+process also creates a virtualenv within this project, stored under the `.venv`
+directory.  To create the virtualenv it assumes that there is a `python3`
+(or `python` for Windows) executable in your path with access to the `venv`
+package. If for any reason the automatic creation of the virtualenv fails,
+you can create the virtualenv manually.
+
+To manually create a virtualenv on MacOS and Linux:
+
+```
+$ python3 -m venv .venv
+```
+
+After the init process completes and the virtualenv is created, you can use the following
+step to activate your virtualenv.
+
+```
+$ source .venv/bin/activate
+```
+
+If you are a Windows platform, you would activate the virtualenv like this:
+
+```
+% .venv\Scripts\activate.bat
+```
+
+Once the virtualenv is activated, you can install the required dependencies.
+
+```
+(.venv) $ pip install -r requirements.txt
+```
+
+Before synthesizing the CloudFormation, **you first set up Apache Iceberg connector for AWS Glue to use Apache Iceber with AWS Glue jobs.** (For more information, see [References](#references) (2))
+
+Then you should set approperly the cdk context configuration file, `cdk.context.json`.
+
+For example:
+<pre>
+{
+  "kinesis_stream_name": "iceberg-demo-stream",
+  "glue_assets_s3_bucket_name": "aws-glue-assets-123456789012-atq4q5u",
+  "glue_job_script_file_name": "glue_streaming_data_from_kds_into_iceberg.py",
+  "glue_job_name": "streaming_data_from_kds_into_iceberg_table",
+  "glue_job_input_arguments": {
+    "--catalog": "job_catalog",
+    "--database_name": "iceberg_demo_db",
+    "--table_name": "iceberg_demo_table",
+    "--kinesis_table_name": "iceberg_demo_kinesis_stream_table",
+    "--kinesis_stream_name": "iceberg-demo-stream",
+    "--starting_position_of_kinesis_iterator": "LATEST",
+    "--iceberg_s3_path": "s3://glue-iceberg-demo-atq4q5u",
+    "--lock_table_name": "employee_details_lock",
+    "--aws_region": "us-east-1",
+    "--window_size": "100 seconds",
+    "--extra-jars": "s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar",
+    "--user-jars-first": "true"
+  },
+  "glue_connections_name": "iceberg-connection"
+}
+</pre>
+
+:warning: **You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket.**
+At this point you can now synthesize the CloudFormation template for this code.
+
+<pre>
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk synth --all
+</pre>
+
+To add additional dependencies, for example other CDK libraries, just add
+them to your `setup.py` file and rerun the `pip install -r requirements.txt`
+command.
+
+## Run Test
+
+1. Set up **Apache Iceberg connector for AWS Glue** to use Apache Hudi with AWS Glue jobs.
+2. Create a Kinesis data stream
+   <pre>
+   (.venv) $ cdk deploy KinesisStreamAsGlueStreamingJobDataSource
+   </pre>
+3. Define a schema for the streaming data
+   <pre>
+   (.venv) $ cdk deploy GlueSchemaOnKinesisStream
+   </pre>
+
+   Running `cdk deploy GlueSchemaOnKinesisStream` command is like that we create a schema manually using the AWS Glue Data Catalog as the following steps:
+
+   (1) On the AWS Glue console, choose **Data Catalog**.<br/>
+   (2) Choose **Databases**, and click **Add database**.<br/>
+   (3) Create a database with the name `iceberg_demo_db`.<br/>
+   (4) On the **Data Catalog** menu, Choose **Tables**, and click **Add Table**.<br/>
+   (5) For the table name, enter `iceberg_demo_kinesis_stream_table`.<br/>
+   (6) Select `iceberg_demo_db` as a database.<br/>
+   (7) Choose **Kinesis** as the type of source.<br/>
+   (8) Enter the name of the stream.<br/>
+   (9) For the classification, choose **JSON**.<br/>
+   (10) Define the schema according to the following table.<br/>
+    | Column name | Data type |
+    |-------------|-----------|
+    | name	| string |
+    | age | int |
+
+   (11) Choose **Finish**
+
+4. Upload **AWS SDK for Java 2.x** jar file into S3
+   <pre>
+   (.venv) $ wget https://repo1.maven.org/maven2/software/amazon/awssdk/aws-sdk-java/2.17.224/aws-sdk-java-2.17.224.jar
+   (.venv) $ aws s3 cp aws-sdk-java-2.17.224.jar s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar
+   </pre>
+   A Glue Streaming Job might fail because of the following error:
+   <pre>
+   py4j.protocol.Py4JJavaError: An error occurred while calling o135.start.
+   : java.lang.NoSuchMethodError: software.amazon.awssdk.utils.SystemSetting.getStringValueFromEnvironmentVariable(Ljava/lang/String;)Ljava/util/Optional
+   </pre>
+   We can work around the problem by starting the Glue Job with the additional parameters:
+   <pre>
+   --extra-jars <i>s3://path/to/aws-sdk-for-java-v2.jar</i>
+   --user-jars-first true
+   </pre>
+   In order to do this, we might need to upload **AWS SDK for Java 2.x** jar file into S3.
+5. Create Glue Streaming Job
+   <pre>
+   (.venv) $ ls src/main/python/
+    glue_streaming_data_from_kds_into_iceberg.py
+   (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-atq4q5u</i> --region <i>us-east-1</i>
+   (.venv) $ aws s3 cp src/main/python/glue_streaming_data_from_kds_into_iceberg.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
+   (.venv) $ cdk deploy GlueStreamingSinkToIceberg
+   </pre>
+6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
+
+   Wec can get permissions by running the following command:
+   <pre>
+   (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-Iceberg"))'
+   </pre>
+   Also, we can grant the glue job to required permissions by running the following command:
+   <pre>
+   (.venv) $ aws lakeformation grant-permissions \
+               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-Iceberg</i> \
+               --permissions SELECT DESCRIBE ALTER INSERT DELETE \
+               --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
+   </pre>
+7. Create a table with partitioned data in Amazon Athena
+
+   Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
+   * (step 1) Create a database
+
+     In order to create a new database called `iceberg_demo_db`, enter the following statement in the Athena query editor
+     and click the **Run** button to execute the query.
+
+     <pre>
+     CREATE DATABASE IF NOT EXISTS iceberg_demo_db
+     </pre>
+
+    * (step 2) Create a table
+
+      Copy the following query into the Athena query editor, replace the `xxxxxxx` in the last line under `LOCATION` with the string of your S3 bucket, and execute the query to create a new table.
+      <pre>
+      CREATE TABLE iceberg_demo_db.iceberg_demo_table (
+        name string,
+        age int)
+      PARTITIONED BY (`name`)
+      LOCATION 's3://glue-iceberg-demo-atq4q5u/iceberg_demo_table'
+      TBLPROPERTIES (
+        'table_type'='iceberg'
+      );
+      </pre>
+      If the query is successful, a table named `iceberg_demo_table` is created and displayed on the left panel under the **Tables** section.
+
+      If you get an error, check if (a) you have updated the `LOCATION` to the correct S3 bucket name, (b) you have mydatabase selected under the Database dropdown, and (c) you have `AwsDataCatalog` selected as the **Data source**.
+
+      :information_source: If you fail to create the table, give Athena users access permissions on `iceberg_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home)
+
+8. Run glue job to load data from Kinesis Data Streams into S3
+    <pre>
+    (.venv) $ aws glue start-job-run --job-name <i>streaming_data_from_kds_into_iceberg_table</i>
+    </pre>
+9.  Generate streaming data
+
+    We can synthetically generate ventilator data in JSON format using a simple Python application.
+    <pre>
+    (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
+               --region-name <i>us-east-1</i> \
+               --stream-name <i>your-stream-name</i> \
+               --max-count 1000
+    </pre>
+10. Check streaming data in S3
+
+    After 5~10 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+
+    ![glue-streaming-data-in-iceberg-table](./assets/glue-streaming-data-in-iceberg-table.png)
+
+11. Run test query
+
+    Enter the following SQL statement and execute the query.
+    <pre>
+    SELECT COUNT(*)
+    FROM iceberg_demo_db.iceberg_demo_table;
+    </pre>
+
+## Useful commands
+
+ * `cdk ls`          list all stacks in the app
+ * `cdk synth`       emits the synthesized CloudFormation template
+ * `cdk deploy`      deploy this stack to your default AWS account/region
+ * `cdk diff`        compare deployed stack with current state
+ * `cdk docs`        open CDK documentation
+
+## References
+
+ * (1) [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
+ * (2) [Use the AWS Glue connector to read and write Apache Iceberg tables with ACID transactions and perform time travel \(2022-06-21\)](https://aws.amazon.com/ko/blogs/big-data/use-the-aws-glue-connector-to-read-and-write-apache-iceberg-tables-with-acid-transactions-and-perform-time-travel/)
+ * (3) [Streaming Data into Apache Iceberg Tables Using AWS Kinesis and AWS Glue (2022-09-26)](https://www.dremio.com/subsurface/streaming-data-into-apache-iceberg-tables-using-aws-kinesis-and-aws-glue/)
+ * (4) [Amazon Athena Using Iceberg tables](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg.html)
+ * (5) [Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
+ * (6) [AWS Glue job parameters](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html)
+ * (7) [Crafting serverless streaming ETL jobs with AWS Glue](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
+
+Enjoy!
