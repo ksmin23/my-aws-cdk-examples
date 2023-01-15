@@ -90,6 +90,9 @@ streaming_data_df = streaming_data \
 table_identifier = f"{CATALOG}.{DATABASE}.{TABLE_NAME}"
 checkpointPath = os.path.join(args["TempDir"], args["JOB_NAME"], "checkpoint/")
 
+#XXX: Writing against partitioned table
+# https://iceberg.apache.org/docs/0.14.0/spark-structured-streaming/#writing-against-partitioned-table
+# Complete output mode not supported when there are no streaming aggregations on streaming DataFrame/Datasets
 query = streaming_data_df.writeStream \
     .format("iceberg") \
     .outputMode("append") \
