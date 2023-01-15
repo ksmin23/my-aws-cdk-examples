@@ -39,7 +39,11 @@ class GlueStreamDataSchemaStack(Stack):
             aws_glue.CfnTable.ColumnProperty(
               name="age",
               type="int"
-            )
+            ),
+            aws_glue.CfnTable.ColumnProperty(
+              name="m_time",
+              type="string"
+            ),
           ],
           input_format="org.apache.hadoop.mapred.TextInputFormat",
           location=kinesis_stream.stream_name,

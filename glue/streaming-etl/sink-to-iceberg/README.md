@@ -72,6 +72,8 @@ For example:
 }
 </pre>
 
+:information_source: `--primary_key` option should be set by Iceberg table's primary column name.
+
 :warning: **You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket.**
 At this point you can now synthesize the CloudFormation template for this code.
 
