@@ -52,7 +52,7 @@ For example:
 {
   "kinesis_stream_name": "iceberg-demo-stream",
   "glue_assets_s3_bucket_name": "aws-glue-assets-123456789012-atq4q5u",
-  "glue_job_script_file_name": "glue_streaming_data_from_kds_into_iceberg.py",
+  "glue_job_script_file_name": "spark_iceberg_writes_with_dataframe.py",
   "glue_job_name": "streaming_data_from_kds_into_iceberg_table",
   "glue_job_input_arguments": {
     "--catalog": "job_catalog",
@@ -135,9 +135,10 @@ command.
 5. Create Glue Streaming Job
    <pre>
    (.venv) $ ls src/main/python/
-    glue_streaming_data_from_kds_into_iceberg.py
+    spark_iceberg_writes_with_dataframe.py
+    spark_iceberg_writes_with_sql.py
    (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-atq4q5u</i> --region <i>us-east-1</i>
-   (.venv) $ aws s3 cp src/main/python/glue_streaming_data_from_kds_into_iceberg.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
+   (.venv) $ aws s3 cp src/main/python/spark_iceberg_writes_with_dataframe.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
    (.venv) $ cdk deploy GlueStreamingSinkToIceberg
    </pre>
 6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
