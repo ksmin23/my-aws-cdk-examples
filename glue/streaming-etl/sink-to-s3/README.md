@@ -99,15 +99,15 @@ command.
    (8) Enter the name of the stream.<br/>
    (9) For the classification, choose **JSON**.<br/>
    (10) Define the schema according to the following table.<br/>
-    | Column name | Data type |
-    |-------------|-----------|
-    | ventilatorid	| int |
-    | eventtime | string |
-    | serialnumber | string |
-    | pressurecontrol | int |
-    | o2stats | int |
-    | minutevolume | int |
-    | manufacturer | string |
+    | Column name | Data type | Example |
+    |-------------|-----------|---------|
+    | ventilatorid	| int | 29 |
+    | eventtime | string | "2023-09-07 16:02:17" |
+    | serialnumber | string | "d85324d6-b426-4713-9409-aa7f5c7523b4" |
+    | pressurecontrol | int | 26 |
+    | o2stats | int | 91 |
+    | minutevolume | int | 5 |
+    | manufacturer | string | "GE" |
 
    (11) Choose **Finish**
 
@@ -117,7 +117,7 @@ command.
     glue_streaming_from_kds_to_s3.py
    (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
    (.venv) $ aws cp src/main/python/glue_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
-   (.venv) $ cdk deploy GlueStreamingSinkToS3
+   (.venv) $ cdk deploy GlueSchemaOnKinesisStream GlueStreamingSinkToS3
    </pre>
 4. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
@@ -167,7 +167,7 @@ command.
 
       Copy the following query into the Athena query editor, replace the `xxxxxxx` in the last line under `LOCATION` with the string of your S3 bucket, and execute the query to create a new table.
       <pre>
-      CREATE EXTERNAL TABLE `ventilatordb.ventilators_parquet`(
+      CREATE EXTERNAL TABLE ventilatordb.ventilators_parquet (
         `ventilatorid` integer,
         `eventtime` timestamp,
         `serialnumber` string,
@@ -192,6 +192,8 @@ command.
       If the query is successful, a table named `ventilators_parquet` is created and displayed on the left panel under the **Tables** section.
 
       If you get an error, check if (a) you have updated the `LOCATION` to the correct S3 bucket name, (b) you have mydatabase selected under the Database dropdown, and (c) you have `AwsDataCatalog` selected as the **Data source**.
+
+      :information_source: If you fail to create the table, give Athena users access permissions on `ventilatordb` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home)
 
     * (step 3) Load the partition data
 
