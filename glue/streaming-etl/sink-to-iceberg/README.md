@@ -59,6 +59,7 @@ For example:
     "--database_name": "iceberg_demo_db",
     "--table_name": "iceberg_demo_table",
     "--primary_key": "name",
+    "--kinesis_table_name": "iceberg_demo_kinesis_stream_table",
     "--kinesis_stream_arn": "arn:aws:kinesis:us-east-1:123456789012:stream/iceberg-demo-stream",
     "--starting_position_of_kinesis_iterator": "LATEST",
     "--iceberg_s3_path": "s3://glue-iceberg-demo-atq4q5u/iceberg_demo_db",

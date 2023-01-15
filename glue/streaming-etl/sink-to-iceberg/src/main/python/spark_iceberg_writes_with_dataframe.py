@@ -28,6 +28,7 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'catalog',
   'database_name',
   'table_name',
+  'kinesis_table_name',
   'kinesis_stream_arn',
   'starting_position_of_kinesis_iterator',
   'iceberg_s3_path',
@@ -37,16 +38,19 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
 ])
 
 CATALOG = args['catalog']
+
 ICEBERG_S3_PATH = args['iceberg_s3_path']
 DATABASE = args['database_name']
 TABLE_NAME = args['table_name']
 DYNAMODB_LOCK_TABLE = args['lock_table_name']
 
+KINESIS_TABLE_NAME = args['kinesis_table_name']
 KINESIS_STREAM_ARN = args['kinesis_stream_arn']
 KINESIS_STREAM_NAME = get_kinesis_stream_name_from_arn(KINESIS_STREAM_ARN)
 
 #XXX: starting_position_of_kinesis_iterator: ['LATEST', 'TRIM_HORIZON']
 STARTING_POSITION_OF_KINESIS_ITERATOR = args.get('starting_position_of_kinesis_iterator', 'LATEST')
+
 AWS_REGION = args['aws_region']
 WINDOW_SIZE = args.get('window_size', '100 seconds')
 
@@ -82,7 +86,7 @@ streaming_data = spark.readStream \
 
 streaming_data_df = streaming_data \
     .select(from_json(col("data").cast("string"), \
-      glueContext.get_catalog_schema_as_spark_schema(DATABASE, TABLE_NAME)) \
+      glueContext.get_catalog_schema_as_spark_schema(DATABASE, KINESIS_TABLE_NAME)) \
     .alias("source_table")) \
     .select("source_table.*") \
     .withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
