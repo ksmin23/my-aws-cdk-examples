@@ -87,7 +87,10 @@ def processBatch(data_frame, batch_id):
     )
 
     sql_query = f"""
-    INSERT INTO {CATALOG}.{DATABASE}.{TABLE_NAME} SELECT myDataSource.name, myDataSource.age FROM myDataSource;
+    INSERT OVERWRITE {CATALOG}.{DATABASE}.{TABLE_NAME}
+    SELECT t.name, first(t.age)
+    FROM myDataSource t
+    GROUP BY t.name
     """
     insert_into_icebeg_table = sparkSqlQuery(
       glueContext,
