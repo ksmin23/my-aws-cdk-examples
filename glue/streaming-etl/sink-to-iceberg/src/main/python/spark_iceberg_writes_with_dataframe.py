@@ -28,7 +28,6 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'catalog',
   'database_name',
   'table_name',
-  'kinesis_table_name',
   'kinesis_stream_arn',
   'starting_position_of_kinesis_iterator',
   'iceberg_s3_path',
@@ -82,10 +81,11 @@ streaming_data = spark.readStream \
                     .load()
 
 streaming_data_df = streaming_data \
-    .select(from_json(col("data") \
-    .cast("string"), glueContext.get_catalog_schema_as_spark_schema(DATABASE, TABLE_NAME)) \
+    .select(from_json(col("data").cast("string"), \
+      glueContext.get_catalog_schema_as_spark_schema(DATABASE, TABLE_NAME)) \
     .alias("source_table")) \
-    .select("source_table.*")
+    .select("source_table.*") \
+    .withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
 
 table_identifier = f"{CATALOG}.{DATABASE}.{TABLE_NAME}"
 checkpointPath = os.path.join(args["TempDir"], args["JOB_NAME"], "checkpoint/")

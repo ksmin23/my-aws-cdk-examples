@@ -4,16 +4,24 @@
 
 import os
 import sys
+import traceback
 
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
+from awsglue import DynamicFrame
 
 from pyspark.conf import SparkConf
 from pyspark.sql import DataFrame, Row
-from awsglue import DynamicFrame
+from pyspark.sql.window import Window
+from pyspark.sql.functions import (
+  col,
+  desc,
+  row_number,
+  to_timestamp
+)
 
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME',
@@ -82,22 +90,30 @@ def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFra
 
 def processBatch(data_frame, batch_id):
   if data_frame.count() > 0:
-    stream_data_df = DynamicFrame.fromDF(
+    stream_data_dynf = DynamicFrame.fromDF(
       data_frame, glueContext, "from_data_frame"
     )
 
+    # Apply De-duplication logic on input data to pick up the latest record based on timestamp and operation
+    window = Window.partitionBy("name").orderBy(desc("m_time"))
+    stream_data_df = stream_data_dynf.toDF()
+    stream_data_df = stream_data_df.withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
+    upsert_data_df = stream_data_df.withColumn("row", row_number().over(window)) \
+      .filter(col("row") == 1).drop("row") \
+      .select("name", "age", "m_time")
+
+    upsert_data_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
+    # print(f"Table '{TABLE_NAME}' is upserting...")
+
     sql_query = f"""
-    INSERT OVERWRITE {CATALOG}.{DATABASE}.{TABLE_NAME}
-    SELECT t.name, first(t.age)
-    FROM myDataSource t
-    GROUP BY t.name
+    INSERT OVERWRITE {CATALOG}.{DATABASE}.{TABLE_NAME} SELECT * FROM {TABLE_NAME}_upsert
     """
-    insert_into_icebeg_table = sparkSqlQuery(
-      glueContext,
-      query=sql_query,
-      mapping={"myDataSource": stream_data_df},
-      transformation_ctx="insert_into_icebeg_table",
-    )
+    try:
+      spark.sql(sql_query)
+    except Exception as ex:
+      traceback.print_exc()
+      raise ex
+
 
 checkpointPath = os.path.join(args["TempDir"], args["JOB_NAME"], "checkpoint/")
 

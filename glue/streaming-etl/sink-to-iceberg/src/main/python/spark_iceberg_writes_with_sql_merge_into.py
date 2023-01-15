@@ -106,15 +106,10 @@ def processBatch(data_frame, batch_id):
       stream_data_df = stream_data_df.withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
       upsert_data_df = stream_data_df.withColumn("row", row_number().over(window)) \
         .filter(col("row") == 1).drop("row") \
-        .select("name", "age")
-
-      print('Kinesis Table Schema:')
-      stream_data_df.printSchema()
-      print('Upserted Iceberg Table Schema:')
-      upsert_data_df.printSchema()
+        .select("name", "age", "m_time")
 
       upsert_data_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
-      print(f"Table '{TABLE_NAME}' is upserting...")
+      # print(f"Table '{TABLE_NAME}' is upserting...")
 
       try:
         spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t

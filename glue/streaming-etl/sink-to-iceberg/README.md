@@ -109,10 +109,11 @@ command.
    (8) Enter the name of the stream.<br/>
    (9) For the classification, choose **JSON**.<br/>
    (10) Define the schema according to the following table.<br/>
-    | Column name | Data type |
-    |-------------|-----------|
-    | name	| string |
-    | age | int |
+    | Column name | Data type | Example |
+    |-------------|-----------|---------|
+    | name	| string | "Ricky" |
+    | age | int | 23 |
+    | m_time | string | "2023-06-13 07:24:26" |
 
    (11) Choose **Finish**
 
@@ -155,7 +156,7 @@ command.
    * (step 2) Provision the Glue Streaming Job
 
      </pre>
-     (.venv) $ cdk deploy GlueStreamingSinkToIceberg
+     (.venv) $ cdk deploy GlueStreamingSinkToIcebergJobRole GlueStreamingSinkToIceberg
      </pre>
 6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
@@ -188,7 +189,9 @@ command.
       <pre>
       CREATE TABLE iceberg_demo_db.iceberg_demo_table (
         name string,
-        age int)
+        age int,
+        m_time timestamp
+      )
       PARTITIONED BY (`name`)
       LOCATION 's3://glue-iceberg-demo-atq4q5u/iceberg_demo_table'
       TBLPROPERTIES (
@@ -258,5 +261,6 @@ command.
        pyspark.sql.utils.AnalysisException: Complete output mode not supported when there are no streaming aggregations on streaming DataFrame/Datasets;
        </pre>
  * (10) [Apache Iceberg - Maintenance for streaming tables (v0.14.0)](https://iceberg.apache.org/docs/0.14.0/spark-structured-streaming/#maintenance-for-streaming-tables)
+ * (11) [awsglue python package](https://github.com/awslabs/aws-glue-libs): The awsglue Python package contains the Python portion of the AWS Glue library. This library extends PySpark to support serverless ETL on AWS.
 
 Enjoy!

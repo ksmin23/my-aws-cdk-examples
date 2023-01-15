@@ -22,6 +22,7 @@ def main():
   parser.add_argument('--stream-name', help='The name of the stream to put the data record into')
   parser.add_argument('--max-count', default=10, type=int, help='The max number of records to put (default: 10)')
   parser.add_argument('--dry-run', action='store_true')
+  parser.add_argument('--console', action='store_true', help='Print out records ingested into the stream')
 
   options = parser.parse_args()
 
@@ -47,13 +48,16 @@ def main():
     cnt += 1
 
     if options.dry_run:
-      print(f"{json.dumps(record)}\n")
+      print(f"{json.dumps(record)}")
     else:
       res = kinesis_streams_client.put_record(
         StreamName=options.stream_name,
         Data=f"{json.dumps(record)}\n", # convert JSON to JSON Line
         PartitionKey=f"{record['name']}"
       )
+
+      if options.console:
+        print(f"{json.dumps(record)}")
 
       if cnt % 100 == 0:
         print(f'[INFO] {cnt} records are processed', file=sys.stderr)
