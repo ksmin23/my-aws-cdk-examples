@@ -61,7 +61,7 @@ For example:
     "--primary_key": "name",
     "--kinesis_stream_arn": "arn:aws:kinesis:us-east-1:123456789012:stream/iceberg-demo-stream",
     "--starting_position_of_kinesis_iterator": "LATEST",
-    "--iceberg_s3_path": "s3://glue-iceberg-demo-atq4q5u",
+    "--iceberg_s3_path": "s3://glue-iceberg-demo-atq4q5u/iceberg_demo_db",
     "--lock_table_name": "iceberg_lock",
     "--aws_region": "us-east-1",
     "--window_size": "100 seconds",
@@ -195,7 +195,7 @@ command.
         m_time timestamp
       )
       PARTITIONED BY (`name`)
-      LOCATION 's3://glue-iceberg-demo-atq4q5u/iceberg_demo_table'
+      LOCATION 's3://glue-iceberg-demo-atq4q5u/iceberg_demo_db/iceberg_demo_table'
       TBLPROPERTIES (
         'table_type'='iceberg'
       );
@@ -221,7 +221,7 @@ command.
     </pre>
 10. Check streaming data in S3
 
-    After 5~10 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+    After 3~5 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
 
     ![glue-streaming-data-in-iceberg-table](./assets/glue-streaming-data-in-iceberg-table.png)
 
