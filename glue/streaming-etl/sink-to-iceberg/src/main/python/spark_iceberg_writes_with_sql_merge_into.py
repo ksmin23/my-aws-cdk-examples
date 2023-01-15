@@ -28,7 +28,6 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'database_name',
   'table_name',
   'primary_key',
-  'kinesis_table_name',
   'kinesis_stream_arn',
   'starting_position_of_kinesis_iterator',
   'iceberg_s3_path',
@@ -82,12 +81,6 @@ kds_df = glueContext.create_data_frame.from_options(
   },
   transformation_ctx="kds_df",
 )
-
-def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
-  for alias, frame in mapping.items():
-    frame.toDF().createOrReplaceTempView(alias)
-  result = spark.sql(query)
-  return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
 
 def processBatch(data_frame, batch_id):
   if data_frame.count() > 0:
