@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
-This repository contains a set of example projects for the [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/api/latest/)
+This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/api/latest/) Python examples with architecture diagrams for frequently used AWS services.
 
 | Example | Description | Tags |
 |---------|-------------|------|
