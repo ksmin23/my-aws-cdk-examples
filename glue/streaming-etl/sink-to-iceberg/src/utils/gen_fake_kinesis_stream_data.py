@@ -26,14 +26,17 @@ def main():
   options = parser.parse_args()
 
   _CURRENT_YEAR = datetime.now().year
+  _NAMES = 'Arica,Burton,Cory,Fernando,Gonzalo,Kenton,Linsey,Micheal,Ricky,Takisha'.split(',')
 
   #XXX: For more information about synthetic data schema, see
   # https://github.com/aws-samples/aws-glue-streaming-etl-blog/blob/master/config/generate_data.py
   _ = Field(locale=Locale.EN)
 
   _schema = Schema(schema=lambda: {
-    "name": _("first_name"),
+    # "name": _("first_name"),
+    "name": _("choice", items=_NAMES),
     "age": _("age"),
+    "m_time": _("formatted_datetime", fmt="%Y-%m-%d %H:%M:%S", start=_CURRENT_YEAR, end=_CURRENT_YEAR)
   })
 
   if not options.dry_run:

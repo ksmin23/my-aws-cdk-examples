@@ -133,14 +133,30 @@ command.
    </pre>
    In order to do this, we might need to upload **AWS SDK for Java 2.x** jar file into S3.
 5. Create Glue Streaming Job
-   <pre>
-   (.venv) $ ls src/main/python/
-    spark_iceberg_writes_with_dataframe.py
-    spark_iceberg_writes_with_sql.py
-   (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-atq4q5u</i> --region <i>us-east-1</i>
-   (.venv) $ aws s3 cp src/main/python/spark_iceberg_writes_with_dataframe.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
-   (.venv) $ cdk deploy GlueStreamingSinkToIceberg
-   </pre>
+
+   * (step 1) Select one of Glue Job Scripts and upload into S3
+
+     **List of Glue Job Scirpts**
+     | File name | Spark Writes |
+     |-----------|--------------|
+     | spark_iceberg_writes_with_dataframe.py | DataFrame append |
+     | spark_iceberg_writes_with_sql_insert_overwrite.py | SQL insert overwrite |
+     | spark_iceberg_writes_with_sql_merge_into.py | SQL merge into |
+
+     <pre>
+     (.venv) $ ls src/main/python/
+      spark_iceberg_writes_with_dataframe.py
+      spark_iceberg_writes_with_sql_insert_overwrite.py
+      spark_iceberg_writes_with_sql_merge_into.py
+     (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-atq4q5u</i> --region <i>us-east-1</i>
+     (.venv) $ aws s3 cp src/main/python/spark_iceberg_writes_with_dataframe.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
+     </pre>
+
+   * (step 2) Provision the Glue Streaming Job
+
+     </pre>
+     (.venv) $ cdk deploy GlueStreamingSinkToIceberg
+     </pre>
 6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
    Wec can get permissions by running the following command:
