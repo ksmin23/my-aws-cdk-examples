@@ -88,4 +88,6 @@ Enjoy!
  * [AWS CDK Workshop](https://cdkworkshop.com/)
  * [Construct Hub: Open-source CDK libraries](https://constructs.dev/)
  * [aws-samples/aws-cdk-examples](https://github.com/aws-samples/aws-cdk-examples)
+ * [CDK Resources](https://cdk.dev/resources) - A collection of tools to help during the development of CDK applications.
+ * [Awesome CDK](https://github.com/kalaiser/awesome-cdk) - Curated list of awesome AWS Cloud Development Kit (AWS CDK) open-source projects, guides, blogs and other resources.
 
