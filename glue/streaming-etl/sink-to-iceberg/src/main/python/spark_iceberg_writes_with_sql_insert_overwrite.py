@@ -87,13 +87,15 @@ def processBatch(data_frame, batch_id):
       data_frame, glueContext, "from_data_frame"
     )
 
+    _df = spark.sql(f"SELECT * FROM {CATALOG}.{DATABASE}.{TABLE_NAME} LIMIT 0")
+
     # Apply De-duplication logic on input data to pick up the latest record based on timestamp and operation
     window = Window.partitionBy("name").orderBy(desc("m_time"))
     stream_data_df = stream_data_dynf.toDF()
     stream_data_df = stream_data_df.withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
     upsert_data_df = stream_data_df.withColumn("row", row_number().over(window)) \
       .filter(col("row") == 1).drop("row") \
-      .select("name", "age", "m_time")
+      .select(_df.schema.names)
 
     upsert_data_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
     # print(f"Table '{TABLE_NAME}' is upserting...")
