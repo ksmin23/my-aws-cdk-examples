@@ -4,25 +4,17 @@
 
 import os
 import sys
-import re
 
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from awsglue import DynamicFrame
 
 from pyspark.conf import SparkConf
 from pyspark.sql import DataFrame, Row
-from pyspark.sql.types import *
-from pyspark.sql.functions import *
+from awsglue import DynamicFrame
 
-
-def get_kinesis_stream_name_from_arn(stream_arn):
-  ARN_PATTERN = re.compile(r'arn:aws:kinesis:([a-z0-9-]+):(\d+):stream/([a-zA-Z0-9-_]+)')
-  results = ARN_PATTERN.match(stream_arn)
-  return results.group(3)
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'catalog',
@@ -42,10 +34,7 @@ ICEBERG_S3_PATH = args['iceberg_s3_path']
 DATABASE = args['database_name']
 TABLE_NAME = args['table_name']
 DYNAMODB_LOCK_TABLE = args['lock_table_name']
-
 KINESIS_STREAM_ARN = args['kinesis_stream_arn']
-KINESIS_STREAM_NAME = get_kinesis_stream_name_from_arn(KINESIS_STREAM_ARN)
-
 #XXX: starting_position_of_kinesis_iterator: ['LATEST', 'TRIM_HORIZON']
 STARTING_POSITION_OF_KINESIS_ITERATOR = args.get('starting_position_of_kinesis_iterator', 'LATEST')
 AWS_REGION = args['aws_region']
@@ -73,30 +62,49 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-# Read from Kinesis Data Stream
-streaming_data = spark.readStream \
-                    .format("kinesis") \
-                    .option("streamName", KINESIS_STREAM_NAME) \
-                    .option("endpointUrl", f"https://kinesis.{AWS_REGION}.amazonaws.com") \
-                    .option("startingPosition", STARTING_POSITION_OF_KINESIS_ITERATOR) \
-                    .load()
+kds_df = glueContext.create_data_frame.from_options(
+  connection_type="kinesis",
+  connection_options={
+    "typeOfData": "kinesis",
+    "streamARN": KINESIS_STREAM_ARN,
+    "classification": "json",
+    "startingPosition": f"{STARTING_POSITION_OF_KINESIS_ITERATOR}",
+    "inferSchema": "true",
+  },
+  transformation_ctx="kds_df",
+)
 
-streaming_data_df = streaming_data \
-    .select(from_json(col("data") \
-    .cast("string"), glueContext.get_catalog_schema_as_spark_schema(DATABASE, TABLE_NAME)) \
-    .alias("source_table")) \
-    .select("source_table.*")
+def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
+  for alias, frame in mapping.items():
+    frame.toDF().createOrReplaceTempView(alias)
+  result = spark.sql(query)
+  return DynamicFrame.fromDF(result, glueContext, transformation_ctx)
 
-table_identifier = f"{CATALOG}.{DATABASE}.{TABLE_NAME}"
+def processBatch(data_frame, batch_id):
+  if data_frame.count() > 0:
+    stream_data_df = DynamicFrame.fromDF(
+      data_frame, glueContext, "from_data_frame"
+    )
+
+    sql_query = f"""
+    INSERT INTO {CATALOG}.{DATABASE}.{TABLE_NAME} SELECT myDataSource.name, myDataSource.age FROM myDataSource;
+    """
+    insert_into_icebeg_table = sparkSqlQuery(
+      glueContext,
+      query=sql_query,
+      mapping={"myDataSource": stream_data_df},
+      transformation_ctx="insert_into_icebeg_table",
+    )
+
 checkpointPath = os.path.join(args["TempDir"], args["JOB_NAME"], "checkpoint/")
 
-query = streaming_data_df.writeStream \
-    .format("iceberg") \
-    .outputMode("append") \
-    .trigger(processingTime=WINDOW_SIZE) \
-    .option("path", table_identifier) \
-    .option("fanout-enabled", "true") \
-    .option("checkpointLocation", checkpointPath) \
-    .start()
+glueContext.forEachBatch(
+  frame=kds_df,
+  batch_function=processBatch,
+  options={
+    "windowSize": WINDOW_SIZE,
+    "checkpointLocation": checkpointPath,
+  }
+)
 
-query.awaitTermination()
+job.commit()

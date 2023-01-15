@@ -43,7 +43,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 (.venv) $ pip install -r requirements.txt
 ```
 
-Before synthesizing the CloudFormation, **you first set up Apache Iceberg connector for AWS Glue to use Apache Iceber with AWS Glue jobs.** (For more information, see [References](#references) (2))
+In case of `AWS Glue 3.0`, before synthesizing the CloudFormation, **you first set up Apache Iceberg connector for AWS Glue to use Apache Iceber with AWS Glue jobs.** (For more information, see [References](#references) (2))
 
 Then you should set approperly the cdk context configuration file, `cdk.context.json`.
 
@@ -59,10 +59,10 @@ For example:
     "--database_name": "iceberg_demo_db",
     "--table_name": "iceberg_demo_table",
     "--kinesis_table_name": "iceberg_demo_kinesis_stream_table",
-    "--kinesis_stream_name": "iceberg-demo-stream",
+    "--kinesis_stream_arn": "arn:aws:kinesis:us-east-1:123456789012:stream/iceberg-demo-stream",
     "--starting_position_of_kinesis_iterator": "LATEST",
     "--iceberg_s3_path": "s3://glue-iceberg-demo-atq4q5u",
-    "--lock_table_name": "employee_details_lock",
+    "--lock_table_name": "iceberg_lock",
     "--aws_region": "us-east-1",
     "--window_size": "100 seconds",
     "--extra-jars": "s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar",
@@ -227,6 +227,8 @@ command.
  * (4) [Amazon Athena Using Iceberg tables](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg.html)
  * (5) [Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
  * (6) [AWS Glue job parameters](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html)
- * (7) [Crafting serverless streaming ETL jobs with AWS Glue](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
+ * (7) [Apaceh Iceberg - Spark Writes with SQL (v0.14.0)](https://iceberg.apache.org/docs/0.14.0/spark-writes/)
+ * (8) [Apaceh Iceberg - Spark Structured Streaming (v0.14.0)](https://iceberg.apache.org/docs/0.14.0/spark-structured-streaming/)
+ * (9) [Crafting serverless streaming ETL jobs with AWS Glue](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
 
 Enjoy!
