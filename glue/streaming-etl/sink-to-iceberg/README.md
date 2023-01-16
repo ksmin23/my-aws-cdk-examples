@@ -218,13 +218,53 @@ command.
     (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
                --region-name <i>us-east-1</i> \
                --stream-name <i>your-stream-name</i> \
-               --max-count 1000
+               --max-count 10
+    </pre>
+
+    Synthentic Data Example order by `m_time`
+    <pre>
+    {"name": "Arica", "age": 48, "m_time": "2023-04-11 19:13:21"}
+    {"name": "Arica", "age": 32, "m_time": "2023-10-20 17:24:17"}
+    {"name": "Arica", "age": 45, "m_time": "2023-12-26 01:20:49"}
+    {"name": "Fernando", "age": 16, "m_time": "2023-05-22 00:13:55"}
+    {"name": "Gonzalo", "age": 37, "m_time": "2023-01-11 06:18:26"}
+    {"name": "Gonzalo", "age": 60, "m_time": "2023-01-25 16:54:26"}
+    {"name": "Micheal", "age": 45, "m_time": "2023-04-07 06:18:17"}
+    {"name": "Micheal", "age": 44, "m_time": "2023-12-14 09:02:57"}
+    {"name": "Takisha", "age": 48, "m_time": "2023-12-20 16:44:13"}
+    {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
+    </pre>
+
+    Spark Writes using `DataFrame append` insert all records into the Iceberg table.
+    <pre>
+    {"name": "Arica", "age": 48, "m_time": "2023-04-11 19:13:21"}
+    {"name": "Arica", "age": 32, "m_time": "2023-10-20 17:24:17"}
+    {"name": "Arica", "age": 45, "m_time": "2023-12-26 01:20:49"}
+    {"name": "Fernando", "age": 16, "m_time": "2023-05-22 00:13:55"}
+    {"name": "Gonzalo", "age": 37, "m_time": "2023-01-11 06:18:26"}
+    {"name": "Gonzalo", "age": 60, "m_time": "2023-01-25 16:54:26"}
+    {"name": "Micheal", "age": 45, "m_time": "2023-04-07 06:18:17"}
+    {"name": "Micheal", "age": 44, "m_time": "2023-12-14 09:02:57"}
+    {"name": "Takisha", "age": 48, "m_time": "2023-12-20 16:44:13"}
+    {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
+    </pre>
+
+    Spark Writes using `SQL insert overwrite` or `SQL merge into` insert the last updated records into the Iceberg table.
+    <pre>
+    {"name": "Arica", "age": 45, "m_time": "2023-12-26 01:20:49"}
+    {"name": "Fernando", "age": 16, "m_time": "2023-05-22 00:13:55"}
+    {"name": "Gonzalo", "age": 60, "m_time": "2023-01-25 16:54:26"}
+    {"name": "Micheal", "age": 44, "m_time": "2023-12-14 09:02:57"}
+    {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
     </pre>
 10. Check streaming data in S3
 
     After 3~5 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
 
-    ![glue-streaming-data-in-iceberg-table](./assets/glue-streaming-data-in-iceberg-table.png)
+    ![iceberg-table](./assets/iceberg-table.png)
+    ![iceberg-table](./assets/iceberg-data-level-01.png)
+    ![iceberg-table](./assets/iceberg-data-level-02.png)
+    ![iceberg-table](./assets/iceberg-data-level-03.png)
 
 11. Run test query
 
