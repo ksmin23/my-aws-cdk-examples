@@ -15,7 +15,7 @@ APP_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
 
 app = cdk.App()
 
-kds_stack = KdsStack(app, 'KinesisStreamForGlueStreamingJob')
+kds_stack = KdsStack(app, 'KinesisStreamAsGlueStreamingJobDataSource')
 
 glue_job_role = GlueJobRoleStack(app, 'GlueStreamingSinkToS3JobRole')
 glue_job_role.add_dependency(kds_stack)

@@ -12,20 +12,14 @@ class GlueStreamDataSchemaStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, kinesis_stream, glue_job_role, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    glue_job_input_arguments = self.node.try_get_context('glue_job_input_arguments')
-    database_name = glue_job_input_arguments["--glue_database"] # "ventilatordb"
-    table_name = glue_job_input_arguments["--glue_table_name"] # "ventilators_table",
+    glue_kinesis_table = self.node.try_get_context('glue_kinesis_table')
+    database_name = glue_kinesis_table['database_name']
+    table_name = glue_kinesis_table['table_name']
+    columns = glue_kinesis_table['columns']
 
     cfn_database = aws_glue.CfnDatabase(self, "GlueCfnDatabase",
       catalog_id=cdk.Aws.ACCOUNT_ID,
       database_input=aws_glue.CfnDatabase.DatabaseInputProperty(
-        # create_table_default_permissions=[aws_glue.CfnDatabase.PrincipalPrivilegesProperty(
-        #   permissions=["ALL"],
-        #   principal=aws_glue.CfnDatabase.DataLakePrincipalProperty(
-        #     # data_lake_principal_identifier=glue_job_role.role_arn
-        #     data_lake_principal_identifier="IAM_ALLOWED_PRINCIPALS"
-        #   )
-        # )],
         name=database_name
       )
     )
@@ -38,36 +32,7 @@ class GlueStreamDataSchemaStack(Stack):
         name=table_name,
         parameters={"classification": "json"},
         storage_descriptor=aws_glue.CfnTable.StorageDescriptorProperty(
-          columns=[
-            aws_glue.CfnTable.ColumnProperty(
-              name="ventilatorid",
-              type="int"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="eventtime",
-              type="string"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="serialnumber",
-              type="string"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="pressurecontrol",
-              type="int"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="o2stats",
-              type="int"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="minutevolume",
-              type="int"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="manufacturer",
-              type="string"
-            ),
-          ],
+          columns=columns,
           input_format="org.apache.hadoop.mapred.TextInputFormat",
           location=kinesis_stream.stream_name,
           output_format="org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",

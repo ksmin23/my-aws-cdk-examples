@@ -59,6 +59,40 @@ For example:
     "--glue_database": "ventilatordb",
     "--glue_table_name": "ventilators_table",
     "stream_starting_position": "LATEST"
+  },
+  "glue_kinesis_table": {
+    "database_name": "ventilatordb",
+    "table_name": "ventilators_table",
+    "columns": [
+      {
+        "name": "ventilatorid",
+        "type": "int"
+      },
+      {
+        "name": "eventtime",
+        "type": "string"
+      },
+      {
+        "name": "serialnumber",
+        "type": "string"
+      },
+      {
+        "name": "pressurecontrol",
+        "type": "int"
+      },
+      {
+        "name": "o2stats",
+        "type": "int"
+      },
+      {
+        "name": "minutevolume",
+        "type": "int"
+      },
+      {
+        "name": "manufacturer",
+        "type": "string"
+      }
+    ]
   }
 }
 </pre>
