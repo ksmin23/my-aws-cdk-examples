@@ -134,28 +134,75 @@ Enjoy!
    </pre>
 10. Check the cloudwatch dashboard of kinesis data streams and you will see graph updating on it.
 ![amazon-kinesis-data-viewer](./amazon-kinesis-data-viewer.png)
-    <pre>
-    {
-      "data": {
-         "trans_id": 6,
-         "customer_id": "387378799012",
-         "event": "list",
-         "sku": "AI6161BEFX",
-         "amount": 1,
-         "device": "pc",
-         "trans_datetime": "2023-01-16T06:18:32Z"
-      },
-      "metadata": {
-         "timestamp": "2023-01-16T06:25:34.444953Z",
-         "record-type": "data",
-         "operation": "insert",
-         "partition-key-type": "primary-key",
-         "schema-name": "testdb",
-         "table-name": "retail_trans",
-         "transaction-id": 12884904641
+   * Insert
+      <pre>
+      {
+         "data": {
+            "trans_id": 6,
+            "customer_id": "387378799012",
+            "event": "list",
+            "sku": "AI6161BEFX",
+            "amount": 1,
+            "device": "pc",
+            "trans_datetime": "2023-01-16T06:18:32Z"
+         },
+         "metadata": {
+            "timestamp": "2023-01-16T06:25:34.444953Z",
+            "record-type": "data",
+            "operation": "insert",
+            "partition-key-type": "primary-key",
+            "schema-name": "testdb",
+            "table-name": "retail_trans",
+            "transaction-id": 12884904641
+         }
       }
-    }
-    </pre>
+      </pre>
+   * Update
+      <pre>
+      {
+         "data": {
+            "trans_id": 6,
+            "customer_id": "387378799012",
+            "event": "list",
+            "sku": "AI6161BEFX",
+            "amount": 3,
+            "device": "pc",
+            "trans_datetime": "2023-01-16T06:18:32Z"
+         },
+         "metadata": {
+            "timestamp": "2023-01-16T08:05:25.942777Z",
+            "record-type": "data",
+            "operation": "update",
+            "partition-key-type": "primary-key",
+            "schema-name": "testdb",
+            "table-name": "retail_trans",
+            "transaction-id": 12884973957
+         }
+      }
+      </pre>
+   * Delete
+      <pre>
+      {
+         "data": {
+            "trans_id": 6,
+            "customer_id": "387378799012",
+            "event": "list",
+            "sku": "AI6161BEFX",
+            "amount": 3,
+            "device": "pc",
+            "trans_datetime": "2023-01-16T06:18:32Z"
+         },
+         "metadata": {
+            "timestamp": "2023-01-16T08:10:49.737891Z",
+            "record-type": "data",
+            "operation": "delete",
+            "partition-key-type": "primary-key",
+            "schema-name": "testdb",
+            "table-name": "retail_trans",
+            "transaction-id": 12884978099
+         }
+      }
+      </pre>
 
 #### Clean Up
 1. Stop the DMS Replication task by replacing the ARN in below command.
