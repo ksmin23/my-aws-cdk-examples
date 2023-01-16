@@ -211,7 +211,7 @@ Enjoy!
    </pre>
 2. Delete the CloudFormation stack by running the below command.
    <pre>
-   (.venv) $ cdk destroy
+   (.venv) $ cdk destroy --all
    </pre>
 
 
