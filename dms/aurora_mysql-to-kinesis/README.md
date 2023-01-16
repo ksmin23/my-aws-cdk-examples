@@ -132,7 +132,7 @@ Enjoy!
                     --host <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com \
                     --max-count 200
    </pre>
-10. Check the Data Viewer in the Kinesis Management Console and you can see incomming records.
+10. Check the Data Viewer in the Amazon Kinesis Management Console and you can see incomming records.
 ![amazon-kinesis-data-viewer](./amazon-kinesis-data-viewer.png)
    * Insert
       <pre>
