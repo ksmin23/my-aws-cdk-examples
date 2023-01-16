@@ -218,6 +218,7 @@ command.
     (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
                --region-name <i>us-east-1</i> \
                --stream-name <i>your-stream-name</i> \
+               --console \
                --max-count 10
     </pre>
 
