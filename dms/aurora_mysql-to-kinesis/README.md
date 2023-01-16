@@ -133,6 +133,29 @@ Enjoy!
                     --max-count 200
    </pre>
 10. Check the cloudwatch dashboard of kinesis data streams and you will see graph updating on it.
+![amazon-kinesis-data-viewer](./amazon-kinesis-data-viewer.png)
+    <pre>
+    {
+      "data": {
+         "trans_id": 6,
+         "customer_id": "387378799012",
+         "event": "list",
+         "sku": "AI6161BEFX",
+         "amount": 1,
+         "device": "pc",
+         "trans_datetime": "2023-01-16T06:18:32Z"
+      },
+      "metadata": {
+         "timestamp": "2023-01-16T06:25:34.444953Z",
+         "record-type": "data",
+         "operation": "insert",
+         "partition-key-type": "primary-key",
+         "schema-name": "testdb",
+         "table-name": "retail_trans",
+         "transaction-id": 12884904641
+      }
+    }
+    </pre>
 
 #### Clean Up
 1. Stop the DMS Replication task by replacing the ARN in below command.
@@ -152,4 +175,5 @@ Enjoy!
  * [How to troubleshoot binary logging errors that I received when using AWS DMS with Aurora MySQL as the source?(Last updated: 2019-10-01)](https://aws.amazon.com/premiumsupport/knowledge-center/dms-binary-logging-aurora-mysql/)
  * [AWS DMS - Using Amazon Kinesis Data Streams as a target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Kinesis.html)
  * [Specifying task settings for AWS Database Migration Service tasks](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Tasks.CustomizingTasks.TaskSettings.html#CHAP_Tasks.CustomizingTasks.TaskSettings.Example)
+ * [Using Data Viewer in the Kinesis Console](https://docs.aws.amazon.com/streams/latest/dev/data-viewer.html)
 
