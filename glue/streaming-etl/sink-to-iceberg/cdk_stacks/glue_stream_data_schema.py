@@ -12,9 +12,10 @@ class GlueStreamDataSchemaStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, kinesis_stream, glue_job_role, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    glue_job_input_arguments = self.node.try_get_context('glue_job_input_arguments')
-    database_name = glue_job_input_arguments["--database_name"]
-    table_name = glue_job_input_arguments["--kinesis_table_name"]
+    glue_kinesis_table = self.node.try_get_context('glue_kinesis_table')
+    database_name = glue_kinesis_table['database_name']
+    table_name = glue_kinesis_table['table_name']
+    columns = glue_kinesis_table['columns']
 
     cfn_database = aws_glue.CfnDatabase(self, "GlueCfnDatabase",
       catalog_id=cdk.Aws.ACCOUNT_ID,
@@ -31,20 +32,7 @@ class GlueStreamDataSchemaStack(Stack):
         name=table_name,
         parameters={"classification": "json"},
         storage_descriptor=aws_glue.CfnTable.StorageDescriptorProperty(
-          columns=[
-            aws_glue.CfnTable.ColumnProperty(
-              name="name",
-              type="string"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="age",
-              type="int"
-            ),
-            aws_glue.CfnTable.ColumnProperty(
-              name="m_time",
-              type="string"
-            ),
-          ],
+          columns=columns,
           input_format="org.apache.hadoop.mapred.TextInputFormat",
           location=kinesis_stream.stream_name,
           output_format="org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",

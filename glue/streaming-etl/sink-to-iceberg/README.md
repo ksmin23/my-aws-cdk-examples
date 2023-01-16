@@ -69,7 +69,25 @@ For example:
     "--extra-jars": "s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar",
     "--user-jars-first": "true"
   },
-  "glue_connections_name": "iceberg-connection"
+  "glue_connections_name": "iceberg-connection",
+  "glue_kinesis_table": {
+    "database_name": "iceberg_demo_db",
+    "table_name": "iceberg_demo_kinesis_stream_table",
+    "columns": [
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "age",
+        "type": "int"
+      },
+      {
+        "name": "m_time",
+        "type": "string"
+      }
+    ]
+  }
 }
 </pre>
 
@@ -222,7 +240,7 @@ command.
                --max-count 10
     </pre>
 
-    Synthentic Data Example order by `m_time`
+    Synthentic Data Example order by `name` and `m_time`
     <pre>
     {"name": "Arica", "age": 48, "m_time": "2023-04-11 19:13:21"}
     {"name": "Arica", "age": 32, "m_time": "2023-10-20 17:24:17"}
