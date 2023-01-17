@@ -113,7 +113,7 @@ def processBatch(data_frame, batch_id):
       upserted_df = deduped_cdc_df.filter(col('_op') != 'delete')
       if upserted_df.count() > 0:
         upserted_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
-        print(f"Table '{TABLE_NAME}' is upserting...") # debug
+        # print(f"Table '{TABLE_NAME}' is upserting...")
 
         try:
           spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
@@ -128,7 +128,7 @@ def processBatch(data_frame, batch_id):
       deleted_df = deduped_cdc_df.filter(col('_op') == 'delete')
       if deleted_df.count() > 0:
         deleted_df.createOrReplaceTempView(f"{TABLE_NAME}_delete")
-        print(f"Table '{TABLE_NAME}' is deleting...") # debug
+        # print(f"Table '{TABLE_NAME}' is deleting...")
 
         try:
           spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
