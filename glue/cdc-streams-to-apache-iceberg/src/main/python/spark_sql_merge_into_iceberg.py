@@ -132,11 +132,6 @@ def processBatch(data_frame, batch_id):
 
         try:
           spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
-            USING {TABLE_NAME}_upsert s ON s.{PRIMARY_KEY} = t.{PRIMARY_KEY}
-            WHEN MATCHED THEN UPDATE SET *
-            WHEN NOT MATCHED THEN INSERT *
-            """)
-          spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
             USING {TABLE_NAME}_delete s ON s.{PRIMARY_KEY} = t.{PRIMARY_KEY}
             WHEN MATCHED THEN DELETE
             """)
