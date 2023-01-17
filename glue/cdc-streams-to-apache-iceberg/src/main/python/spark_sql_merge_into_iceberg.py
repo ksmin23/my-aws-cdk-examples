@@ -108,6 +108,8 @@ def processBatch(data_frame, batch_id):
         .filter(col("_row") == 1).drop("_row") \
         .select(_df.schema.names)
 
+      deduped_cdc_df = deduped_cdc_df.withColumn('trans_datetime', to_timestamp(col('trans_datetime')))
+
       upserted_df = deduped_cdc_df.filter(col('_op') != 'delete')
       if upserted_df.count() > 0:
         upserted_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
