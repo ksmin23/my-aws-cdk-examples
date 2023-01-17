@@ -113,7 +113,7 @@ command.
    (7) Choose **Kinesis** as the type of source.<br/>
    (8) Enter the name of the stream.<br/>
    (9) For the classification, choose **JSON**.<br/>
-   (11) Choose **Finish**
+   (10) Choose **Finish**
 
 4. Upload **AWS SDK for Java 2.x** jar file into S3
    <pre>
