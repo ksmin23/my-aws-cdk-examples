@@ -1,9 +1,9 @@
 
 # CDC-based UPSERT into Apache Iceberg with AWS Glue Streaming in Near Real-time
 
-![glue-streaming-data-to-iceberg-table](./glue-streaming-data-to-iceberg-table.svg)
+![glue-streaming-cdc-to-iceberg-table](./glue-streaming-cdc-to-iceberg-table.svg)
 
-In this project, we create a streaming ETL job in AWS Glue to integrate Iceberg with a streaming use case and create an in-place updatable data lake on Amazon S3.
+In this project, we create a solution to implement CDC-based UPSERT or MERGE in an S3 data lake using Apache Iceberg and AWS Glue Streaming.
 
 After ingested to Amazon S3, you can query the data with [Amazon Athena](http://aws.amazon.com/athena).
 
@@ -59,6 +59,7 @@ For example:
     "--primary_key": "trans_id",
     "--kinesis_table_name": "cdc_retail_trans_stream",
     "--kinesis_stream_name": "cdc-retail-trans-stream",
+    "--kinesis_stream_arn": "arn:aws:kinesis:us-east-1:123456789012:stream/cdc-retail-trans-stream",
     "--starting_position_of_kinesis_iterator": "LATEST",
     "--iceberg_s3_path": "s3://glue-iceberg-demo-us-east-1/cdc_iceberg_demo_db/retail_trans_iceberg",
     "--lock_table_name": "iceberg_lock",
@@ -157,7 +158,7 @@ command.
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-Iceberg</i> \
                --permissions SELECT DESCRIBE ALTER INSERT DELETE \
-               --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
+               --resource '{ "Table": {"DatabaseName": "<i>cdc_iceberg_demo_db</i>", "TableWildcard": {}} }'
    </pre>
 7. Create a table with partitioned data in Amazon Athena
 
@@ -193,7 +194,13 @@ command.
 
       If you get an error, check if (a) you have updated the `LOCATION` to the correct S3 bucket name, (b) you have mydatabase selected under the Database dropdown, and (c) you have `AwsDataCatalog` selected as the **Data source**.
 
-      :information_source: If you fail to create the table, give Athena users access permissions on `cdc_iceberg_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home)
+      :information_source: If you fail to create the table, give Athena users access permissions on `cdc_iceberg_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home), or you can grant anyone using Athena to access `cdc_iceberg_demo_db` by running the following command:
+      <pre>
+      (.venv) $ aws lakeformation grant-permissions \
+                    --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+                    --permissions SELECT DESCRIBE ALTER INSERT DELETE DROP \
+                    --resource '{ "Table": {"DatabaseName": "<i>cdc_iceberg_demo_db</i>", "TableWildcard": {}} }'
+      </pre>
 
 8. Run glue job to load data from Kinesis Data Streams into S3
     <pre>
@@ -201,42 +208,105 @@ command.
     </pre>
 9.  Generate streaming data
 
-    We can synthetically generate ventilator data in JSON format using a simple Python application.
+    We can synthetically generate change data capture(CDC) in JSON format using a simple Python application.
+
+    First, we generate new CDC records into the Kinesis Data Streams.
     <pre>
-    (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
+    (.venv) $ python src/utils/gen_fake_cdc_data.py \
                --region-name <i>us-east-1</i> \
                --stream-name <i>your-stream-name</i> \
-               --console \
-               --max-count 10
+               --console
+               --insert-only
     </pre>
 
-    Synthentic JSON data
+    Next, we can check if data is inserted into the Iceberg table (see the next steps: 10, 11), and we generate insert, update or delete CDC records by running the command:
     <pre>
-    {
-      "data": {
-        "trans_id": 6,
-        "customer_id": "387378799012",
-        "event": "list",
-        "sku": "AI6161BEFX",
-        "amount": 1,
-        "device": "pc",
-        "trans_datetime": "2023-01-16T06:18:32Z"
-      },
-      "metadata": {
-        "timestamp": "2023-01-16T06:25:34.444953Z",
-        "record-type": "data",
-        "operation": "insert",
-        "partition-key-type": "primary-key",
-        "schema-name": "testdb",
-        "table-name": "retail_trans",
-        "transaction-id": 12884904641
-      }
-    }
+    (.venv) $ python src/utils/gen_fake_cdc_data.py \
+               --region-name <i>us-east-1</i> \
+               --stream-name <i>your-stream-name</i> \
+               --console
+               --insert-update-or-delete
     </pre>
+
+    The synthetic CDC json data is similar to the Amazon DMS output format from data source MySQL.
+    * Insert
+      <pre>
+      {
+         "data": {
+            "trans_id": 6,
+            "customer_id": "387378799012",
+            "event": "list",
+            "sku": "AI6161BEFX",
+            "amount": 1,
+            "device": "pc",
+            "trans_datetime": "2023-01-16T06:18:32Z"
+         },
+         "metadata": {
+            "timestamp": "2023-01-16T06:25:34.444953Z",
+            "record-type": "data",
+            "operation": "insert",
+            "partition-key-type": "primary-key",
+            "schema-name": "testdb",
+            "table-name": "retail_trans",
+            "transaction-id": 12884904641
+         }
+      }
+      </pre>
+    * Update
+      <pre>
+      {
+         "data": {
+            "trans_id": 6,
+            "customer_id": "387378799012",
+            "event": "list",
+            "sku": "AI6161BEFX",
+            "amount": 3,
+            "device": "pc",
+            "trans_datetime": "2023-01-16T06:18:32Z"
+         },
+         "metadata": {
+            "timestamp": "2023-01-16T08:05:25.942777Z",
+            "record-type": "data",
+            "operation": "update",
+            "partition-key-type": "primary-key",
+            "schema-name": "testdb",
+            "table-name": "retail_trans",
+            "transaction-id": 12884973957
+         }
+      }
+      </pre>
+    * Delete
+      <pre>
+      {
+         "data": {
+            "trans_id": 6,
+            "customer_id": "387378799012",
+            "event": "list",
+            "sku": "AI6161BEFX",
+            "amount": 3,
+            "device": "pc",
+            "trans_datetime": "2023-01-16T06:18:32Z"
+         },
+         "metadata": {
+            "timestamp": "2023-01-16T08:10:49.737891Z",
+            "record-type": "data",
+            "operation": "delete",
+            "partition-key-type": "primary-key",
+            "schema-name": "testdb",
+            "table-name": "retail_trans",
+            "transaction-id": 12884978099
+         }
+      }
+      </pre>
 
 10. Check streaming data in S3
 
     After 3~5 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+
+    ![iceberg-table](./assets/cdc-iceberg-table.png)
+    ![iceberg-table](./assets/cdc-iceberg-data-level-01.png)
+    ![iceberg-table](./assets/cdc-iceberg-data-level-02.png)
+    ![iceberg-table](./assets/cdc-iceberg-data-level-03.png)
 
 11. Run test query
 
