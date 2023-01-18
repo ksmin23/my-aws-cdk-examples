@@ -223,7 +223,13 @@ command.
 
       If you get an error, check if (a) you have updated the `LOCATION` to the correct S3 bucket name, (b) you have mydatabase selected under the Database dropdown, and (c) you have `AwsDataCatalog` selected as the **Data source**.
 
-      :information_source: If you fail to create the table, give Athena users access permissions on `iceberg_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home)
+      :information_source: If you fail to create the table, give Athena users access permissions on `iceberg_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home), or you can grant anyone using Athena to access `iceberg_demo_db` by running the following command:
+      <pre>
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions SELECT DESCRIBE ALTER INSERT DELETE DROP \
+              --resource '{ "Table": {"DatabaseName": "iceberg_demo_db", "TableWildcard": {}} }'
+      </pre>
 
 8. Run glue job to load data from Kinesis Data Streams into S3
     <pre>
@@ -231,7 +237,7 @@ command.
     </pre>
 9.  Generate streaming data
 
-    We can synthetically generate ventilator data in JSON format using a simple Python application.
+    We can synthetically generate data in JSON format using a simple Python application.
     <pre>
     (.venv) $ python src/utils/gen_fake_kinesis_stream_data.py \
                --region-name <i>us-east-1</i> \
