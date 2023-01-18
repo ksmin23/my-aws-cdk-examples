@@ -28,6 +28,7 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'catalog',
   'database_name',
   'table_name',
+  'primary_key',
   'kinesis_stream_arn',
   'starting_position_of_kinesis_iterator',
   'iceberg_s3_path',
@@ -40,6 +41,7 @@ CATALOG = args['catalog']
 ICEBERG_S3_PATH = args['iceberg_s3_path']
 DATABASE = args['database_name']
 TABLE_NAME = args['table_name']
+PRIMARY_KEY = args['primary_key']
 DYNAMODB_LOCK_TABLE = args['lock_table_name']
 KINESIS_STREAM_ARN = args['kinesis_stream_arn']
 #XXX: starting_position_of_kinesis_iterator: ['LATEST', 'TRIM_HORIZON']
@@ -90,7 +92,7 @@ def processBatch(data_frame, batch_id):
     _df = spark.sql(f"SELECT * FROM {CATALOG}.{DATABASE}.{TABLE_NAME} LIMIT 0")
 
     # Apply De-duplication logic on input data to pick up the latest record based on timestamp and operation
-    window = Window.partitionBy("name").orderBy(desc("m_time"))
+    window = Window.partitionBy(PRIMARY_KEY).orderBy(desc("m_time"))
     stream_data_df = stream_data_dynf.toDF()
     stream_data_df = stream_data_df.withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
     upsert_data_df = stream_data_df.withColumn("row", row_number().over(window)) \

@@ -3,12 +3,11 @@
 
 ![glue-streaming-data-to-iceberg-table](./glue-streaming-data-to-iceberg-table.svg)
 
-This is an examplary AWS Glue Streaming ETL Job project for CDK development with Python.
-
 In this project, we create a streaming ETL job in AWS Glue to integrate Iceberg with a streaming use case and create an in-place updatable data lake on Amazon S3.
 
 After ingested to Amazon S3, you can query the data with [Amazon Athena](http://aws.amazon.com/athena).
 
+This project can be deployed with [AWS CDK Python](https://docs.aws.amazon.com/cdk/api/v2/).
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 This project is set up like a standard Python project.  The initialization
@@ -115,7 +114,7 @@ command.
    </pre>
 3. Define a schema for the streaming data
    <pre>
-   (.venv) $ cdk deploy GlueSchemaOnKinesisStream
+   (.venv) $ cdk deploy GlueStreamingSinkToIcebergJobRole GlueSchemaOnKinesisStream
    </pre>
 
    Running `cdk deploy GlueSchemaOnKinesisStream` command is like that we create a schema manually using the AWS Glue Data Catalog as the following steps:
@@ -177,7 +176,7 @@ command.
    * (step 2) Provision the Glue Streaming Job
 
      </pre>
-     (.venv) $ cdk deploy GlueStreamingSinkToIcebergJobRole GlueStreamingSinkToIceberg
+     (.venv) $ cdk deploy GlueStreamingSinkToIceberg
      </pre>
 6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 

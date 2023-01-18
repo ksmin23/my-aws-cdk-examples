@@ -96,7 +96,7 @@ def processBatch(data_frame, batch_id):
       _df = spark.sql(f"SELECT * FROM {CATALOG}.{DATABASE}.{TABLE_NAME} LIMIT 0")
 
       # Apply De-duplication logic on input data to pick up the latest record based on timestamp and operation
-      window = Window.partitionBy("name").orderBy(desc("m_time"))
+      window = Window.partitionBy(PRIMARY_KEY).orderBy(desc("m_time"))
       stream_data_df = stream_data_dynf.toDF()
       stream_data_df = stream_data_df.withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
       upsert_data_df = stream_data_df.withColumn("row", row_number().over(window)) \

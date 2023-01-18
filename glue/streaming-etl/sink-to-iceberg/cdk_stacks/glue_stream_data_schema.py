@@ -15,7 +15,7 @@ class GlueStreamDataSchemaStack(Stack):
     glue_kinesis_table = self.node.try_get_context('glue_kinesis_table')
     database_name = glue_kinesis_table['database_name']
     table_name = glue_kinesis_table['table_name']
-    columns = glue_kinesis_table['columns']
+    columns = glue_kinesis_table.get('columns', [])
 
     cfn_database = aws_glue.CfnDatabase(self, "GlueCfnDatabase",
       catalog_id=cdk.Aws.ACCOUNT_ID,
