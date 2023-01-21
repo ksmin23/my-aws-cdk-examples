@@ -216,7 +216,7 @@ command.
                --region-name <i>us-east-1</i> \
                --stream-name <i>your-stream-name</i> \
                --console
-               --insert-only
+               --cdc-type insert-only
     </pre>
 
     Next, we can check if data is inserted into the Iceberg table (see the next steps: 10, 11), and we generate insert, update or delete CDC records by running the command:
@@ -225,7 +225,7 @@ command.
                --region-name <i>us-east-1</i> \
                --stream-name <i>your-stream-name</i> \
                --console
-               --insert-update-or-delete
+               --cdc-type insert-update-or-delete
     </pre>
 
     The synthetic CDC json data is similar to the Amazon DMS output format from data source MySQL.
