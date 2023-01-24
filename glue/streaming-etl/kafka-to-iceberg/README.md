@@ -100,15 +100,20 @@ command.
    <pre>
    (.venv) $ cdk deploy KafkaToIcebergStackVpc KafkaAsGlueStreamingJobDataSource
    </pre>
-3. Create a IAM Role for Glue Streaming Job
+3. Create a MSK connector for Glue Streaming Job
+   <pre>
+   (.venv) $ cdk deploy GlueMSKConnection
+   </pre>
+   For more information, see [References](#references) (8)
+4. Create a IAM Role for Glue Streaming Job
    <pre>
    (.venv) $ cdk deploy GlueStreamingMSKtoIcebergJobRole
    </pre>
-4. Set up a Kafka Client Machine
+5. Set up a Kafka Client Machine
    <pre>
    (.venv) $ cdk deploy KafkaClientEC2Instance
    </pre>
-5. Upload **AWS SDK for Java 2.x** jar file into S3
+6. Upload **AWS SDK for Java 2.x** jar file into S3
    <pre>
    (.venv) $ wget https://repo1.maven.org/maven2/software/amazon/awssdk/aws-sdk-java/2.17.224/aws-sdk-java-2.17.224.jar
    (.venv) $ aws s3 cp aws-sdk-java-2.17.224.jar s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar
@@ -124,7 +129,7 @@ command.
    --user-jars-first true
    </pre>
    In order to do this, we might need to upload **AWS SDK for Java 2.x** jar file into S3.
-6. Create a Glue Streaming Job
+7. Create a Glue Streaming Job
 
    * (step 1) Select one of Glue Job Scripts and upload into S3
 
@@ -142,27 +147,12 @@ command.
      (.venv) $ aws s3 cp src/main/python/spark_sql_insert_overwrite_iceberg_from_kafka.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
      </pre>
 
-   * (step 2) Create an AWS Glue connection for an Apache Kafka data stream
-
-     Follow the instructions on [References](#references) (8)
-   * (step 3) Provision the Glue Streaming Job
+   * (step 2) Provision the Glue Streaming Job
 
      </pre>
      (.venv) $ cdk deploy GlueStreamingJobMSKtoIceberg
      </pre>
-7. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
-   Wec can get permissions by running the following command:
-   <pre>
-   (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-MSK2Iceberg"))'
-   </pre>
-   Also, we can grant the glue job to required permissions by running the following command:
-   <pre>
-   (.venv) $ aws lakeformation grant-permissions \
-               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-MSK2Iceberg</i> \
-               --permissions SELECT DESCRIBE ALTER INSERT DELETE \
-               --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
-   </pre>
 8. Create a table with partitioned data in Amazon Athena
 
    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
@@ -202,11 +192,26 @@ command.
               --resource '{ "Table": {"DatabaseName": "iceberg_demo_db", "TableWildcard": {}} }'
       </pre>
 
-9. Run glue job to load data from MSK into S3
+9. Make sure the glue job to access the Iceberg table in the Glue Catalog database
+
+   Wec can get permissions by running the following command:
+   <pre>
+   (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-MSK2Iceberg"))'
+   </pre>
+   Also, we can grant the glue job to required permissions by running the following command:
+   <pre>
+   (.venv) $ aws lakeformation grant-permissions \
+               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-MSK2Iceberg</i> \
+               --permissions SELECT DESCRIBE ALTER INSERT DELETE \
+               --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
+   </pre>
+
+10. Run glue job to load data from MSK into S3
     <pre>
     (.venv) $ aws glue start-job-run --job-name <i>streaming_data_from_kafka_into_iceberg_table</i>
     </pre>
-10. Generate streaming data
+
+11. Generate streaming data
 
     1. Connect the MSK client EC2 Host.
 
@@ -263,20 +268,6 @@ command.
     {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
     </pre>
 
-    Spark Writes using `DataFrame append` insert all records into the Iceberg table.
-    <pre>
-    {"name": "Arica", "age": 48, "m_time": "2023-04-11 19:13:21"}
-    {"name": "Arica", "age": 32, "m_time": "2023-10-20 17:24:17"}
-    {"name": "Arica", "age": 45, "m_time": "2023-12-26 01:20:49"}
-    {"name": "Fernando", "age": 16, "m_time": "2023-05-22 00:13:55"}
-    {"name": "Gonzalo", "age": 37, "m_time": "2023-01-11 06:18:26"}
-    {"name": "Gonzalo", "age": 60, "m_time": "2023-01-25 16:54:26"}
-    {"name": "Micheal", "age": 45, "m_time": "2023-04-07 06:18:17"}
-    {"name": "Micheal", "age": 44, "m_time": "2023-12-14 09:02:57"}
-    {"name": "Takisha", "age": 48, "m_time": "2023-12-20 16:44:13"}
-    {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
-    </pre>
-
     Spark Writes using `SQL insert overwrite` or `SQL merge into` insert the last updated records into the Iceberg table.
     <pre>
     {"name": "Arica", "age": 45, "m_time": "2023-12-26 01:20:49"}
@@ -285,16 +276,17 @@ command.
     {"name": "Micheal", "age": 44, "m_time": "2023-12-14 09:02:57"}
     {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
     </pre>
-11. Check streaming data in S3
 
-    After 3~5 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+12. Check streaming data in S3
+
+    After 3~5 minutes, you can see that the streaming data have been delivered from **MSK** to **S3** and stored in a folder structure by year, month, day, and hour.
 
     ![iceberg-table](./assets/iceberg-table.png)
     ![iceberg-table](./assets/iceberg-data-level-01.png)
     ![iceberg-table](./assets/iceberg-data-level-02.png)
     ![iceberg-table](./assets/iceberg-data-level-03.png)
 
-12. Run test query
+13. Run test query
 
     Enter the following SQL statement and execute the query.
     <pre>

@@ -8,6 +8,7 @@ from cdk_stacks import (
   MskStack,
   KafkaClientEC2InstanceStack,
   GlueJobRoleStack,
+  GlueMSKConnectionStack,
   GlueStreamingJobStack,
 )
 
@@ -38,9 +39,17 @@ kafka_client_ec2_stack.add_dependency(msk_stack)
 glue_job_role = GlueJobRoleStack(app, 'GlueStreamingMSKtoIcebergJobRole')
 glue_job_role.add_dependency(msk_stack)
 
-glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingJobMSKtoIceberg',
-  glue_job_role.glue_job_role
+glue_msk_connection = GlueMSKConnectionStack(app, 'GlueMSKConnection',
+  vpc_stack.vpc,
+  msk_stack.sg_msk_client,
+  env=APP_ENV
 )
-glue_streaming_job.add_dependency(glue_job_role)
+glue_msk_connection.add_dependency(msk_stack)
+
+glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingJobMSKtoIceberg',
+  glue_job_role.glue_job_role,
+  glue_msk_connection.msk_connection_name
+)
+glue_streaming_job.add_dependency(glue_msk_connection)
 
 app.synth()

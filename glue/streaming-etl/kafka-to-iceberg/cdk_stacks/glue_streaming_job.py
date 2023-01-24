@@ -9,7 +9,7 @@ from constructs import Construct
 
 class GlueStreamingJobStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, glue_job_role, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, glue_job_role, msk_connection_name, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     glue_assets_s3_bucket_name = self.node.try_get_context('glue_assets_s3_bucket_name')
@@ -49,7 +49,7 @@ class GlueStreamingJobStack(Stack):
       # Do not set Allocated Capacity if using Worker Type and Number of Workers
       # allocated_capacity=2,
       connections=aws_glue.CfnJob.ConnectionsListProperty(
-        connections=[glue_connections_name]
+        connections=[glue_connections_name, msk_connection_name]
       ),
       default_arguments=glue_job_default_arguments,
       description="This job loads the data from MSK to Apache Iceberg table in S3.",

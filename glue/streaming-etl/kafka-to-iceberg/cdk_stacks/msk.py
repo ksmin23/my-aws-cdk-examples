@@ -24,8 +24,7 @@ class MskStack(Stack):
 
     msk_config = self.node.try_get_context('msk')
 
-    _MSK_DEFAULT_CLUSTER_NAME = 'MSK-{}'.format(''.join(random.choices((string.ascii_letters), k=5)))
-    MSK_CLUSTER_NAME = msk_config.get('cluster_name', _MSK_DEFAULT_CLUSTER_NAME)
+    MSK_CLUSTER_NAME = msk_config['cluster_name']
     assert len(MSK_CLUSTER_NAME) <= 64 and re.fullmatch(r'[a-zA-Z]+[a-zA-Z0-9-]*', MSK_CLUSTER_NAME)
 
     # Supported Apache Kafka versions:
