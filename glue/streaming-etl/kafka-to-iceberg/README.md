@@ -65,7 +65,7 @@ For example:
     "--database_name": "iceberg_demo_db",
     "--table_name": "iceberg_demo_table",
     "--primary_key": "name",
-    "--kafka_topic_name": "iceberg_demo_stream",
+    "--kafka_topic_name": "ev_stream_data",
     "--starting_offsets_of_kafka_topic": "latest",
     "--iceberg_s3_path": "s3://glue-iceberg-demo-atq4q5u/iceberg_demo_db",
     "--lock_table_name": "iceberg_lock",
