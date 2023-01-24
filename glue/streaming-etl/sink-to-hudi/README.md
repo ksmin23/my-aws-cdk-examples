@@ -1,7 +1,7 @@
 
 # AWS Glue Streaming ETL Job with Apace Hudi CDK Python project!
 
-![glue-streaming-to-s3-with-hudi](./glue-streaming-to-s3-with-hudi.svg)
+![glue-streaming-to-s3-with-hudi](./glue-streaming-data-to-hudi-table.svg)
 
 This is an examplary AWS Glue Streaming ETL Job project for CDK development with Python.
 
@@ -234,10 +234,10 @@ command.
 ## References
 
  * (1) [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
- * (2) [Build a serverless pipeline to analyze streaming data using AWS Glue, Apache Hudi, and Amazon S3](https://aws.amazon.com/ko/blogs/big-data/build-a-serverless-pipeline-to-analyze-streaming-data-using-aws-glue-apache-hudi-and-amazon-s3/)
+ * (2) [Build a serverless pipeline to analyze streaming data using AWS Glue, Apache Hudi, and Amazon S3 (2022-03-09)](https://aws.amazon.com/ko/blogs/big-data/build-a-serverless-pipeline-to-analyze-streaming-data-using-aws-glue-apache-hudi-and-amazon-s3/)
  * (3) [aws-samples/aws-glue-streaming-etl-with-apache-hudi](https://github.com/aws-samples/aws-glue-streaming-etl-with-apache-hudi)
  * (4) [Using Amazon Athena to query Apache Hudi datasets](https://docs.aws.amazon.com/athena/latest/ug/querying-hudi.html)
  * (5) [Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
- * (6) [Crafting serverless streaming ETL jobs with AWS Glue](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
+ * (6) [Crafting serverless streaming ETL jobs with AWS Glue (2020-10-14)](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
 
 Enjoy!
