@@ -46,7 +46,8 @@ def main():
   cnt = 0
   for record in _schema.create(options.max_count):
     cnt += 1
-    print(json.dumps(record))
+    partition_key = record['name']
+    print(f"{partition_key}\t{json.dumps(record)}")
     time.sleep(random.choices([0.01, 0.03, 0.05, 0.07, 0.1])[-1])
 
   print(f'[INFO] {cnt} records are processed', file=sys.stderr)

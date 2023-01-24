@@ -238,7 +238,10 @@ command.
        Run the following command to generate messages into the topic on the cluster.
 
        <pre>
-       [ec2-user@ip-172-31-0-180 ~]$ python3 gen_fake_data.py | kafka-console-producer.sh --bootstrap-server $BS --topic <i>ev_stream_data</i>
+       [ec2-user@ip-172-31-0-180 ~]$ python3 gen_fake_data.py | kafka-console-producer.sh --bootstrap-server $BS \
+          --topic <i>ev_stream_data</i> \
+          --property parse.key=true \
+          --property key.seperator='\t'
        </pre>
 
        **(2) To consume messages**
