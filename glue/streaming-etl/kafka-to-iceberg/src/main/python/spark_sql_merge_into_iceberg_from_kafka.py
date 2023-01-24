@@ -4,27 +4,24 @@
 
 import os
 import sys
-# import re
 import traceback
 
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue import DynamicFrame
 
+from pyspark.context import SparkContext
 from pyspark.conf import SparkConf
 from pyspark.sql import DataFrame, Row
 from pyspark.sql.window import Window
-from pyspark.sql.types import *
 from pyspark.sql.functions import (
   col,
   desc,
   row_number,
   to_timestamp
 )
-
 
 args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'catalog',
@@ -99,27 +96,33 @@ def processBatch(data_frame, batch_id):
       data_frame, glueContext, "from_data_frame"
     )
 
-    _df = spark.sql(f"SELECT * FROM {CATALOG}.{DATABASE}.{TABLE_NAME} LIMIT 0")
+    tables_df = spark.sql(f"SHOW TABLES IN {CATALOG}.{DATABASE}")
+    table_list = tables_df.select('tableName').rdd.flatMap(lambda x: x).collect()
+    if f"{TABLE_NAME}" not in table_list:
+      print(f"Table {TABLE_NAME} doesn't exist in {CATALOG}.{DATABASE}.")
+    else:
+      _df = spark.sql(f"SELECT * FROM {CATALOG}.{DATABASE}.{TABLE_NAME} LIMIT 0")
 
-    #XXX: Apply De-duplication logic on input data to pick up the latest record based on timestamp and operation
-    window = Window.partitionBy(PRIMARY_KEY).orderBy(desc("m_time"))
-    stream_data_df = stream_data_dynf.toDF()
-    stream_data_df = stream_data_df.withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
-    upsert_data_df = stream_data_df.withColumn("row", row_number().over(window)) \
-      .filter(col("row") == 1).drop("row") \
-      .select(_df.schema.names)
+      #XXX: Apply De-duplication logic on input data to pick up the latest record based on timestamp and operation
+      window = Window.partitionBy(PRIMARY_KEY).orderBy(desc("m_time"))
+      stream_data_df = stream_data_dynf.toDF()
+      stream_data_df = stream_data_df.withColumn('m_time', to_timestamp(col('m_time'), 'yyyy-MM-dd HH:mm:ss'))
+      upsert_data_df = stream_data_df.withColumn("row", row_number().over(window)) \
+        .filter(col("row") == 1).drop("row") \
+        .select(_df.schema.names)
 
-    upsert_data_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
-    # print(f"Table '{TABLE_NAME}' is upserting...")
+      upsert_data_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
+      # print(f"Table '{TABLE_NAME}' is upserting...")
 
-    sql_query = f"""
-    INSERT OVERWRITE {CATALOG}.{DATABASE}.{TABLE_NAME} SELECT * FROM {TABLE_NAME}_upsert
-    """
-    try:
-      spark.sql(sql_query)
-    except Exception as ex:
-      traceback.print_exc()
-      raise ex
+      try:
+        spark.sql(f"""MERGE INTO {CATALOG}.{DATABASE}.{TABLE_NAME} t
+          USING {TABLE_NAME}_upsert s ON s.{PRIMARY_KEY} = t.{PRIMARY_KEY}
+          WHEN MATCHED THEN UPDATE SET *
+          WHEN NOT MATCHED THEN INSERT *
+          """)
+      except Exception as ex:
+        traceback.print_exc()
+        raise ex
 
 
 checkpointPath = os.path.join(args["TempDir"], args["JOB_NAME"], "checkpoint/")
