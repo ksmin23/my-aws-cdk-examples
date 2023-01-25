@@ -9,12 +9,15 @@ from constructs import Construct
 
 class GlueStreamingJobStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, glue_job_role, msk_connection_name, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, glue_job_role, msk_connection_info, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     glue_assets_s3_bucket_name = self.node.try_get_context('glue_assets_s3_bucket_name')
     glue_job_script_file_name = self.node.try_get_context('glue_job_script_file_name')
     glue_job_input_arguments = self.node.try_get_context('glue_job_input_arguments')
+
+    msk_connection_name = msk_connection_info.name
+    kafka_bootstrap_servers = msk_connection_info.connection_properties['KAFKA_BOOTSTRAP_SERVERS']
 
     glue_job_default_arguments = {
       "--enable-metrics": "true",
@@ -26,7 +29,8 @@ class GlueStreamingJobStack(Stack):
       "--job-bookmark-option": "job-bookmark-disable",
       "--job-language": "python",
       "--TempDir": f"s3://{glue_assets_s3_bucket_name}/temporary/",
-      "--kafka_connection_name": msk_connection_name
+      "--kafka_connection_name": msk_connection_name,
+      "--kafka_bootstrap_servers": kafka_bootstrap_servers,
     }
 
     glue_job_default_arguments.update(glue_job_input_arguments)

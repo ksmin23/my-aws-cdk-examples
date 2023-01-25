@@ -48,7 +48,7 @@ glue_msk_connection.add_dependency(msk_stack)
 
 glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingJobMSKtoIceberg',
   glue_job_role.glue_job_role,
-  glue_msk_connection.msk_connection_name
+  glue_msk_connection.msk_connection_info
 )
 glue_streaming_job.add_dependency(glue_msk_connection)
 

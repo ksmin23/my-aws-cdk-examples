@@ -58,6 +58,6 @@ class GlueMSKConnectionStack(Stack):
       connection_input=connection_input_property
     )
 
-    self.msk_connection_name = connection_input_property.name
+    self.msk_connection_info = msk_connection.connection_input
 
-    cdk.CfnOutput(self, f'{self.stack_name}-MSKConnectorName', value=self.msk_connection_name)
+    cdk.CfnOutput(self, f'{self.stack_name}-MSKConnectorName', value=self.msk_connection_info.name)

@@ -136,6 +136,7 @@ command.
      **List of Glue Job Scirpts**
      | File name | Spark Writes |
      |-----------|--------------|
+     | spark_dataframe_insert_iceberg_from_kafka.py | DataFrame append |
      | spark_sql_insert_overwrite_iceberg_from_kafka.py | SQL insert overwrite |
      | spark_sql_merge_into_iceberg_from_kafka.py | SQL merge into |
 
@@ -258,6 +259,20 @@ command.
     We can synthetically generate data in JSON format using a simple Python application.
 
     Synthentic Data Example order by `name` and `m_time`
+    <pre>
+    {"name": "Arica", "age": 48, "m_time": "2023-04-11 19:13:21"}
+    {"name": "Arica", "age": 32, "m_time": "2023-10-20 17:24:17"}
+    {"name": "Arica", "age": 45, "m_time": "2023-12-26 01:20:49"}
+    {"name": "Fernando", "age": 16, "m_time": "2023-05-22 00:13:55"}
+    {"name": "Gonzalo", "age": 37, "m_time": "2023-01-11 06:18:26"}
+    {"name": "Gonzalo", "age": 60, "m_time": "2023-01-25 16:54:26"}
+    {"name": "Micheal", "age": 45, "m_time": "2023-04-07 06:18:17"}
+    {"name": "Micheal", "age": 44, "m_time": "2023-12-14 09:02:57"}
+    {"name": "Takisha", "age": 48, "m_time": "2023-12-20 16:44:13"}
+    {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
+    </pre>
+
+    Spark Writes using `DataFrame append` insert all records into the Iceberg table.
     <pre>
     {"name": "Arica", "age": 48, "m_time": "2023-04-11 19:13:21"}
     {"name": "Arica", "age": 32, "m_time": "2023-10-20 17:24:17"}
