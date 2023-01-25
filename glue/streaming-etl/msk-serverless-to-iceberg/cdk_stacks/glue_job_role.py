@@ -53,7 +53,7 @@ class GlueJobRoleStack(Stack):
     }))
 
     glue_job_role = aws_iam.Role(self, 'GlueJobRole',
-      role_name='GlueStreamingJobRole-MSK2Iceberg',
+      role_name='GlueJobRole-MSKServerless2Iceberg',
       assumed_by=aws_iam.ServicePrincipal('glue.amazonaws.com'),
       inline_policies={
         'aws_glue_job_role_policy': glue_job_role_policy_doc
