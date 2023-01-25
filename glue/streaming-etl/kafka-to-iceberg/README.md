@@ -142,6 +142,7 @@ command.
 
      <pre>
      (.venv) $ ls src/main/python/
+      spark_dataframe_insert_iceberg_from_kafka.py
       spark_sql_insert_overwrite_iceberg_from_kafka.py
       spark_sql_merge_into_iceberg_from_kafka.py
      (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-atq4q5u</i> --region <i>us-east-1</i>
