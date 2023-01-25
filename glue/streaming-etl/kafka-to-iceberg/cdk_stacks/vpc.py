@@ -22,7 +22,7 @@ class VpcStack(Stack):
     # cdk -c vpc_name=your-existing-vpc syth
     #
     vpc_name = self.node.try_get_context("vpc_name") or "default"
-    vpc = aws_ec2.Vpc.from_lookup(self, "MSKServerlessVpc",
+    vpc = aws_ec2.Vpc.from_lookup(self, "MSKVpc",
       is_default=True,
       vpc_name=vpc_name)
 

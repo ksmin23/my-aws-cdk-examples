@@ -79,7 +79,6 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 options_read = {
-  # "kafka.bootstrap.servers": "b-1.icebergdemostream.khxj9u.c3.kafka.us-east-1.amazonaws.com:9092,b-2.icebergdemostream.khxj9u.c3.kafka.us-east-1.amazonaws.com:9092,b-3.icebergdemostream.khxj9u.c3.kafka.us-east-1.amazonaws.com:9092",
   "kafka.bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,
   "subscribe": KAFKA_TOPIC_NAME,
   "startingOffsets": STARTING_OFFSETS_OF_KAFKA_TOPIC

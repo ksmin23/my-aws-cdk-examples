@@ -58,7 +58,7 @@ For example:
     "broker_ebs_volume_size": 100
   },
   "glue_assets_s3_bucket_name": "aws-glue-assets-123456789012-atq4q5u",
-  "glue_job_script_file_name": "spark_sql_insert_overwrite_iceberg_from_kafka.py",
+  "glue_job_script_file_name": "spark_sql_merge_into_iceberg_from_kafka.py",
   "glue_job_name": "streaming_data_from_kafka_into_iceberg_table",
   "glue_job_input_arguments": {
     "--catalog": "job_catalog",
@@ -146,7 +146,7 @@ command.
       spark_sql_insert_overwrite_iceberg_from_kafka.py
       spark_sql_merge_into_iceberg_from_kafka.py
      (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-atq4q5u</i> --region <i>us-east-1</i>
-     (.venv) $ aws s3 cp src/main/python/spark_sql_insert_overwrite_iceberg_from_kafka.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
+     (.venv) $ aws s3 cp src/main/python/spark_sql_merge_into_iceberg_from_kafka.py <i>s3://aws-glue-assets-123456789012-atq4q5u/scripts/</i>
      </pre>
 
    * (step 2) Provision the Glue Streaming Job
@@ -230,7 +230,11 @@ command.
        <pre>
        [ec2-user@ip-172-31-0-180 ~]$ export PATH=$HOME/opt/kafka/bin:$PATH
        [ec2-user@ip-172-31-0-180 ~]$ export BS=<i>{BootstrapBrokerString}</i>
-       [ec2-user@ip-172-31-0-180 ~]$ kafka-topics.sh --bootstrap-server $BS --command-config client.properties --create --topic <i>ev_stream_data</i> --partitions 3 --replication-factor 2
+       [ec2-user@ip-172-31-0-180 ~]$ kafka-topics.sh --bootstrap-server $BS \
+          --create \
+          --topic <i>ev_stream_data</i> \
+          --partitions 3 \
+          --replication-factor 2
        </pre>
 
     3. Produce and consume data
@@ -240,7 +244,8 @@ command.
        Run the following command to generate messages into the topic on the cluster.
 
        <pre>
-       [ec2-user@ip-172-31-0-180 ~]$ python3 gen_fake_data.py | kafka-console-producer.sh --bootstrap-server $BS \
+       [ec2-user@ip-172-31-0-180 ~]$ python3 gen_fake_data.py | kafka-console-producer.sh \
+          --bootstrap-server $BS \
           --topic <i>ev_stream_data</i> \
           --property parse.key=true \
           --property key.seperator='\t'
@@ -251,7 +256,9 @@ command.
        Keep the connection to the client machine open, and then open a second, separate connection to that machine in a new window.
 
        <pre>
-       [ec2-user@ip-172-31-0-180 ~]$ kafka-console-consumer.sh --bootstrap-server $BS --topic <i>ev_stream_data</i> --from-beginning
+       [ec2-user@ip-172-31-0-180 ~]$ kafka-console-consumer.sh --bootstrap-server $BS \
+          --topic <i>ev_stream_data</i> \
+          --from-beginning
        </pre>
 
        You start seeing the messages you entered earlier when you used the console producer command.
