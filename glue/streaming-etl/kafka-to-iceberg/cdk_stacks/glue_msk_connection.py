@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-import os
-import random
-import string
-
 import boto3
 
 import aws_cdk as cdk
@@ -14,8 +10,6 @@ from aws_cdk import (
   aws_msk
 )
 from constructs import Construct
-
-random.seed(47)
 
 
 class GlueMSKConnectionStack(Stack):
@@ -46,13 +40,16 @@ class GlueMSKConnectionStack(Stack):
       "KAFKA_SSL_ENABLED": "false"
     }
   
+    subnet = vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnets[0]
+
     connection_input_property = aws_glue.CfnConnection.ConnectionInputProperty(
       connection_type="KAFKA",
       connection_properties=connection_properties,
       name="msk-connector",
       physical_connection_requirements=aws_glue.CfnConnection.PhysicalConnectionRequirementsProperty(
         security_group_id_list=[sg_msk_client.security_group_id, sg_glue_cluster.security_group_id],
-        subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids[0]
+        subnet_id=subnet.subnet_id,
+        availability_zone=subnet.availability_zone
       )
     )
 

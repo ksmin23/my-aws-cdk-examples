@@ -25,7 +25,8 @@ class GlueStreamingJobStack(Stack):
       "--enable-continuous-cloudwatch-log": "true",
       "--job-bookmark-option": "job-bookmark-disable",
       "--job-language": "python",
-      "--TempDir": f"s3://{glue_assets_s3_bucket_name}/temporary/"
+      "--TempDir": f"s3://{glue_assets_s3_bucket_name}/temporary/",
+      "--kafka_connection_name": msk_connection_name
     }
 
     glue_job_default_arguments.update(glue_job_input_arguments)

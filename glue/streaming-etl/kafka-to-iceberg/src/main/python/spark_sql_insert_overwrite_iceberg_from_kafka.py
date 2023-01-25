@@ -4,7 +4,6 @@
 
 import os
 import sys
-# import re
 import traceback
 
 from awsglue.transforms import *
@@ -33,6 +32,7 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'primary_key',
   'kafka_topic_name',
   'starting_offsets_of_kafka_topic',
+  'kafka_connection_name',
   'iceberg_s3_path',
   'lock_table_name',
   'aws_region',
@@ -49,8 +49,8 @@ PRIMARY_KEY = args['primary_key']
 
 DYNAMODB_LOCK_TABLE = args['lock_table_name']
 
-# KAFKA_BOOTSTRAP_SERVERS = args['kafka_bootstrap_servers']
 KAFKA_TOPIC_NAME = args['kafka_topic_name']
+KAFKA_CONNECTION_NAME = args['kafka_connection_name']
 
 #XXX: starting_offsets_of_kafka_topic: ['latest', 'earliest']
 STARTING_OFFSETS_OF_KAFKA_TOPIC = args.get('starting_offsets_of_kafka_topic', 'latest')
@@ -81,16 +81,17 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 kafka_options = {
-  "connectionName": "msk-iceberg-conn", 
-  "topicName": KAFKA_TOPIC_NAME, 
-  "startingOffsets": STARTING_OFFSETS_OF_KAFKA_TOPIC, 
-  "inferSchema": "true", 
-  "classification": "json" 
+  "connectionName": KAFKA_CONNECTION_NAME,
+  "topicName": KAFKA_TOPIC_NAME,
+  "startingOffsets": STARTING_OFFSETS_OF_KAFKA_TOPIC,
+  "inferSchema": "true",
+  "classification": "json"
 }
 
 streaming_data = glueContext.create_data_frame.from_options(
   connection_type="kafka",
-  connection_options=kafka_options
+  connection_options=kafka_options,
+  transformation_ctx="kafka_df"
 )
 
 def processBatch(data_frame, batch_id):
