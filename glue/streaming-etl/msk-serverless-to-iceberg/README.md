@@ -5,7 +5,7 @@
 
 In this project, we create a streaming ETL job in AWS Glue to integrate Iceberg with a streaming use case and create an in-place updatable data lake on Amazon S3.
 
-After streaming data are ingested from Amazon Managed Service for Apache Kafka (MSK) to Amazon S3, you can query the data with [Amazon Athena](http://aws.amazon.com/athena).
+After streaming data are ingested from Amazon MSK Serverles to Amazon S3, you can query the data with [Amazon Athena](http://aws.amazon.com/athena).
 
 This project can be deployed with [AWS CDK Python](https://docs.aws.amazon.com/cdk/api/v2/).
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
