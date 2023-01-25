@@ -29,11 +29,15 @@ class GlueMSKConnectionStack(Stack):
 
     msk_cluster_name = self.node.try_get_context('msk').get('cluster_name')
     msk_client = boto3.client('kafka', region_name=vpc.env.region)
-    msk_cluster_info_list = msk_client.list_clusters(ClusterNameFilter=msk_cluster_name)
-    msk_cluster_arn = msk_cluster_info_list['ClusterInfoList'][0]['ClusterArn']
-    msk_brokers = msk_client.get_bootstrap_brokers(ClusterArn=msk_cluster_arn)
-    kafka_bootstrap_servers = msk_brokers['BootstrapBrokerString']
-    assert kafka_bootstrap_servers
+    response = msk_client.list_clusters(ClusterNameFilter=msk_cluster_name)
+    msk_cluster_info_list = response['ClusterInfoList']
+    if not msk_cluster_info_list:
+      kafka_bootstrap_servers = ":9094"
+    else:
+      msk_cluster_arn = msk_cluster_info_list[0]['ClusterArn']
+      msk_brokers = msk_client.get_bootstrap_brokers(ClusterArn=msk_cluster_arn)
+      kafka_bootstrap_servers = msk_brokers['BootstrapBrokerStringSaslIam']
+      assert kafka_bootstrap_servers
 
     connection_properties = {
       "KAFKA_BOOTSTRAP_SERVERS": kafka_bootstrap_servers,
