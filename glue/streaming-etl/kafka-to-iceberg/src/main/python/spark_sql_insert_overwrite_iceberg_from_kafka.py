@@ -111,7 +111,7 @@ def processBatch(data_frame, batch_id):
       .select(_df.schema.names)
 
     upsert_data_df.createOrReplaceTempView(f"{TABLE_NAME}_upsert")
-    # print(f"Table '{TABLE_NAME}' is upserting...")
+    # print(f"Table '{TABLE_NAME}' is inserting overwrite...")
 
     sql_query = f"""
     INSERT OVERWRITE {CATALOG}.{DATABASE}.{TABLE_NAME} SELECT * FROM {TABLE_NAME}_upsert

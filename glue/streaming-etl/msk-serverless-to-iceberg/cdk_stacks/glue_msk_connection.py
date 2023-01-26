@@ -32,7 +32,7 @@ class GlueMSKConnectionStack(Stack):
     response = msk_client.list_clusters_v2(ClusterNameFilter=msk_cluster_name)
     msk_cluster_info_list = response['ClusterInfoList']
     if not msk_cluster_info_list:
-      kafka_bootstrap_servers = ":9094"
+      kafka_bootstrap_servers = "localhost:9094"
     else:
       msk_cluster_arn = msk_cluster_info_list[0]['ClusterArn']
       msk_brokers = msk_client.get_bootstrap_brokers(ClusterArn=msk_cluster_arn)
