@@ -192,12 +192,12 @@ command.
 
    Wec can get permissions by running the following command:
    <pre>
-   (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-MSK2Iceberg"))'
+   (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueJobRole-MSKServerless2Iceberg"))'
    </pre>
    Also, we can grant the glue job to required permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation grant-permissions \
-               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-MSK2Iceberg</i> \
+               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueJobRole-MSKServerless2Iceberg</i> \
                --permissions SELECT DESCRIBE ALTER INSERT DELETE \
                --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
    </pre>
