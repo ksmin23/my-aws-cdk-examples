@@ -296,3 +296,7 @@ Enjoy!
      In order to solve the error, it is necessary to promote the cdk execution role to the data lake administrator.<br/>
      For example, https://github.com/aws-samples/data-lake-as-code/blob/mainline/lib/stacks/datalake-stack.ts#L68
 
+   * Reference:
+
+     [https://github.com/aws-samples/data-lake-as-code](https://github.com/aws-samples/data-lake-as-code) - Data Lake as Code
+
