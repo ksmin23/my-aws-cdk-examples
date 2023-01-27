@@ -99,5 +99,7 @@ Delete the CloudFormation stack by running the below command.
  * [SageMaker Studio Permissions Required to Use Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-studio-updates.html)
  * [Automate Amazon SageMaker Studio setup using AWS CDK (2021-06-16)](https://aws.amazon.com/ko/blogs/machine-learning/automate-amazon-sagemaker-studio-setup-using-aws-cdk/)
    * [aws-samples/aws-cdk-sagemaker-studio](https://github.com/aws-samples/aws-cdk-sagemaker-studio)
+ * [Set up Amazon SageMaker Studio with Jupyter Lab 3 using the AWS CDK (2023-01-23)](https://aws.amazon.com/ko/blogs/machine-learning/set-up-amazon-sagemaker-studio-with-jupyter-lab-3-using-the-aws-cdk/)
+   * [aws-cdk-native-sagemaker-studio](https://github.com/aws-samples/aws-cdk-native-sagemaker-studio/tree/e72e64b8631510f5f4d4f92306d145a2eaed1092)
 
 Enjoy!
