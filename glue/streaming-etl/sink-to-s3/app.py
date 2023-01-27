@@ -24,7 +24,7 @@ glue_stream_schema = GlueStreamDataSchemaStack(app, 'GlueSchemaOnKinesisStream',
   kds_stack.kinesis_stream,
   glue_job_role.glue_job_role
 )
-glue_stream_schema.add_dependency(glue_stream_schema)
+glue_stream_schema.add_dependency(glue_job_role)
 
 glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToS3',
   glue_job_role.glue_job_role
