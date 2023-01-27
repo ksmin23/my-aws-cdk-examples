@@ -159,7 +159,7 @@ command.
    <pre>
    (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole"))'
    </pre>
-   Also, we can grant the glue job to required permissions by running the following command:
+   If not found, we need manually to grant the glue job to required permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole</i> \
@@ -278,3 +278,21 @@ command.
  * [Best practices to optimize cost and performance for AWS Glue streaming ETL jobs (2022-08-03)](https://aws.amazon.com/blogs/big-data/best-practices-to-optimize-cost-and-performance-for-aws-glue-streaming-etl-jobs/)
 
 Enjoy!
+
+## Troubleshooting
+
+ * Granting database or table permissions error using AWS CDK
+   * Error message:
+     <pre>
+     AWS::LakeFormation::PrincipalPermissions | CfnPrincipalPermissions Resource handler returned message: "Resource does not exist or requester is not authorized to access requested permissions. (Service: LakeFormation, Status Code: 400, Request ID: f4d5e58b-29b6-4889-9666-7e38420c9035)" (RequestToken: 4a4bb1d6-b051-032f-dd12-5951d7b4d2a9, HandlerErrorCode: AccessDenied)
+     </pre>
+   * Solution:
+
+     The role assumed by cdk is not a data lake administrator. (e.g., `cdk-hnb659fds-deploy-role-12345678912-us-east-1`) <br/>
+     So, deploying PrincipalPermissions meets the error such as:
+
+     `Resource does not exist or requester is not authorized to access requested permissions.`
+
+     In order to solve the error, it is necessary to promote the cdk execution role to the data lake administrator.<br/>
+     For example, https://github.com/aws-samples/data-lake-as-code/blob/mainline/lib/stacks/datalake-stack.ts#L68
+
