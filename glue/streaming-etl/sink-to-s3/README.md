@@ -227,7 +227,17 @@ command.
 
       If you get an error, check if (a) you have updated the `LOCATION` to the correct S3 bucket name, (b) you have mydatabase selected under the Database dropdown, and (c) you have `AwsDataCatalog` selected as the **Data source**.
 
-      :information_source: If you fail to create the table, give Athena users access permissions on `ventilatordb` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home)
+      :information_source: If you fail to create the table, give Athena users access permissions on `ventilatordb` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home), or you can grant anyone using Athena to access `ventilatordb` by running the following command:
+      <pre>
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions CREATE_TABLE DESCRIBE ALTER DROP \
+              --resource '{ "Database": { "Name": "<i>ventilatordb</i>" } }'
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions SELECT DESCRIBE ALTER INSERT DELETE DROP \
+              --resource '{ "Table": {"DatabaseName": "<i>ventilatordb</i>", "TableWildcard": {}} }'
+      </pre>
 
     * (step 3) Load the partition data
 

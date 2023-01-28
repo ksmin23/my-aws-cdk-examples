@@ -144,7 +144,7 @@ command.
 
       Copy the following query into the Athena query editor, replace the `xxxxxxx` in the last line under `LOCATION` with the string of your S3 bucket, and execute the query to create a new table.
       <pre>
-      CREATE EXTERNAL TABLE `hudi_demo_db`.`hudi_demo_table_cow`(
+      CREATE EXTERNAL TABLE hudi_demo_db.hudi_demo_table_cow (
         `_hoodie_commit_time` string,
         `_hoodie_commit_seqno` string,
         `_hoodie_record_key` string,
@@ -170,6 +170,18 @@ command.
       If the query is successful, a table named `hudi_demo_table_cow` is created and displayed on the left panel under the **Tables** section.
 
       If you get an error, check if (a) you have updated the `LOCATION` to the correct S3 bucket name, (b) you have mydatabase selected under the Database dropdown, and (c) you have `AwsDataCatalog` selected as the **Data source**.
+
+      :information_source: If you fail to create the table, give Athena users access permissions on `hudi_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home), or you can grant anyone using Athena to access `hudi_demo_db` by running the following command:
+      <pre>
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions CREATE_TABLE DESCRIBE ALTER DROP \
+              --resource '{ "Database": { "Name": "<i>hudi_demo_db</i>" } }'
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions SELECT DESCRIBE ALTER INSERT DELETE DROP \
+              --resource '{ "Table": {"DatabaseName": "<i>hudi_demo_db</i>", "TableWildcard": {}} }'
+      </pre>
 
 7. Run glue job to load data from Kinesis Data Streams into S3
    <pre>
@@ -279,4 +291,27 @@ command.
    * Reference:
 
      [https://github.com/aws-samples/data-lake-as-code](https://github.com/aws-samples/data-lake-as-code) - Data Lake as Code
+ * Amazon Athena experienced a permission error in Amazon Athena
+   * Error message:
+     <pre>
+     [ErrorCategory:USER_ERROR, ErrorCode:PERMISSION_ERROR], Detail:Amazon Athena experienced a permission error.
+     Please provide proper permission and submitting the query again. If the issue reoccurs, contact AWS support for further assistance.
+     You will not be charged for this query. We apologize for the inconvenience., Message:Amazon Athena experienced a permission error.
+     Please provide proper permission and submitting the query again. If the issue reoccurs, contact AWS support for further assistance.
+     You will not be charged for this query. We apologize for the inconvenience.
+     This query ran against the "hudi_demo_db" database, unless qualified by the query.
+     Please post the error message on our forum  or contact customer support  with Query Id: 8a61dc7c-02f0-4552-8a5c-940080d78ac7
+     </pre>
+   * Solution:
 
+     If you fail to create the table, give Athena users access permissions on `hudi_demo_db` through [AWS Lake Formation](https://console.aws.amazon.com/lakeformation/home), or you can grant anyone using Athena to access `hudi_demo_db` by running the following command:
+      <pre>
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions CREATE_TABLE DESCRIBE ALTER DROP \
+              --resource '{ "Database": { "Name": "<i>hudi_demo_db</i>" } }'
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions SELECT DESCRIBE ALTER INSERT DELETE DROP \
+              --resource '{ "Table": {"DatabaseName": "<i>hudi_demo_db</i>", "TableWildcard": {}} }'
+      </pre>

@@ -226,8 +226,12 @@ command.
       <pre>
       (.venv) $ aws lakeformation grant-permissions \
               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
+              --permissions CREATE_TABLE DESCRIBE ALTER DROP \
+              --resource '{ "Database": { "Name": "<i>iceberg_demo_db</i>" } }'
+      (.venv) $ aws lakeformation grant-permissions \
+              --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:user/<i>example-user-id</i> \
               --permissions SELECT DESCRIBE ALTER INSERT DELETE DROP \
-              --resource '{ "Table": {"DatabaseName": "iceberg_demo_db", "TableWildcard": {}} }'
+              --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
       </pre>
 
 8. Run glue job to load data from Kinesis Data Streams into S3
