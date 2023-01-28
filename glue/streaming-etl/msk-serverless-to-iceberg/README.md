@@ -151,7 +151,6 @@ command.
 
      </pre>
      (.venv) $ cdk deploy GrantLFPermissionsOnGlueJobRole \
-                          GrantLFPermissionsOnGlueJobRole \
                           GlueStreamingJobMSKServerlessToIceberg
      </pre>
 
