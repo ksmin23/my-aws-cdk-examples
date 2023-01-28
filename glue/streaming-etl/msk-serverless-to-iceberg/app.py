@@ -51,7 +51,6 @@ glue_job_role = GlueJobRoleStack(app, 'GlueStreamingMSKServerlessToIcebergJobRol
 glue_job_role.add_dependency(msk_stack)
 
 glue_database = GlueCatalogDatabaseStack(app, 'GlueIcebergeDatabase')
-# glue_database.add_dependency(glue_job_role)
 
 grant_lake_formation_permissions = DataLakePermissionsStack(app, 'GrantLFPermissionsOnGlueJobRole',
   glue_job_role.glue_job_role
