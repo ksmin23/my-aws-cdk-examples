@@ -296,8 +296,6 @@ command.
  * [Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
  * [Best practices to optimize cost and performance for AWS Glue streaming ETL jobs (2022-08-03)](https://aws.amazon.com/blogs/big-data/best-practices-to-optimize-cost-and-performance-for-aws-glue-streaming-etl-jobs/)
 
-Enjoy!
-
 ## Troubleshooting
 
  * Granting database or table permissions error using AWS CDK
