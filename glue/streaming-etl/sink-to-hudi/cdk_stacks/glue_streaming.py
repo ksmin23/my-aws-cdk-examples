@@ -52,7 +52,7 @@ class GlueStreamingJobStack(Stack):
         connections=[glue_connections_name]
       ),
       default_arguments=glue_job_default_arguments,
-      description="This job loads the data from Kinesis Data Streams to S3.",
+      description="This job loads the data from Kinesis Data Streams to Apache Hudi table in S3.",
       execution_property=aws_glue.CfnJob.ExecutionPropertyProperty(
         max_concurrent_runs=1
       ),
