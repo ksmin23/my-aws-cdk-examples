@@ -175,7 +175,7 @@ command.
 
    * (step 2) Provision the Glue Streaming Job
 
-     </pre>
+     <pre>
      (.venv) $ cdk deploy GlueStreamingSinkToIcebergJobRole GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToIceberg
      </pre>
 6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
