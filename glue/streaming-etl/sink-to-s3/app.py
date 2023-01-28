@@ -22,14 +22,14 @@ glue_job_role = GlueJobRoleStack(app, 'GlueStreamingSinkToS3JobRole')
 glue_job_role.add_dependency(kds_stack)
 
 glue_stream_schema = GlueStreamDataSchemaStack(app, 'GlueSchemaOnKinesisStream',
-  kds_stack.kinesis_stream,
-  glue_job_role.glue_job_role
+  kds_stack.kinesis_stream
 )
-glue_stream_schema.add_dependency(glue_job_role)
+glue_stream_schema.add_dependency(kds_stack)
 
 grant_lake_formation_permissions = DataLakePermissionsStack(app, 'GrantLFPermissionsOnGlueJobRole',
   glue_job_role.glue_job_role
 )
+grant_lake_formation_permissions.add_dependency(glue_job_role)
 grant_lake_formation_permissions.add_dependency(glue_stream_schema)
 
 glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToS3',

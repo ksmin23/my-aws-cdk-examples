@@ -114,7 +114,7 @@ command.
 
 1. Create a Kinesis data stream
    <pre>
-   (.venv) $ cdk deploy KinesisStreamForGlueStreamingJob
+   (.venv) $ cdk deploy KinesisStreamAsGlueStreamingJobDataSource
    </pre>
 2. Define a schema for the streaming data
    <pre>
@@ -151,7 +151,7 @@ command.
     glue_streaming_from_kds_to_s3.py
    (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
    (.venv) $ aws cp src/main/python/glue_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
-   (.venv) $ cdk deploy GlueSchemaOnKinesisStream GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToS3
+   (.venv) $ cdk deploy GlueStreamingSinkToS3JobRole GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToS3
    </pre>
 4. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
