@@ -121,7 +121,7 @@ command.
    <pre>
    (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole"))'
    </pre>
-   Also, we can grant the glue job to required permissions by running the following command:
+   If not found, we need manually to grant the glue job to required permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole</i> \
