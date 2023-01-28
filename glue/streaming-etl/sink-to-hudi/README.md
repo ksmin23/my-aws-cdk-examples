@@ -91,7 +91,7 @@ command.
    </pre>
 3. Define a schema for the streaming data
    <pre>
-   (.venv) $ cdk deploy GlueSchemaOnKinesisStream
+   (.venv) $ cdk deploy GlueStreamingSinkToHudiJobRole GlueSchemaOnKinesisStream
    </pre>
 
    Running `cdk deploy GlueSchemaOnKinesisStream` command is like that we create a schema manually using the AWS Glue Data Catalog as the following steps:
@@ -113,7 +113,7 @@ command.
     glue_hudi_streaming_from_kds_to_s3.py
    (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
    (.venv) $ aws s3 cp src/main/python/glue_hudi_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
-   (.venv) $ cdk deploy GlueStreamingSinkToHudi
+   (.venv) $ cdk deploy GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToHudi
    </pre>
 5. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
@@ -223,6 +223,25 @@ command.
     FROM hudi_demo_db.hudi_demo_table_cow;
     </pre>
 
+## Clean Up
+
+1. Stop the glue job by replacing the job name in below command.
+
+   <pre>
+   (.venv) $ JOB_RUN_IDS=$(aws glue get-job-runs \
+              --job-name hudi-streaming-from-kds-to-s3 | jq -r '.JobRuns[] | select(.JobRunState=="RUNNING") | .Id' \
+              | xargs)
+   (.venv) $ aws glue batch-stop-job-run \
+              --job-name hudi-streaming-from-kds-to-s3 \
+              --job-run-ids $JOB_RUN_IDS
+   </pre>
+
+2. Delete the CloudFormation stack by running the below command.
+
+   <pre>
+   (.venv) $ cdk destroy --all
+   </pre>
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -240,4 +259,24 @@ command.
  * (5) [Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
  * (6) [Crafting serverless streaming ETL jobs with AWS Glue (2020-10-14)](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
 
-Enjoy!
+## Troubleshooting
+
+ * Granting database or table permissions error using AWS CDK
+   * Error message:
+     <pre>
+     AWS::LakeFormation::PrincipalPermissions | CfnPrincipalPermissions Resource handler returned message: "Resource does not exist or requester is not authorized to access requested permissions. (Service: LakeFormation, Status Code: 400, Request ID: f4d5e58b-29b6-4889-9666-7e38420c9035)" (RequestToken: 4a4bb1d6-b051-032f-dd12-5951d7b4d2a9, HandlerErrorCode: AccessDenied)
+     </pre>
+   * Solution:
+
+     The role assumed by cdk is not a data lake administrator. (e.g., `cdk-hnb659fds-deploy-role-12345678912-us-east-1`) <br/>
+     So, deploying PrincipalPermissions meets the error such as:
+
+     `Resource does not exist or requester is not authorized to access requested permissions.`
+
+     In order to solve the error, it is necessary to promote the cdk execution role to the data lake administrator.<br/>
+     For example, https://github.com/aws-samples/data-lake-as-code/blob/mainline/lib/stacks/datalake-stack.ts#L68
+
+   * Reference:
+
+     [https://github.com/aws-samples/data-lake-as-code](https://github.com/aws-samples/data-lake-as-code) - Data Lake as Code
+
