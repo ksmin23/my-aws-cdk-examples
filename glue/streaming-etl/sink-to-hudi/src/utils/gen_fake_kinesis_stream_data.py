@@ -12,7 +12,6 @@ import time
 import boto3
 from mimesis.locales import Locale
 from mimesis.schema import Field, Schema
-from mimesis.providers.base import BaseProvider
 
 
 def main():
@@ -34,7 +33,7 @@ def main():
   _ = Field(locale=Locale.EN)
 
   _schema = Schema(schema=lambda: {
-    "name": _("choice", items=['Persion1', 'Persion2', 'Persion3', 'Persion4']),
+    "name": "Person{}".format(_("integer_number", start=1, end=4)),
     "date": _("formatted_date", fmt="%Y-%m-%d %H:%M:%S", start=_CURRENT_YEAR, end=_CURRENT_YEAR),
     "year": _("formatted_date", fmt="%Y", start=_CURRENT_YEAR, end=_CURRENT_YEAR),
     "month": _("formatted_date", fmt="%m", start=_CURRENT_YEAR, end=_CURRENT_YEAR),
