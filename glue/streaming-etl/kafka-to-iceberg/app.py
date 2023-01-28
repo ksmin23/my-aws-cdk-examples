@@ -9,7 +9,9 @@ from cdk_stacks import (
   KafkaClientEC2InstanceStack,
   GlueJobRoleStack,
   GlueMSKConnectionStack,
+  GlueCatalogDatabaseStack,
   GlueStreamingJobStack,
+  DataLakePermissionsStack
 )
 
 
@@ -36,9 +38,6 @@ kafka_client_ec2_stack = KafkaClientEC2InstanceStack(app, 'KafkaClientEC2Instanc
 )
 kafka_client_ec2_stack.add_dependency(msk_stack)
 
-glue_job_role = GlueJobRoleStack(app, 'GlueStreamingMSKtoIcebergJobRole')
-glue_job_role.add_dependency(msk_stack)
-
 glue_msk_connection = GlueMSKConnectionStack(app, 'GlueMSKConnection',
   vpc_stack.vpc,
   msk_stack.sg_msk_client,
@@ -46,10 +45,21 @@ glue_msk_connection = GlueMSKConnectionStack(app, 'GlueMSKConnection',
 )
 glue_msk_connection.add_dependency(msk_stack)
 
+glue_job_role = GlueJobRoleStack(app, 'GlueStreamingMSKtoIcebergJobRole')
+glue_job_role.add_dependency(msk_stack)
+
+glue_database = GlueCatalogDatabaseStack(app, 'GlueIcebergeDatabase')
+
+grant_lake_formation_permissions = DataLakePermissionsStack(app, 'GrantLFPermissionsOnGlueJobRole',
+  glue_job_role.glue_job_role
+)
+grant_lake_formation_permissions.add_dependency(glue_database)
+grant_lake_formation_permissions.add_dependency(glue_job_role)
+
 glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingJobMSKtoIceberg',
   glue_job_role.glue_job_role,
   glue_msk_connection.msk_connection_info
 )
-glue_streaming_job.add_dependency(glue_msk_connection)
+glue_streaming_job.add_dependency(grant_lake_formation_permissions)
 
 app.synth()

@@ -113,7 +113,11 @@ command.
    <pre>
    (.venv) $ cdk deploy KafkaClientEC2Instance
    </pre>
-6. Upload **AWS SDK for Java 2.x** jar file into S3
+6. Create a Glue Database for an Apache Iceberg table
+   <pre>
+   (.venv) $ cdk deploy GlueIcebergeDatabase
+   </pre>
+7. Upload **AWS SDK for Java 2.x** jar file into S3
    <pre>
    (.venv) $ wget https://repo1.maven.org/maven2/software/amazon/awssdk/aws-sdk-java/2.17.224/aws-sdk-java-2.17.224.jar
    (.venv) $ aws s3 cp aws-sdk-java-2.17.224.jar s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar
@@ -129,7 +133,7 @@ command.
    --user-jars-first true
    </pre>
    In order to do this, we might need to upload **AWS SDK for Java 2.x** jar file into S3.
-7. Create a Glue Streaming Job
+8. Create a Glue Streaming Job
 
    * (step 1) Select one of Glue Job Scripts and upload into S3
 
@@ -152,10 +156,11 @@ command.
    * (step 2) Provision the Glue Streaming Job
 
      </pre>
-     (.venv) $ cdk deploy GlueStreamingJobMSKtoIceberg
+     (.venv) $ cdk deploy GrantLFPermissionsOnGlueJobRole \
+                          GlueStreamingJobMSKtoIceberg
      </pre>
 
-8. Create a table with partitioned data in Amazon Athena
+9.  Create a table with partitioned data in Amazon Athena
 
    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
    * (step 1) Create a database
@@ -194,13 +199,13 @@ command.
               --resource '{ "Table": {"DatabaseName": "iceberg_demo_db", "TableWildcard": {}} }'
       </pre>
 
-9. Make sure the glue job to access the Iceberg table in the Glue Catalog database
+10. Make sure the glue job to access the Iceberg table in the Glue Catalog database
 
-   Wec can get permissions by running the following command:
+   We can get permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-MSK2Iceberg"))'
    </pre>
-   Also, we can grant the glue job to required permissions by running the following command:
+   If not found, we need manually to grant the glue job to required permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-MSK2Iceberg</i> \
@@ -208,12 +213,12 @@ command.
                --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
    </pre>
 
-10. Run glue job to load data from MSK into S3
+11. Run glue job to load data from MSK into S3
     <pre>
     (.venv) $ aws glue start-job-run --job-name <i>streaming_data_from_kafka_into_iceberg_table</i>
     </pre>
 
-11. Generate streaming data
+12. Generate streaming data
 
     1. Connect the MSK client EC2 Host.
 
@@ -303,7 +308,7 @@ command.
     {"name": "Takisha", "age": 24, "m_time": "2023-12-30 12:38:23"}
     </pre>
 
-12. Check streaming data in S3
+13. Check streaming data in S3
 
     After 3~5 minutes, you can see that the streaming data have been delivered from **MSK** to **S3** and stored in a folder structure by year, month, day, and hour.
 
@@ -312,7 +317,7 @@ command.
     ![iceberg-table](./assets/iceberg-data-level-02.png)
     ![iceberg-table](./assets/iceberg-data-level-03.png)
 
-13. Run test query
+14. Run test query
 
     Enter the following SQL statement and execute the query.
     <pre>
@@ -366,4 +371,24 @@ command.
  * (13) [Apache Iceberg - Maintenance for streaming tables (v0.14.0)](https://iceberg.apache.org/docs/0.14.0/spark-structured-streaming/#maintenance-for-streaming-tables)
  * (14) [awsglue python package](https://github.com/awslabs/aws-glue-libs): The awsglue Python package contains the Python portion of the AWS Glue library. This library extends PySpark to support serverless ETL on AWS.
 
-Enjoy!
+## Troubleshooting
+
+ * Granting database or table permissions error using AWS CDK
+   * Error message:
+     <pre>
+     AWS::LakeFormation::PrincipalPermissions | CfnPrincipalPermissions Resource handler returned message: "Resource does not exist or requester is not authorized to access requested permissions. (Service: LakeFormation, Status Code: 400, Request ID: f4d5e58b-29b6-4889-9666-7e38420c9035)" (RequestToken: 4a4bb1d6-b051-032f-dd12-5951d7b4d2a9, HandlerErrorCode: AccessDenied)
+     </pre>
+   * Solution:
+
+     The role assumed by cdk is not a data lake administrator. (e.g., `cdk-hnb659fds-deploy-role-12345678912-us-east-1`) <br/>
+     So, deploying PrincipalPermissions meets the error such as:
+
+     `Resource does not exist or requester is not authorized to access requested permissions.`
+
+     In order to solve the error, it is necessary to promote the cdk execution role to the data lake administrator.<br/>
+     For example, https://github.com/aws-samples/data-lake-as-code/blob/mainline/lib/stacks/datalake-stack.ts#L68
+
+   * Reference:
+
+     [https://github.com/aws-samples/data-lake-as-code](https://github.com/aws-samples/data-lake-as-code) - Data Lake as Code
+
