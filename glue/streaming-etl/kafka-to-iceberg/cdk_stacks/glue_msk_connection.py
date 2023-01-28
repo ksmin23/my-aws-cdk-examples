@@ -36,7 +36,7 @@ class GlueMSKConnectionStack(Stack):
     else:
       msk_cluster_arn = msk_cluster_info_list[0]['ClusterArn']
       msk_brokers = msk_client.get_bootstrap_brokers(ClusterArn=msk_cluster_arn)
-      kafka_bootstrap_servers = msk_brokers['BootstrapBrokerStringSaslIam']
+      kafka_bootstrap_servers = msk_brokers['BootstrapBrokerString']
       assert kafka_bootstrap_servers
 
     connection_properties = {
