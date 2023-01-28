@@ -154,9 +154,10 @@ command.
                           GlueStreamingJobMSKServerlessToIceberg
      </pre>
 
-9.  Create a table with partitioned data in Amazon Athena
+9. Create a table with partitioned data in Amazon Athena
 
-   Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
+   Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.
+
    * (step 1) Create a database
 
      In order to create a new database called `iceberg_demo_db`, enter the following statement in the Athena query editor
@@ -166,7 +167,7 @@ command.
      CREATE DATABASE IF NOT EXISTS iceberg_demo_db
      </pre>
 
-    * (step 2) Create a table
+   * (step 2) Create a table
 
       Copy the following query into the Athena query editor, replace the `xxxxxxx` in the last line under `LOCATION` with the string of your S3 bucket, and execute the query to create a new table.
       <pre>
