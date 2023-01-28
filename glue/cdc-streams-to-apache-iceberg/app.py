@@ -21,8 +21,7 @@ glue_job_role = GlueJobRoleStack(app, 'GlueStreamingCDCtoIcebergJobRole')
 glue_job_role.add_dependency(kds_stack)
 
 glue_stream_schema = GlueStreamDataSchemaStack(app, 'GlueTableSchemaOnKinesisStream',
-  kds_stack.kinesis_stream,
-  glue_job_role.glue_job_role
+  kds_stack.kinesis_stream
 )
 glue_stream_schema.add_dependency(glue_job_role)
 

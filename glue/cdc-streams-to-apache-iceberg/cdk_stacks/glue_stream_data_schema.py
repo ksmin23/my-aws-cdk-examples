@@ -9,7 +9,7 @@ from constructs import Construct
 
 class GlueStreamDataSchemaStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, kinesis_stream, glue_job_role, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, kinesis_stream, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     glue_kinesis_table = self.node.try_get_context('glue_kinesis_table')
