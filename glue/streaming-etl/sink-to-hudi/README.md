@@ -204,10 +204,18 @@ command.
 
 10. Load partitioned data into Amazon Athena table
 
-    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
-    * (step 1) Load the partition data
+    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.
 
-      We can use the `ALTER TABLE ADD PARTITION` command to add each partition manually.
+    * (step 1) Check partitions
+
+      Run the following query to list all the partitions in an Athena table in unsorted order.
+      <pre>
+      SHOW PARTITIONS hudi_demo_db.hudi_demo_table_cow;
+      </pre>
+
+    * (step 2) Load the partition data
+
+      If no partitions are found, we can use the `ALTER TABLE ADD PARTITION` command to add each partition manually.
       For example, to load the data in `s3://hudi-demo-bucket-xxxxxx/hudi_stuff/hudi_demo_table_cow/name=Person1/year=2023/month=01/day=10`, you can run the following query.
       <pre>
       ALTER TABLE hudi_demo_db.hudi_demo_table_cow ADD IF NOT EXISTS
@@ -219,13 +227,6 @@ command.
       LOCATION 's3://hudi-demo-bucket-<i>xxxxxx</i>/hudi_stuff/hudi_demo_table_cow/name=Person1/year=2023/month=01/day=10';
       </pre>
       After you run this command, the data is ready for querying.
-
-    * (Optional) (step 2) Check partitions
-
-      Run the following query to list all the partitions in an Athena table in unsorted order.
-      <pre>
-      SHOW PARTITIONS hudi_demo_db.hudi_demo_table_cow;
-      </pre>
 
 11. Run test query
 
