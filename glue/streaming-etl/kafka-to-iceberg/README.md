@@ -201,17 +201,17 @@ command.
 
 10. Make sure the glue job to access the Iceberg table in the Glue Catalog database
 
-   We can get permissions by running the following command:
-   <pre>
-   (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-MSK2Iceberg"))'
-   </pre>
-   If not found, we need manually to grant the glue job to required permissions by running the following command:
-   <pre>
-   (.venv) $ aws lakeformation grant-permissions \
-               --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-MSK2Iceberg</i> \
-               --permissions SELECT DESCRIBE ALTER INSERT DELETE \
-               --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
-   </pre>
+    We can get permissions by running the following command:
+    <pre>
+    (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-MSK2Iceberg"))'
+    </pre>
+    If not found, we need manually to grant the glue job to required permissions by running the following command:
+    <pre>
+    (.venv) $ aws lakeformation grant-permissions \
+                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-MSK2Iceberg</i> \
+                --permissions SELECT DESCRIBE ALTER INSERT DELETE \
+                --resource '{ "Table": {"DatabaseName": "<i>iceberg_demo_db</i>", "TableWildcard": {}} }'
+    </pre>
 
 11. Run glue job to load data from MSK into S3
     <pre>
