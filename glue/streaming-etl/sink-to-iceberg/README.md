@@ -114,7 +114,7 @@ command.
    </pre>
 3. Define a schema for the streaming data
    <pre>
-   (.venv) $ cdk deploy GlueStreamingSinkToIcebergJobRole GlueSchemaOnKinesisStream
+   (.venv) $ cdk deploy GlueSchemaOnKinesisStream
    </pre>
 
    Running `cdk deploy GlueSchemaOnKinesisStream` command is like that we create a schema manually using the AWS Glue Data Catalog as the following steps:
@@ -176,7 +176,7 @@ command.
    * (step 2) Provision the Glue Streaming Job
 
      </pre>
-     (.venv) $ cdk deploy GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToIceberg
+     (.venv) $ cdk deploy GlueStreamingSinkToIcebergJobRole GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToIceberg
      </pre>
 6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
