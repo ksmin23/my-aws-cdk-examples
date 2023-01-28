@@ -91,7 +91,7 @@ command.
    </pre>
 3. Define a schema for the streaming data
    <pre>
-   (.venv) $ cdk deploy GlueStreamingSinkToHudiJobRole GlueSchemaOnKinesisStream
+   (.venv) $ cdk deploy GlueSchemaOnKinesisStream
    </pre>
 
    Running `cdk deploy GlueSchemaOnKinesisStream` command is like that we create a schema manually using the AWS Glue Data Catalog as the following steps:
@@ -113,7 +113,7 @@ command.
     glue_hudi_streaming_from_kds_to_s3.py
    (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
    (.venv) $ aws s3 cp src/main/python/glue_hudi_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
-   (.venv) $ cdk deploy GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToHudi
+   (.venv) $ cdk deploy GlueStreamingSinkToHudiJobRole GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToHudi
    </pre>
 5. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
