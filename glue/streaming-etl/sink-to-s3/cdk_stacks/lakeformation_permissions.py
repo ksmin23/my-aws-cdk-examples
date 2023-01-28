@@ -11,8 +11,8 @@ class DataLakePermissionsStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, glue_job_role, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    glue_job_input_arguments = self.node.try_get_context('glue_job_input_arguments')
-    database_name = glue_job_input_arguments["--glue_database"]
+    glue_job_input_arguments = self.node.try_get_context('glue_kinesis_table')
+    database_name = glue_job_input_arguments["database_name"]
 
     #XXXX: The role assumed by cdk is not a data lake administrator.
     # So, deploying PrincipalPermissions meets the error such as:

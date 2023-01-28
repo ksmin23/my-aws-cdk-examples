@@ -151,7 +151,7 @@ command.
     glue_streaming_from_kds_to_s3.py
    (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
    (.venv) $ aws cp src/main/python/glue_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
-   (.venv) $ cdk deploy GlueSchemaOnKinesisStream GlueStreamingSinkToS3
+   (.venv) $ cdk deploy GlueSchemaOnKinesisStream GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToS3
    </pre>
 4. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
@@ -259,6 +259,25 @@ command.
    <pre>
    SELECT COUNT(*)
    FROM ventilatordb.ventilators_parquet;
+   </pre>
+
+## Clean Up
+
+1. Stop the glue job by replacing the job name in below command.
+
+   <pre>
+   (.venv) $ JOB_RUN_IDS=$(aws glue get-job-runs \
+              --job-name glue-streaming-from-kds-to-s3 | jq -r '.JobRuns[] | select(.JobRunState=="RUNNING") | .Id' \
+              | xargs)
+   (.venv) $ aws glue batch-stop-job-run \
+              --job-name glue-streaming-from-kds-to-s3 \
+              --job-run-ids $JOB_RUN_IDS
+   </pre>
+
+2. Delete the CloudFormation stack by running the below command.
+
+   <pre>
+   (.venv) $ cdk destroy --all
    </pre>
 
 ## Useful commands
