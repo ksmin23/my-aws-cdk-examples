@@ -117,7 +117,7 @@ command.
    </pre>
 5. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
-   Wec can get permissions by running the following command:
+   We can get permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole"))'
    </pre>
