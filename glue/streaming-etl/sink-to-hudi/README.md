@@ -271,6 +271,7 @@ command.
  * (4) [Using Amazon Athena to query Apache Hudi datasets](https://docs.aws.amazon.com/athena/latest/ug/querying-hudi.html)
  * (5) [Streaming ETL jobs in AWS Glue](https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html)
  * (6) [Crafting serverless streaming ETL jobs with AWS Glue (2020-10-14)](https://aws.amazon.com/ko/blogs/big-data/crafting-serverless-streaming-etl-jobs-with-aws-glue/)
+ * (7) [Apache Hudi Quick start - Spark Guide](https://hudi.apache.org/docs/quick-start-guide/)
 
 ## Troubleshooting
 
