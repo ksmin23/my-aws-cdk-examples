@@ -41,6 +41,9 @@ Once the virtualenv is activated, you can install the required dependencies.
 To use more than 2 AZs, be sure to specify the account and region on your stack.
 
 ```
+(.venv) $ aws configure set region us-east-2
+(.venv) $ aws configure cdk_user get region
+us-east-2
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 ```
