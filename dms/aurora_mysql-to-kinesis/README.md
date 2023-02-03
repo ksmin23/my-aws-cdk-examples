@@ -105,7 +105,7 @@ Enjoy!
    </pre>
 4. At SQL prompt run the below command to confirm that binary logging is enabled:
    <pre>
-   mysql> show global variables like "log_bin";
+   mysql> SHOW GLOBAL VARIABLES LIKE "log_bin";
    +---------------+-------+
    | Variable_name | Value |
    +---------------+-------+
@@ -114,19 +114,39 @@ Enjoy!
    </pre>
 5. Also run this to AWS DMS has bin log access that is required for replication
    <pre>
-   mysql> call mysql.rds_set_configuration('binlog retention hours', 24);
+   mysql> CALL mysql.rds_set_configuration('binlog retention hours', 24);
    </pre>
 6. Run the below command to create the sample database named `testdb`.
    <pre>
-   mysql> create database testdb;
+   mysql> CREATE DATABASE testdb;
    </pre>
 7. Exit from the SQL prompt and open the command-line terminal.
-8. At the command-line prompt run the below command to create the sample table named in `testdb` database.
+8. At the command-line prompt run the below command to create the sample table named `retail_trans` in `testdb` database.
+   <pre>
+   (.venv) $ python tests/gen_fake_mysql_data.py \
+                    --database <i>testdb</i> \
+                    --table <i>retail_trans</i> \
+                    --user <i>user-name</i> \
+                    --password <i>password</i> \
+                    --host <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com \
+                    --create-table
+
+            CREATE TABLE IF NOT EXISTS testdb.retail_trans (
+               trans_id BIGINT(20) AUTO_INCREMENT PRIMARY KEY,
+               customer_id VARCHAR(12) NOT NULL,
+               event VARCHAR(10) DEFAULT NULL,
+               sku VARCHAR(10) NOT NULL,
+               amount INT DEFAULT 0,
+               device VARCHAR(10) DEFAULT NULL,
+               trans_datetime DATETIME DEFAULT CURRENT_TIMESTAMP,
+               KEY(trans_datetime)
+            ) ENGINE=InnoDB AUTO_INCREMENT=0;
+   </pre>
 9. Generate test data.
    <pre>
    (.venv) $ python tests/gen_fake_mysql_data.py \
-                    --database <i>your-database-name</i> \
-                    --table <i>your-table-name</i> \
+                    --database <i>testdb</i> \
+                    --table <i>retail_tans</i> \
                     --user <i>user-name</i> \
                     --password <i>password</i> \
                     --host <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com \
