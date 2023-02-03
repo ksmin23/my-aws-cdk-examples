@@ -43,13 +43,13 @@ At this point you can now synthesize the CloudFormation template for this code.
 ```
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk -c vpc_name='<your-existing-vpc-name>' synth
+$ cdk synth
 ```
 
 Use `cdk deploy` command to create the stack shown above,
 
 ```
-$ cdk -c vpc_name='<your-existing-vpc-name>' deploy
+$ cdk deploy
 ```
 
 then load and run the [Jupyter notebook](https://github.com/aws-samples/documentdb-sagemaker-example/blob/main/script.ipynb) in your Sagemaker instance.

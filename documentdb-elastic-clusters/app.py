@@ -96,13 +96,15 @@ vpc_stack = VpcStack(app, 'DocDBElasticVpc',
   env=AWS_ENV)
 
 docdb_elastic_cluster_stack = DocumentDbElasticClustersStack(app, 'DocDBElasticStack',
-  vpc_stack.vpc
+  vpc_stack.vpc,
+  env=AWS_ENV
 )
 docdb_elastic_cluster_stack.add_dependency(vpc_stack)
 
 docdb_client_ec2_stack = DocDBClientEC2InstanceStack(app, 'DocDBClientEC2Instance',
   vpc_stack.vpc,
-  docdb_elastic_cluster_stack.sg_docdb_client
+  docdb_elastic_cluster_stack.sg_docdb_client,
+  env=AWS_ENV
 )
 docdb_client_ec2_stack.add_dependency(docdb_elastic_cluster_stack)
 
