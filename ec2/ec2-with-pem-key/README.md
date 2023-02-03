@@ -57,15 +57,13 @@ To import an existing VPC, you should specify the following environment variable
 If you pass context variable such as `vcp_name=<your vpc name>` (e.g. `vpc_name='[X]default'`), you can use the existing VPC.
 
 <pre>
-(.venv) $ cdk synth -c vpc_name="<i>your-vpc-name</i>" \
-                    --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk synth --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy -c vpc_name="<i>your-vpc-name</i>" \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk deploy --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add

@@ -40,13 +40,13 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk synth -c vpc_name="<i>your-vpc-name</i>"
+(.venv) $ cdk synth
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy -c vpc_name="<i>your-vpc-name</i>"
+(.venv) $ cdk deploy
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add

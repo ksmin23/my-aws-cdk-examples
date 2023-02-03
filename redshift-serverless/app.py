@@ -24,21 +24,21 @@ class RedshiftServerlessStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    vpc_name = self.node.try_get_context("vpc_name") or "default"
-    vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
-      is_default=True,
-      vpc_name=vpc_name)
+    # vpc_name = self.node.try_get_context("vpc_name") or "default"
+    # vpc = aws_ec2.Vpc.from_lookup(self, "RedshiftServerlessVPC",
+    #   is_default=True,
+    #   vpc_name=vpc_name)
 
     #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    # vpc = aws_ec2.Vpc(self, "RedshiftServerlessVPC",
-    #   max_azs=2,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
-    # )
+    vpc = aws_ec2.Vpc(self, "RedshiftServerlessVPC",
+      max_azs=2,
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     secret_name = self.node.try_get_context('aws_secret_name')
     rs_admin_user_secret = aws_secretsmanager.Secret.from_secret_name_v2(self,

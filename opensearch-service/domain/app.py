@@ -54,6 +54,7 @@ class OpensearchStack(Stack):
     #   vpc_name=vpc_name
     # )
 
+    # Default: The VPC CIDR will be evenly divided between 1 public and 1 private subnet per AZ.
     vpc = aws_ec2.Vpc(self, "OpenSearchVPC",
       max_azs=3,
       gateway_endpoints={
