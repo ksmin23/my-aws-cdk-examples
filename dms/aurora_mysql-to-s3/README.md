@@ -45,7 +45,6 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 (.venv) $ cdk synth \
-              -c vpc_name=default \
               -c aws_secret_name='<i>secret-full-name</i>' \
               -c mysql_client_security_group_name='<i>mysql-client-security-group-name</i>' \
               --parameters SourceDatabaseName='<i>database-name</i>' \
@@ -58,7 +57,6 @@ Use `cdk deploy` command to create the stack shown above.
 
 <pre>
 (.venv) $ cdk deploy \
-              -c vpc_name=default \
               -c aws_secret_name='<i>secret-full-name</i>' \
               -c mysql_client_security_group_name='<i>mysql-client-security-group-name</i>' \
               --parameters SourceDatabaseName='<i>database-name</i>' \
