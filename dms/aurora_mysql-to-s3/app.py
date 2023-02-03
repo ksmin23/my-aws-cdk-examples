@@ -46,20 +46,37 @@ class AuroraMysqlToS3Stack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    vpc_name = self.node.try_get_context('vpc_name')
-    vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-      is_default=True,
-      vpc_name=vpc_name
-    )
-
-    # vpc = aws_ec2.Vpc(self, 'DMSAuroraMysqlToS3VPC',
-    #   max_azs=3,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
+    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'DMSAuroraMysqlToS3VPC',
+    #   is_default=True,
+    #   vpc_name=vpc_name
     # )
+
+    vpc = aws_ec2.Vpc(self, 'DMSAuroraMysqlToS3VPC',
+      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/21"),
+      max_azs=3,
+
+      # 'subnetConfiguration' specifies the "subnet groups" to create.
+      # Every subnet group will have a subnet for each AZ, so this
+      # configuration will create `2 groups × 3 AZs = 6` subnets.
+      subnet_configuration=[
+        {
+          "cidrMask": 24,
+          "name": "Public",
+          "subnetType": aws_ec2.SubnetType.PUBLIC,
+        },
+        {
+          "cidrMask": 24,
+          "name": "Private",
+          "subnetType": aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
+        }
+      ],
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     db_client_sg_name = self.node.try_get_context('mysql_client_security_group_name')
     db_client_sg = aws_ec2.SecurityGroup.from_lookup_by_name(self, 'MySQLClientSG', db_client_sg_name, vpc)
