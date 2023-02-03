@@ -16,9 +16,38 @@ class DynamodbStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    # The code that defines your stack goes here
+    #XXX: For creating this CDK Stack in the existing VPC,
+    # remove comments from the below codes and
+    # comments out vpc = aws_ec2.Vpc(..) codes,
+    # then pass -c vpc_name=your-existing-vpc to cdk command
+    # for example,
+    # cdk -c vpc_name=your-existing-vpc syth
+    #
+    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'DynamodbVPC',
+    #   is_default=True,
+    #   vpc_name=vpc_name
+    # )
+
     vpc = aws_ec2.Vpc(self, "DynamodbVPC",
-      max_azs=2,
+      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/21"),
+      max_azs=3,
+
+      # 'subnetConfiguration' specifies the "subnet groups" to create.
+      # Every subnet group will have a subnet for each AZ, so this
+      # configuration will create `2 groups × 3 AZs = 6` subnets.
+      subnet_configuration=[
+        {
+          "cidrMask": 24,
+          "name": "Public",
+          "subnetType": aws_ec2.SubnetType.PUBLIC,
+        },
+        {
+          "cidrMask": 24,
+          "name": "Private",
+          "subnetType": aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
+        }
+      ],
       gateway_endpoints={
         "DynamoDB": aws_ec2.GatewayVpcEndpointOptions(
           service=aws_ec2.GatewayVpcEndpointAwsService.DYNAMODB
