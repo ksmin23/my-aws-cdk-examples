@@ -30,29 +30,6 @@ class KdsProxyWithCognitoStack(Stack):
       default='PUT-Firehose-{}'.format(''.join(random.sample((string.ascii_letters), k=5)))
     )
 
-    #XXX: For creating this CDK Stack in the existing VPC,
-    # remove comments from the below codes and
-    # comments out vpc = aws_ec2.Vpc(..) codes,
-    # then pass -c vpc_name=your-existing-vpc to cdk command
-    # for example,
-    # cdk -c vpc_name=your-existing-vpc syth
-    #
-    # vpc_name = self.node.try_get_context("vpc_name")
-    # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
-    #   is_default=True,
-    #   vpc_name=vpc_name)
-    #
-    #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
-    #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    # vpc = aws_ec2.Vpc(self, "KdsProxyWithCognitoVPC",
-    #   max_azs=2,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
-    # )
-
     source_kinesis_stream = aws_kinesis.Stream(self, "SourceKinesisStreams",
       retention_period=Duration.hours(24),
       stream_mode=aws_kinesis.StreamMode.ON_DEMAND, 
