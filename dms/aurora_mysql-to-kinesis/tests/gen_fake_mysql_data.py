@@ -59,7 +59,7 @@ def main():
 
   db_url = DB_URL_FMT.format(user=options.user, password=options.password, host=options.host)
   if not options.dry_run:
-    db = dataset.connect(db_url)
+    db = dataset.connect(db_url, autocommit=True)
     
   if options.create_table:
     sql_stmt = CREATE_TABLE_SQL_FMT.format(database=options.database, table=options.table)
