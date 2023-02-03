@@ -28,20 +28,37 @@ class Cloud9Stack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    vpc_name = self.node.try_get_context('vpc_name')
-    vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-      is_default=True,
-      vpc_name=vpc_name
-    )
-
-    # vpc = aws_ec2.Vpc(self, "Cloud9VPC",
-    #   max_azs=3,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
+    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'Cloud9VPC',
+    #   is_default=True,
+    #   vpc_name=vpc_name
     # )
+
+    vpc = aws_ec2.Vpc(self, "Cloud9VPC",
+      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/21"),
+      max_azs=3,
+
+      # 'subnetConfiguration' specifies the "subnet groups" to create.
+      # Every subnet group will have a subnet for each AZ, so this
+      # configuration will create `2 groups × 3 AZs = 6` subnets.
+      subnet_configuration=[
+        {
+          "cidrMask": 24,
+          "name": "Public",
+          "subnetType": aws_ec2.SubnetType.PUBLIC,
+        },
+        {
+          "cidrMask": 24,
+          "name": "Private",
+          "subnetType": aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
+        }
+      ],
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     #XXX: AWS Cloud9 CloudFormation Guide
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloud9-environmentec2.html
