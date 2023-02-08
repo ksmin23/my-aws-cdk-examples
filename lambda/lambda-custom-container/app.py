@@ -31,20 +31,20 @@ class LambdaCustomContainerStack(Stack):
     # check https://github.com/aws/aws-cdk/issues/12078
     # This error occurs when ZoneAwarenessEnabled in aws_opensearch.Domain(..) is set `true`
     # 
-    vpc_name = self.node.try_get_context('vpc_name')
-    vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-      is_default=True,
-      vpc_name=vpc_name
-    )
-
-    # vpc = aws_ec2.Vpc(self, "LambdaCustomContainerVPC",
-    #   max_azs=3,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
+    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
+    #   is_default=True,
+    #   vpc_name=vpc_name
     # )
+
+    vpc = aws_ec2.Vpc(self, "LambdaCustomContainerVPC",
+      max_azs=3,
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     ecr_repo_name = self.node.try_get_context('ecr_repo_name')
     custom_container_ecr_repo = aws_ecr.Repository.from_repository_name(self,

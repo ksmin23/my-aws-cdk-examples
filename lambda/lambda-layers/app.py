@@ -24,20 +24,20 @@ class LambdaLayersStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    vpc_name = self.node.try_get_context('vpc_name')
-    vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-      is_default=True,
-      vpc_name=vpc_name
-    )
-
-    # vpc = aws_ec2.Vpc(self, 'LambdaLayersVPC',
-    #   max_azs=3,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
+    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
+    #   is_default=True,
+    #   vpc_name=vpc_name
     # )
+
+    vpc = aws_ec2.Vpc(self, 'LambdaLayersVPC',
+      max_azs=3,
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     S3_BUCKET_LAMBDA_LAYER_LIB = self.node.try_get_context('s3_bucket_lambda_layer_lib')
     s3_lib_bucket = s3.Bucket.from_bucket_name(self, "LambdaLayerS3Bucket", S3_BUCKET_LAMBDA_LAYER_LIB)
