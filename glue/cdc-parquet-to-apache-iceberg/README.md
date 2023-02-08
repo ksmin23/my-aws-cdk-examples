@@ -1,5 +1,5 @@
 
-# AWS Glue Job CDK Python project!
+# AWS Glue Job to ingest Change Data Capture(CDC) to Apache Iceberg table in Amazon S3
 
 ![glue-job-cdc-parquet-to-iceberg-arch](./glue-job-cdc-parquet-to-iceberg-arch.svg)
 
