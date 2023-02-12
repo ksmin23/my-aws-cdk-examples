@@ -41,7 +41,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 (.venv) $ pip install -r requirements.txt
 ```
 
-In case of `AWS Glue 3.0`, before synthesizing the CloudFormation, **you first set up Apache Iceberg connector for AWS Glue to use Apache Iceber with AWS Glue jobs.** (For more information, see [References](#references) (2))
+In case of `AWS Glue 3.0`, before synthesizing the CloudFormation, **you first set up Apache Iceberg connector for AWS Glue to use Apache Iceberg with AWS Glue jobs.** (For more information, see [References](#references) (2))
 
 Then you should set approperly the cdk context configuration file, `cdk.context.json`.
 
