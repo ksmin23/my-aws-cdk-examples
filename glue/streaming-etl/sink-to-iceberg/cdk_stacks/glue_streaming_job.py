@@ -9,7 +9,7 @@ from constructs import Construct
 
 class GlueStreamingJobStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, glue_job_role, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, glue_job_role, kinesis_stream, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     glue_assets_s3_bucket_name = self.node.try_get_context('glue_assets_s3_bucket_name')
@@ -17,6 +17,7 @@ class GlueStreamingJobStack(Stack):
     glue_job_input_arguments = self.node.try_get_context('glue_job_input_arguments')
 
     glue_job_default_arguments = {
+      "--kinesis_stream_arn": kinesis_stream.stream_arn,
       "--enable-metrics": "true",
       "--enable-spark-ui": "true",
       "--spark-event-logs-path": f"s3://{glue_assets_s3_bucket_name}/sparkHistoryLogs/",
