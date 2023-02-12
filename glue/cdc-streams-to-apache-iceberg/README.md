@@ -94,11 +94,15 @@ command.
 ## Run Test
 
 1. Set up **Apache Iceberg connector for AWS Glue** to use Apache Iceberg with AWS Glue jobs.
-2. Create a Kinesis data stream
+2. Create a S3 bucket for Apache Iceberg table
    <pre>
    (.venv) $ cdk deploy KinesisStreamAsGlueStreamingJobCDCDataSource
    </pre>
-3. Define a schema for the streaming data
+3. Create a Kinesis data stream
+   <pre>
+   (.venv) $ cdk deploy KinesisStreamAsGlueStreamingJobCDCDataSource
+   </pre>
+4. Define a schema for the streaming data
    <pre>
    (.venv) $ cdk deploy GlueTableSchemaOnKinesisStream
    </pre>
@@ -116,7 +120,7 @@ command.
    (9) For the classification, choose **JSON**.<br/>
    (10) Choose **Finish**
 
-4. Upload **AWS SDK for Java 2.x** jar file into S3
+5. Upload **AWS SDK for Java 2.x** jar file into S3
    <pre>
    (.venv) $ wget https://repo1.maven.org/maven2/software/amazon/awssdk/aws-sdk-java/2.17.224/aws-sdk-java-2.17.224.jar
    (.venv) $ aws s3 cp aws-sdk-java-2.17.224.jar s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar
@@ -132,7 +136,7 @@ command.
    --user-jars-first true
    </pre>
    In order to do this, we might need to upload **AWS SDK for Java 2.x** jar file into S3.
-5. Create Glue Streaming Job
+6. Create Glue Streaming Job
 
    * (step 1) Select one of Glue Job Scripts and upload into S3
      <pre>
@@ -149,9 +153,9 @@ command.
                           GrantLFPermissionsOnGlueJobRole \
                           GlueStreamingCDCtoIceberg
      </pre>
-6. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
+7. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
-   Wec can get permissions by running the following command:
+   We can get permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole-Iceberg"))'
    </pre>
@@ -162,7 +166,7 @@ command.
                --permissions SELECT DESCRIBE ALTER INSERT DELETE \
                --resource '{ "Table": {"DatabaseName": "<i>cdc_iceberg_demo_db</i>", "TableWildcard": {}} }'
    </pre>
-7. Create a table with partitioned data in Amazon Athena
+8. Create a table with partitioned data in Amazon Athena
 
    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
    * (step 1) Create a database
@@ -208,11 +212,11 @@ command.
                     --resource '{ "Table": {"DatabaseName": "<i>cdc_iceberg_demo_db</i>", "TableWildcard": {}} }'
       </pre>
 
-8. Run glue job to load data from Kinesis Data Streams into S3
+9. Run glue job to load data from Kinesis Data Streams into S3
     <pre>
     (.venv) $ aws glue start-job-run --job-name <i>cdc_based_upsert_to_iceberg_table</i>
     </pre>
-9.  Generate streaming data
+10. Generate streaming data
 
     We can synthetically generate change data capture(CDC) in JSON format using a simple Python application.
 
@@ -305,7 +309,7 @@ command.
       }
       </pre>
 
-10. Check streaming data in S3
+11. Check streaming data in S3
 
     After 3~5 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
 
@@ -314,7 +318,7 @@ command.
     ![iceberg-table](./assets/cdc-iceberg-data-level-02.png)
     ![iceberg-table](./assets/cdc-iceberg-data-level-03.png)
 
-11. Run test query
+12. Run test query
 
     Enter the following SQL statement and execute the query.
     <pre>
