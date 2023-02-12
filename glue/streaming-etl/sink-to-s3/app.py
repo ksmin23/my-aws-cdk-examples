@@ -8,7 +8,8 @@ from cdk_stacks import (
   GlueJobRoleStack,
   GlueStreamDataSchemaStack,
   GlueStreamingJobStack,
-  DataLakePermissionsStack
+  DataLakePermissionsStack,
+  S3BucketStack
 )
 
 APP_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
@@ -16,7 +17,10 @@ APP_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
 
 app = cdk.App()
 
+s3_bucket = S3BucketStack(app, 'GlueStreamingSinkToS3Path')
+
 kds_stack = KdsStack(app, 'KinesisStreamAsGlueStreamingJobDataSource')
+kds_stack.add_dependency(s3_bucket)
 
 glue_job_role = GlueJobRoleStack(app, 'GlueStreamingSinkToS3JobRole')
 glue_job_role.add_dependency(kds_stack)
@@ -32,7 +36,7 @@ grant_lake_formation_permissions = DataLakePermissionsStack(app, 'GrantLFPermiss
 grant_lake_formation_permissions.add_dependency(glue_job_role)
 grant_lake_formation_permissions.add_dependency(glue_stream_schema)
 
-glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToS3',
+glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToS3Job',
   glue_job_role.glue_job_role
 )
 glue_streaming_job.add_dependency(grant_lake_formation_permissions)

@@ -98,6 +98,7 @@ For example:
 </pre>
 
 :warning: **You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket.**
+
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
@@ -112,11 +113,15 @@ command.
 
 ## Run Test
 
-1. Create a Kinesis data stream
+1. Create a S3 bucket for Apache Iceberg table
+   <pre>
+   (.venv) $ cdk deploy GlueStreamingSinkToS3Path
+   </pre>
+2. Create a Kinesis data stream
    <pre>
    (.venv) $ cdk deploy KinesisStreamAsGlueStreamingJobDataSource
    </pre>
-2. Define a schema for the streaming data
+3. Define a schema for the streaming data
    <pre>
    (.venv) $ cdk deploy GlueSchemaOnKinesisStream
    </pre>
@@ -145,17 +150,17 @@ command.
 
    (11) Choose **Finish**
 
-3. Create Glue Streaming Job
+4. Create Glue Streaming Job
    <pre>
    (.venv) $ ls src/main/python/
     glue_streaming_from_kds_to_s3.py
    (.venv) $ aws mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
    (.venv) $ aws cp src/main/python/glue_streaming_from_kds_to_s3.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/</i>
-   (.venv) $ cdk deploy GlueStreamingSinkToS3JobRole GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToS3
+   (.venv) $ cdk deploy GlueStreamingSinkToS3JobRole GrantLFPermissionsOnGlueJobRole GlueStreamingSinkToS3Job
    </pre>
-4. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
+5. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
-   Wec can get permissions by running the following command:
+   We can get permissions by running the following command:
    <pre>
    (.venv) $ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | select(.Principal.DataLakePrincipalIdentifier | endswith(":role/GlueStreamingJobRole"))'
    </pre>
@@ -166,11 +171,11 @@ command.
                --permissions SELECT DESCRIBE \
                --resource '{ "Table": {"DatabaseName": "<i>ventilatordb</i>", "TableWildcard": {}} }'
    </pre>
-5. Run glue job to load data from Kinesis Data Streams into S3
+6. Run glue job to load data from Kinesis Data Streams into S3
    <pre>
    (.venv) $ aws glue start-job-run --job-name <i>glue-streaming-from-kds-to-s3</i>
    </pre>
-6. Generate streaming data
+7. Generate streaming data
 
    We can synthetically generate ventilator data in JSON format using a simple Python application.
    <pre>
@@ -179,13 +184,13 @@ command.
                --stream-name <i>your-stream-name</i> \
                --max-count 1000
    </pre>
-7. Check the access logs in S3
+8. Check the access logs in S3
 
-   After 5~10 minutes, you can see that the access logs have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+   After `5~10` minutes, you can see that the access logs have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
 
    ![glue-streaming-data-in-s3](./assets/glue-streaming-data-in-s3.png)
 
-8. Create and load a table with partitioned data in Amazon Athena
+9. Create and load a table with partitioned data in Amazon Athena
 
    Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.<br/>
    * (step 1) Create a database
@@ -263,13 +268,13 @@ command.
       SHOW PARTITIONS ventilatordb.ventilators_parquet;
       </pre>
 
-9. Run test query
+10. Run test query
 
-   Enter the following SQL statement and execute the query.
-   <pre>
-   SELECT COUNT(*)
-   FROM ventilatordb.ventilators_parquet;
-   </pre>
+    Enter the following SQL statement and execute the query.
+    <pre>
+    SELECT COUNT(*)
+    FROM ventilatordb.ventilators_parquet;
+    </pre>
 
 ## Clean Up
 
