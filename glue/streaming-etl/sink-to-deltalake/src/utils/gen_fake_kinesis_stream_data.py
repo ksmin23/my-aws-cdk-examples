@@ -69,11 +69,24 @@ def main():
 
   _ = Field(locale=Locale.EN, providers=[CustomDatetimeProvider])
 
+  manufacturers = [
+    "Mazda",
+    "Lancia",
+    "Peugeot",
+    "Maybach",
+    "Chevrolet",
+    "Mercedes-Benz",
+    "Nissan",
+    "Volkswagen",
+    "Fiat",
+    "Daihatsu"
+  ]
+
   _schema = Schema(schema=lambda: {
-    "product_id": f'{_("integer_number", start=1, end=12345):05}',
+    "product_id": f'{_("integer_number", start=1, end=20):05}',
     "product_name": _("car"),
     "price": _("integer_number", start=1000, end=12345),
-    "category": _("manufacturer"),
+    "category": _("choice", items=manufacturers),
     "updated_at": _("custom_datetime.formated_datetime", fmt="%Y-%m-%d %H:%M:%S", lt_now=True),
   })
 

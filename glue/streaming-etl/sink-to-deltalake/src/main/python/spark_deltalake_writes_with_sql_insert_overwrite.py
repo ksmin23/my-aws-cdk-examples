@@ -76,6 +76,19 @@ kds_df = glueContext.create_data_frame.from_options(
 )
 
 def processBatch(data_frame, batch_id):
+
+  CREATE_DELTA_TABLE_SQL = f'''CREATE TABLE IF NOT EXISTS {DATABASE}.{TABLE_NAME} (
+  product_id STRING,
+  product_name STRING,
+  price INT,
+  category STRING,
+  updated_at TIMESTAMP
+) USING DELTA
+LOCATION '{DELTA_S3_PATH}'
+'''
+
+  spark.sql(CREATE_DELTA_TABLE_SQL)
+
   if data_frame.count() > 0:
     stream_data_dynf = DynamicFrame.fromDF(
       data_frame, glueContext, "from_data_frame"

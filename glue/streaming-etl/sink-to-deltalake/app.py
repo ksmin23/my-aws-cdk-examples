@@ -19,12 +19,12 @@ APP_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
 
 app = cdk.App()
 
-s3_bucket = S3BucketStack(app, 'DeltalakeS3Path')
+s3_bucket = S3BucketStack(app, 'DeltaLakeS3Path')
 
 kds_stack = KdsStack(app, 'KinesisStreamAsGlueStreamingJobDataSource')
 kds_stack.add_dependency(s3_bucket)
 
-glue_job_role = GlueJobRoleStack(app, 'GlueStreamingSinkToDeltalakeJobRole')
+glue_job_role = GlueJobRoleStack(app, 'GlueStreamingSinkToDeltaLakeJobRole')
 glue_job_role.add_dependency(kds_stack)
 
 glue_stream_schema = GlueStreamDataSchemaStack(app, 'GlueSchemaOnKinesisStream',
@@ -38,13 +38,13 @@ grant_lake_formation_permissions = DataLakePermissionsStack(app, 'GrantLFPermiss
 grant_lake_formation_permissions.add_dependency(glue_job_role)
 grant_lake_formation_permissions.add_dependency(glue_stream_schema)
 
-deltalake_conn = DeltalakeConnectionStack(app, "SinkToDeltalakeConnectionStack")
+deltalake_conn = DeltalakeConnectionStack(app, "GlueDeltaLakeConnection")
 deltalake_conn.add_dependency(grant_lake_formation_permissions)
 
-glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToDeltalake',
+glue_streaming_job = GlueStreamingJobStack(app, 'GlueStreamingSinkToDeltaLake',
   glue_job_role.glue_job_role,
   kds_stack.kinesis_stream
 )
-glue_streaming_job.add_dependency(grant_lake_formation_permissions)
+glue_streaming_job.add_dependency(deltalake_conn)
 
 app.synth()
