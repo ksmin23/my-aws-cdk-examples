@@ -198,7 +198,7 @@ command.
    </pre>
 9. Check streaming data in S3
 
-   After 5~10 minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+   After `5~10` minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3**.
 
    ![glue-streaming-data-in-s3-with-hudi](./assets/glue-streaming-data-in-s3-with-hudi.png)
 

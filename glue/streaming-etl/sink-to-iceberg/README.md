@@ -291,7 +291,7 @@ command.
     </pre>
 11. Check streaming data in S3
 
-    After `3~5` minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+    After `5~10` minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3**.
 
     ![iceberg-table](./assets/iceberg-table.png)
     ![iceberg-table](./assets/iceberg-data-level-01.png)

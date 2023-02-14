@@ -97,7 +97,7 @@ For example:
 }
 </pre>
 
-:information_source: `--primary_key` option should be set by Iceberg table's primary column name.
+:information_source: `--primary_key` option should be set by Delta Lake table's primary column name.
 
 :warning: **You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket.**
 
@@ -115,8 +115,8 @@ command.
 
 ## Run Test
 
-1. Set up **Apache Iceberg connector for AWS Glue** to use Apache Iceberg with AWS Glue jobs.
-2. Create a S3 bucket for Apache Iceberg table
+1. Set up **Delta Lake connector for AWS Glue** to use Delta Lake with AWS Glue jobs.
+2. Create a S3 bucket for Delta Lake table
    <pre>
    (.venv) $ cdk deploy DeltaLakeS3Path
    </pre>
@@ -247,7 +247,7 @@ command.
     {"product_id": "00005", "product_name": "Fiat Uno", "price": 11656, "category": "Fiat", "updated_at": "2023-02-14 06:25:04"}
     </pre>
 
-    Spark Writes using `DataFrame append` insert all records into the Iceberg table.
+    Spark Writes using `DataFrame append` insert all records into the Delta Lake table.
     <pre>
     {"product_id": "00001", "product_name": "Buick LeSabre", "price": 2024, "category": "Mercedes-Benz", "updated_at": "2023-02-14 01:15:00"}
     {"product_id": "00001", "product_name": "Holden Commodore", "price": 3650, "category": "Chevrolet", "updated_at": "2023-02-14 08:22:45"}
@@ -266,7 +266,7 @@ command.
     {"product_id": "00005", "product_name": "Fiat Uno", "price": 11656, "category": "Fiat", "updated_at": "2023-02-14 06:25:04"}
     </pre>
 
-    Spark Writes using `SQL insert overwrite` or `SQL merge into` insert the last updated records into the Iceberg table.
+    Spark Writes using `SQL insert overwrite` or `SQL merge into` insert the last updated records into the Delta Lake table.
     <pre>
     {"product_id": "00001", "product_name": "Chevrolet Impala", "price": 5011, "category": "Volkswagen", "updated_at": "2023-02-14 13:10:12"}
     {"product_id": "00002", "product_name": "Bugatti Type 40", "price": 8319, "category": "Mercedes-Benz", "updated_at": "2023-02-14 09:16:01"}
@@ -276,7 +276,7 @@ command.
     </pre>
 10. Check streaming data in S3
 
-    After `3~5` minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3** and stored in a folder structure by year, month, day, and hour.
+    After `3~5` minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3**.
 
 11. Run test query with Amazon Glue Studio
 
