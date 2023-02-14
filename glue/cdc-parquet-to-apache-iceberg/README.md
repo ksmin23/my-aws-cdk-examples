@@ -216,6 +216,10 @@ Enjoy!
 ## References
 
 - (1) [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
+   | AWS Glue version	| Hudi | Delta Lake	| Iceberg |
+   |------------------|------|------------|---------|
+   | AWS Glue 3.0	| 0.10.1 | 1.0.0 | 0.13.1 |
+   | AWS Glue 4.0	| 0.12.1 | 2.1.0 | 1.0.0  |
 - (2) [Migrating AWS Glue jobs to AWS Glue version 4.0 - Appendix C: Connector upgrades](https://docs.aws.amazon.com/glue/latest/dg/migrating-version-40.html#migrating-version-40-appendix-connector)
 - (3) [Apache Iceberg Connector for AWS Glue를 이용하여 데이터레이크 CRUD 하기 \(2022-07-08\)](https://aws.amazon.com/ko/blogs/tech/transactional-datalake-using-apache-iceberg-connector-for-aws-glue/)
 - (4) [Use the AWS Glue connector to read and write Apache Iceberg tables with ACID transactions and perform time travel \(2022-06-21\)](https://aws.amazon.com/ko/blogs/big-data/use-the-aws-glue-connector-to-read-and-write-apache-iceberg-tables-with-acid-transactions-and-perform-time-travel/)

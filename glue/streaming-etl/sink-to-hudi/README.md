@@ -266,6 +266,10 @@ command.
 ## References
 
  * (1) [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
+   | AWS Glue version	| Hudi | Delta Lake	| Iceberg |
+   |------------------|------|------------|---------|
+   | AWS Glue 3.0	| 0.10.1 | 1.0.0 | 0.13.1 |
+   | AWS Glue 4.0	| 0.12.1 | 2.1.0 | 1.0.0  |
  * (2) [Build a serverless pipeline to analyze streaming data using AWS Glue, Apache Hudi, and Amazon S3 (2022-03-09)](https://aws.amazon.com/ko/blogs/big-data/build-a-serverless-pipeline-to-analyze-streaming-data-using-aws-glue-apache-hudi-and-amazon-s3/)
  * (3) [aws-samples/aws-glue-streaming-etl-with-apache-hudi](https://github.com/aws-samples/aws-glue-streaming-etl-with-apache-hudi)
  * (4) [Using Amazon Athena to query Apache Hudi datasets](https://docs.aws.amazon.com/athena/latest/ug/querying-hudi.html)

@@ -349,6 +349,10 @@ command.
 ## References
 
  * (1) [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
+   | AWS Glue version	| Hudi | Delta Lake	| Iceberg |
+   |------------------|------|------------|---------|
+   | AWS Glue 3.0	| 0.10.1 | 1.0.0 | 0.13.1 |
+   | AWS Glue 4.0	| 0.12.1 | 2.1.0 | 1.0.0  |
  * (2) [Use the AWS Glue connector to read and write Apache Iceberg tables with ACID transactions and perform time travel \(2022-06-21\)](https://aws.amazon.com/ko/blogs/big-data/use-the-aws-glue-connector-to-read-and-write-apache-iceberg-tables-with-acid-transactions-and-perform-time-travel/)
  * (3) [Spark Stream Processing with Amazon EMR using Apache Kafka streams running in Amazon MSK (2022-06-30)](https://yogender027mae.medium.com/spark-stream-processing-with-amazon-emr-using-apache-kafka-streams-running-in-amazon-msk-9776036c18d9)
    * [yogenderPalChandra/AmazonMSK-EMR-tem-data](https://github.com/yogenderPalChandra/AmazonMSK-EMR-tem-data) - This is repo for medium article "Spark Stream Processing with Amazon EMR using Kafka streams running in Amazon MSK"

@@ -356,6 +356,10 @@ command.
 ## References
 
  * (1) [AWS Glue versions](https://docs.aws.amazon.com/glue/latest/dg/release-notes.html): The AWS Glue version determines the versions of Apache Spark and Python that AWS Glue supports.
+   | AWS Glue version	| Hudi | Delta Lake	| Iceberg |
+   |------------------|------|------------|---------|
+   | AWS Glue 3.0	| 0.10.1 | 1.0.0 | 0.13.1 |
+   | AWS Glue 4.0	| 0.12.1 | 2.1.0 | 1.0.0  |
  * (2) [Use the AWS Glue connector to read and write Apache Iceberg tables with ACID transactions and perform time travel \(2022-06-21\)](https://aws.amazon.com/ko/blogs/big-data/use-the-aws-glue-connector-to-read-and-write-apache-iceberg-tables-with-acid-transactions-and-perform-time-travel/)
  * (3) [Streaming Data into Apache Iceberg Tables Using AWS Kinesis and AWS Glue (2022-09-26)](https://www.dremio.com/subsurface/streaming-data-into-apache-iceberg-tables-using-aws-kinesis-and-aws-glue/)
  * (4) [Amazon Athena Using Iceberg tables](https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg.html)
