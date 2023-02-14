@@ -287,10 +287,10 @@ command.
 
    <pre>
    (.venv) $ JOB_RUN_IDS=$(aws glue get-job-runs \
-              --job-name streaming_data_from_kds_into_iceberg_table | jq -r '.JobRuns[] | select(.JobRunState=="RUNNING") | .Id' \
+              --job-name streaming_data_from_kds_into_deltalake_table | jq -r '.JobRuns[] | select(.JobRunState=="RUNNING") | .Id' \
               | xargs)
    (.venv) $ aws glue batch-stop-job-run \
-              --job-name streaming_data_from_kds_into_iceberg_table \
+              --job-name streaming_data_from_kds_into_deltalake_table \
               --job-run-ids $JOB_RUN_IDS
    </pre>
 
