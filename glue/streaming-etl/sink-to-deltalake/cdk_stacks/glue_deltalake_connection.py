@@ -11,6 +11,8 @@ class DeltalakeConnectionStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
+    glue_deltalake_connection_name = self.node.try_get_context('glue_connections_name')
+
     connection_properties = {
       "CONNECTOR_TYPE": "Spark",
       "CONNECTOR_URL": "https://709825985650.dkr.ecr.us-east-1.amazonaws.com/amazon-web-services/glue/delta:1.0.0-glue3.0-2",
@@ -24,7 +26,7 @@ class DeltalakeConnectionStack(Stack):
 
         connection_properties=connection_properties,
         description="Delta Lake Connector 1.0.0 for AWS Glue 3.0",
-        name="deltalake-connector-1_0_0"
+        name=glue_deltalake_connection_name
       )
     )
 

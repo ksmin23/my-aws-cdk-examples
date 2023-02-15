@@ -40,7 +40,7 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 In case of `AWS Glue 3.0`, before synthesizing the CloudFormation, **you first set up Delta Lake connector for AWS Glue to use Delta Lake with AWS Glue jobs.** (For more information, see [References](#references) (2))
@@ -56,14 +56,14 @@ For example:
   "glue_job_name": "streaming_data_from_kds_into_deltalake_table",
   "glue_job_input_arguments": {
     "--catalog": "spark_catalog",
-    "--database_name": "deltalake_demo_db",
-    "--table_name": "deltalake_demo_table",
+    "--database_name": "deltalake_db",
+    "--table_name": "products",
     "--primary_key": "product_id",
     "--partition_key": "category",
     "--kinesis_database_name": "deltalake_stream_db",
-    "--kinesis_table_name": "deltalake_demo_kinesis_stream_table",
+    "--kinesis_table_name": "kinesis_stream_table",
     "--starting_position_of_kinesis_iterator": "LATEST",
-    "--delta_s3_path": "s3://glue-deltalake-demo-us-east-1/deltalake_demo_db",
+    "--delta_s3_path": "s3://glue-deltalake-demo-us-east-1/deltalake_db/products",
     "--aws_region": "us-east-1",
     "--window_size": "100 seconds",
     "--extra-jars": "s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar",
@@ -72,7 +72,7 @@ For example:
   "glue_connections_name": "deltalake-connector-1_0_0",
   "glue_kinesis_table": {
     "database_name": "deltalake_stream_db",
-    "table_name": "deltalake_demo_kinesis_stream_table",
+    "table_name": "kinesis_stream_table",
     "columns": [
       {
         "name": "product_id",
@@ -100,6 +100,8 @@ For example:
 </pre>
 
 :information_source: `--primary_key` option should be set by Delta Lake table's primary column name.
+
+:information_source: `--partition_key` option should be set by Delta Lake table's column name for partitioning.
 
 :warning: **You should create a S3 bucket for a glue job script and upload the glue job script file into the s3 bucket.**
 
@@ -140,7 +142,7 @@ command.
    (2) Choose **Databases**, and click **Add database**.<br/>
    (3) Create a database with the name `deltalake_stream_db`.<br/>
    (4) On the **Data Catalog** menu, Choose **Tables**, and click **Add Table**.<br/>
-   (5) For the table name, enter `deltalake_demo_kinesis_stream_table`.<br/>
+   (5) For the table name, enter `kinesis_stream_table`.<br/>
    (6) Select `deltalake_stream_db` as a database.<br/>
    (7) Choose **Kinesis** as the type of source.<br/>
    (8) Enter the name of the stream.<br/>
@@ -201,8 +203,6 @@ command.
      <pre>
      (.venv) $ cdk deploy GlueStreamingSinkToDeltaLakeJobRole \
                           GrantLFPermissionsOnGlueJobRole \
-                          GlueStudioNotebookRoleDeltaLake \
-                          GrantLFPermissionsOnGlueStudioRole \
                           GlueStreamingSinkToDeltaLake
      </pre>
 8. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
@@ -216,11 +216,11 @@ command.
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-DeltaLake</i> \
                --permissions CREATE_TABLE DESCRIBE ALTER DROP \
-               --resource '{ "Database": { "Name": "<i>deltalake_demo_db</i>" } }'
+               --resource '{ "Database": { "Name": "<i>deltalake_db</i>" } }'
    (.venv) $ aws lakeformation grant-permissions \
                --principal DataLakePrincipalIdentifier=arn:aws:iam::<i>{account-id}</i>:role/<i>GlueStreamingJobRole-DeltaLake</i> \
                --permissions SELECT DESCRIBE ALTER INSERT DELETE \
-               --resource '{ "Table": {"DatabaseName": "<i>deltalake_demo_db</i>", "TableWildcard": {}} }'
+               --resource '{ "Table": {"DatabaseName": "<i>deltalake_db</i>", "TableWildcard": {}} }'
    </pre>
 
 9.  Run glue job to load data from Kinesis Data Streams into S3
@@ -287,10 +287,16 @@ command.
 11. Check streaming data in S3
 
     After `3~5` minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3**.
-
+     ![delta-lake-database](./assets/delta-lake-database.png)
      ![delta-lake-table](./assets/delta-lake-table.png)
 
-12. Run test queries with Amazon Glue Studio
+12. Create IAM Role for Glue Studio Notebook and grant Lake Formation permissions
+     <pre>
+     (.venv) $ cdk deploy GlueStudioNotebookRoleDeltaLake \
+                          GrantLFPermissionsOnGlueStudioRole
+     </pre>
+
+13. Run test queries with Amazon Glue Studio
 
     :warning: **Note**
 

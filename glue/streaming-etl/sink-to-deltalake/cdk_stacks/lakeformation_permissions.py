@@ -11,8 +11,6 @@ class DataLakePermissionsStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, glue_job_role, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    print(self.stack_name)
-
     glue_kinesis_table_info = self.node.try_get_context('glue_kinesis_table')
     stream_database_name = glue_kinesis_table_info["database_name"]
 
