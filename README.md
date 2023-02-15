@@ -94,4 +94,5 @@ Enjoy!
  * [aws-samples/aws-cdk-examples](https://github.com/aws-samples/aws-cdk-examples)
  * [CDK Resources](https://cdk.dev/resources) - A collection of tools to help during the development of CDK applications.
  * [Awesome CDK](https://github.com/kalaiser/awesome-cdk) - Curated list of awesome AWS Cloud Development Kit (AWS CDK) open-source projects, guides, blogs and other resources.
+ * [AWS CloudFormation quotas](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) - Check out **AWS CloudFormation quotas** when you encounter limitation errors when authoring templates and creating stacks.
 
