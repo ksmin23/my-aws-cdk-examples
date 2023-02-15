@@ -28,7 +28,7 @@ class DataLakePermissionsStack(Stack):
       )]
     )
 
-    lf_permissions_on_database = aws_lakeformation.CfnPrincipalPermissions(self, "CfnPrincipalPermissions",
+    lf_permissions_on_database = aws_lakeformation.CfnPrincipalPermissions(self, "LfPermissionsOnDatabase",
       permissions=["CREATE_TABLE", "DROP", "ALTER", "DESCRIBE"],
       permissions_with_grant_option=[],
       principal=aws_lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty(
@@ -47,7 +47,7 @@ class DataLakePermissionsStack(Stack):
     # set dependency between CfnDataLakeSettings and CfnPrincipalPermissions
     lf_permissions_on_database.add_dependency(cfn_data_lake_settings)
 
-    lf_permissions_on_table = aws_lakeformation.CfnPrincipalPermissions(self, "CfnPrincipalPermissions2",
+    lf_permissions_on_table = aws_lakeformation.CfnPrincipalPermissions(self, "LfPermissionsOnTable",
       permissions=["SELECT", "INSERT", "DELETE", "DESCRIBE", "ALTER"],
       permissions_with_grant_option=[],
       principal=aws_lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty(
@@ -66,5 +66,7 @@ class DataLakePermissionsStack(Stack):
     lf_permissions_on_table.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
     lf_permissions_on_table.add_dependency(cfn_data_lake_settings)
 
-    cdk.CfnOutput(self, f'{self.stack_name}_Principal',
+    cdk.CfnOutput(self, f'{self.stack_name}_PrincipalOnDatabase',
+      value=lf_permissions_on_database.attr_principal_identifier)
+    cdk.CfnOutput(self, f'{self.stack_name}_PrincipalOnTable',
       value=lf_permissions_on_database.attr_principal_identifier)
