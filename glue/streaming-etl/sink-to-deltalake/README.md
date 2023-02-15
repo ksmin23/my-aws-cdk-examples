@@ -291,6 +291,13 @@ command.
      ![delta-lake-table](./assets/delta-lake-table.png)
 
 12. Run test queries with Amazon Glue Studio
+
+    :warning: **Note**
+
+    **Check that your browser does not block third-party cookies**.
+    Any browser that blocks third party cookies either by default or as a user-enabled setting will prevent notebooks from launching.
+    For more inforemation, see [References](#references) (7)
+
    * (step 1) Download the [Jupyter notebook file](./src/main/notebook/native-deltalake-sql.ipynb).
    * (step 2) On the AWS Glue console, choose **Jobs** in the navigation plane.
    * (step 3) Under **Create job**, select **Jupyter Notebook**.
