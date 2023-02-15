@@ -238,7 +238,7 @@ command.
                --max-count 10
     </pre>
 
-    Synthentic Data Example order by `name` and `m_time`
+    Synthentic Data Example order by `product_id` and `updated_at`
     <pre>
     {"product_id": "00001", "product_name": "Buick LeSabre", "price": 2024, "category": "Mercedes-Benz", "updated_at": "2023-02-14 01:15:00"}
     {"product_id": "00001", "product_name": "Holden Commodore", "price": 3650, "category": "Chevrolet", "updated_at": "2023-02-14 08:22:45"}
