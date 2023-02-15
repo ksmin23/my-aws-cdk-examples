@@ -90,7 +90,7 @@ class GlueJobRoleStack(Stack):
       ]
     }))
 
-    self.glue_job_role = glue_job_role
+    self.iam_role = glue_job_role
 
-    cdk.CfnOutput(self, f'{self.stack_name}_GlueJobRole', value=self.glue_job_role.role_name)
-    cdk.CfnOutput(self, f'{self.stack_name}_GlueJobRoleArn', value=self.glue_job_role.role_arn)
+    cdk.CfnOutput(self, f'{self.stack_name}_GlueJobRole', value=self.iam_role.role_name)
+    cdk.CfnOutput(self, f'{self.stack_name}_GlueJobRoleArn', value=self.iam_role.role_arn)

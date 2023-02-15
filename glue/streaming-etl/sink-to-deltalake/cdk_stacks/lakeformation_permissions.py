@@ -11,8 +11,15 @@ class DataLakePermissionsStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, glue_job_role, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    glue_job_input_arguments = self.node.try_get_context('glue_kinesis_table')
-    database_name = glue_job_input_arguments["database_name"]
+    print(self.stack_name)
+
+    glue_kinesis_table_info = self.node.try_get_context('glue_kinesis_table')
+    stream_database_name = glue_kinesis_table_info["database_name"]
+
+    glue_job_input_arguments = self.node.try_get_context('glue_job_input_arguments')
+    deltalake_database_name = glue_job_input_arguments["--database_name"]
+
+    database_list = list(set([stream_database_name, deltalake_database_name]))
 
     #XXXX: The role assumed by cdk is not a data lake administrator.
     # So, deploying PrincipalPermissions meets the error such as:
@@ -25,27 +32,46 @@ class DataLakePermissionsStack(Stack):
       )]
     )
 
-    cfn_principal_permissions = aws_lakeformation.CfnPrincipalPermissions(self, "CfnPrincipalPermissions",
-      permissions=["SELECT", "INSERT", "DELETE", "DESCRIBE", "ALTER"],
-      permissions_with_grant_option=[],
-      principal=aws_lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty(
-        data_lake_principal_identifier=glue_job_role.role_arn
-      ),
-      resource=aws_lakeformation.CfnPrincipalPermissions.ResourceProperty(
-        #XXX: Can't specify a TableWithColumns resource and a Table resource
-        table=aws_lakeformation.CfnPrincipalPermissions.TableResourceProperty(
-          catalog_id=cdk.Aws.ACCOUNT_ID,
-          database_name=database_name,
-          # name="ALL_TABLES",
-          table_wildcard={}
+    for idx, database_name in enumerate(database_list):
+      lf_permissions_on_database = aws_lakeformation.CfnPrincipalPermissions(self, f"LfPermissionsOnDatabase{idx}",
+        permissions=["CREATE_TABLE", "DROP", "ALTER", "DESCRIBE"],
+        permissions_with_grant_option=[],
+        principal=aws_lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty(
+          data_lake_principal_identifier=glue_job_role.role_arn
+        ),
+        resource=aws_lakeformation.CfnPrincipalPermissions.ResourceProperty(
+          database=aws_lakeformation.CfnPrincipalPermissions.DatabaseResourceProperty(
+            catalog_id=cdk.Aws.ACCOUNT_ID,
+            name=database_name
+          )
         )
       )
-    )
-    cfn_principal_permissions.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
+      lf_permissions_on_database.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
-    #XXX: In order to keep resource destruction order,
-    # set dependency between CfnDataLakeSettings and CfnPrincipalPermissions
-    cfn_principal_permissions.add_dependency(cfn_data_lake_settings)
+      #XXX: In order to keep resource destruction order,
+      # set dependency between CfnDataLakeSettings and CfnPrincipalPermissions
+      lf_permissions_on_database.add_dependency(cfn_data_lake_settings)
 
-    cdk.CfnOutput(self, f'{self.stack_name}_Principal',
-      value=cfn_principal_permissions.attr_principal_identifier)
+    for idx, database_name in enumerate(database_list):
+      lf_permissions_on_table = aws_lakeformation.CfnPrincipalPermissions(self, f"LfPermissionsOnTable{idx}",
+        permissions=["SELECT", "INSERT", "DELETE", "DESCRIBE", "ALTER"],
+        permissions_with_grant_option=[],
+        principal=aws_lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty(
+          data_lake_principal_identifier=glue_job_role.role_arn
+        ),
+        resource=aws_lakeformation.CfnPrincipalPermissions.ResourceProperty(
+          #XXX: Can't specify a TableWithColumns resource and a Table resource
+          table=aws_lakeformation.CfnPrincipalPermissions.TableResourceProperty(
+            catalog_id=cdk.Aws.ACCOUNT_ID,
+            database_name=database_name,
+            # name="ALL_TABLES",
+            table_wildcard={}
+          )
+        )
+      )
+      lf_permissions_on_table.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
+
+      #XXX: In order to keep resource destruction order,
+      # set dependency between CfnDataLakeSettings and CfnPrincipalPermissions
+      lf_permissions_on_table.add_dependency(cfn_data_lake_settings)
+

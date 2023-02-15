@@ -17,7 +17,7 @@ class GlueStreamDataSchemaStack(Stack):
     table_name = glue_kinesis_table['table_name']
     columns = glue_kinesis_table.get('columns', [])
 
-    cfn_database = aws_glue.CfnDatabase(self, "GlueCfnDatabase",
+    cfn_database = aws_glue.CfnDatabase(self, "GlueCfnDatabaseOnKinesis",
       catalog_id=cdk.Aws.ACCOUNT_ID,
       database_input=aws_glue.CfnDatabase.DatabaseInputProperty(
         name=database_name
@@ -25,7 +25,7 @@ class GlueStreamDataSchemaStack(Stack):
     )
     cfn_database.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
-    cfn_table = aws_glue.CfnTable(self, "GlueCfnTable",
+    cfn_table = aws_glue.CfnTable(self, "GlueCfnTableOnKinesis",
       catalog_id=cdk.Aws.ACCOUNT_ID,
       database_name=database_name,
       table_input=aws_glue.CfnTable.TableInputProperty(

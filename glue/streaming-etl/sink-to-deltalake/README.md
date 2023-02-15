@@ -59,6 +59,8 @@ For example:
     "--database_name": "deltalake_demo_db",
     "--table_name": "deltalake_demo_table",
     "--primary_key": "product_id",
+    "--partition_key": "category",
+    "--kinesis_database_name": "deltalake_stream_db",
     "--kinesis_table_name": "deltalake_demo_kinesis_stream_table",
     "--starting_position_of_kinesis_iterator": "LATEST",
     "--delta_s3_path": "s3://glue-deltalake-demo-us-east-1/deltalake_demo_db",
@@ -69,7 +71,7 @@ For example:
   },
   "glue_connections_name": "deltalake-connector-1_0_0",
   "glue_kinesis_table": {
-    "database_name": "deltalake_demo_db",
+    "database_name": "deltalake_stream_db",
     "table_name": "deltalake_demo_kinesis_stream_table",
     "columns": [
       {
@@ -86,7 +88,7 @@ For example:
       },
       {
         "name": "category",
-        "type": "int"
+        "type": "string"
       },
       {
         "name": "updated_at",
@@ -116,6 +118,9 @@ command.
 ## Run Test
 
 1. Set up **Delta Lake connector for AWS Glue** to use Delta Lake with AWS Glue jobs.
+   <pre>
+   (.venv) $ cdk deploy GlueDeltaLakeConnection
+   </pre>
 2. Create a S3 bucket for Delta Lake table
    <pre>
    (.venv) $ cdk deploy DeltaLakeS3Path
@@ -133,10 +138,10 @@ command.
 
    (1) On the AWS Glue console, choose **Data Catalog**.<br/>
    (2) Choose **Databases**, and click **Add database**.<br/>
-   (3) Create a database with the name `deltalake_demo_db`.<br/>
+   (3) Create a database with the name `deltalake_stream_db`.<br/>
    (4) On the **Data Catalog** menu, Choose **Tables**, and click **Add Table**.<br/>
    (5) For the table name, enter `deltalake_demo_kinesis_stream_table`.<br/>
-   (6) Select `deltalake_demo_db` as a database.<br/>
+   (6) Select `deltalake_stream_db` as a database.<br/>
    (7) Choose **Kinesis** as the type of source.<br/>
    (8) Enter the name of the stream.<br/>
    (9) For the classification, choose **JSON**.<br/>
@@ -151,7 +156,11 @@ command.
 
    (11) Choose **Finish**
 
-5. Upload **AWS SDK for Java 2.x** jar file into S3
+5. Create Database in Glue Data Catalog for Delta Lake table
+   <pre>
+   (.venv) $ cdk deploy GlueSchemaOnDeltaLake
+   </pre>
+6. Upload **AWS SDK for Java 2.x** jar file into S3
    <pre>
    (.venv) $ wget https://repo1.maven.org/maven2/software/amazon/awssdk/aws-sdk-java/2.17.224/aws-sdk-java-2.17.224.jar
    (.venv) $ aws s3 cp aws-sdk-java-2.17.224.jar s3://aws-glue-assets-123456789012-atq4q5u/extra-jars/aws-sdk-java-2.17.224.jar
@@ -167,7 +176,7 @@ command.
    --user-jars-first true
    </pre>
    In order to do this, we might need to upload **AWS SDK for Java 2.x** jar file into S3.
-6. Create Glue Streaming Job
+7. Create Glue Streaming Job
 
    * (step 1) Select one of Glue Job Scripts and upload into S3
 
@@ -192,10 +201,11 @@ command.
      <pre>
      (.venv) $ cdk deploy GlueStreamingSinkToDeltaLakeJobRole \
                           GrantLFPermissionsOnGlueJobRole \
-                          GlueDeltaLakeConnection \
+                          GlueStudioNotebookRoleDeltaLake \
+                          GrantLFPermissionsOnGlueStudioRole \
                           GlueStreamingSinkToDeltaLake
      </pre>
-7. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
+8. Make sure the glue job to access the Kinesis Data Streams table in the Glue Catalog database, otherwise grant the glue job to permissions
 
    We can get permissions by running the following command:
    <pre>
@@ -213,11 +223,11 @@ command.
                --resource '{ "Table": {"DatabaseName": "<i>deltalake_demo_db</i>", "TableWildcard": {}} }'
    </pre>
 
-8. Run glue job to load data from Kinesis Data Streams into S3
+9.  Run glue job to load data from Kinesis Data Streams into S3
     <pre>
     (.venv) $ aws glue start-job-run --job-name <i>streaming_data_from_kds_into_deltalake_table</i>
     </pre>
-9.  Generate streaming data
+10. Generate streaming data
 
     We can synthetically generate data in JSON format using a simple Python application.
     <pre>
@@ -274,11 +284,26 @@ command.
     {"product_id": "00004", "product_name": "Excalibur Series II", "price": 6432, "category": "Nissan", "updated_at": "2023-02-14 11:18:44"}
     {"product_id": "00005", "product_name": "Fiat Uno", "price": 11656, "category": "Fiat", "updated_at": "2023-02-14 06:25:04"}
     </pre>
-10. Check streaming data in S3
+11. Check streaming data in S3
 
     After `3~5` minutes, you can see that the streaming data have been delivered from **Kinesis Data Streams** to **S3**.
 
-11. Run test query with Amazon Glue Studio
+     ![delta-lake-table](./assets/delta-lake-table.png)
+
+12. Run test queries with Amazon Glue Studio
+   * (step 1) Download the [Jupyter notebook file](./src/main/notebook/native-deltalake-sql.ipynb).
+   * (step 2) On the AWS Glue console, choose **Jobs** in the navigation plane.
+   * (step 3) Under **Create job**, select **Jupyter Notebook**.
+     ![glue-studio-create-job](./assets/glue-studio-create-job.jpg)
+   * (step 4) Select **Upload and edit an existing notebook**.
+   * (step 5) Upload `native-deltalake-sql.ipynb` through **Choose file** under **File upload**.
+     ![glue-studio-upload-file](./assets/glue-studio-upload-file.jpg)
+   * (step 6) Choose **Create**.
+   * (step 7) For **Job name**, enter `native_deltalake_sql`.
+   * (step 9) For **IAM Role**, choose your IAM role (`AWSGlueServiceRole-StudioNotebook`).
+   * (step 10) Choose **Start notebook job**.
+     ![glue-studio-notebook-setup](./assets/glue-studio-notebook-setup.jpg)
+   * (step 11) Run each cells in a row.
 
 
 ## Clean Up
@@ -337,3 +362,10 @@ Enjoy!
    <pre>
    IllegalArgumentException: Can not create a Path from an empty string
    </pre>
+ * [Why does my AWS Glue crawler or ETL job fail with the error "Insufficient Lake Formation permission(s)"?](https://aws.amazon.com/premiumsupport/knowledge-center/glue-insufficient-lakeformation-permissions/)
+   <pre>
+   AnalysisException: Insufficient Lake Formation permission(s) on deltalake_demo_db
+   (Service: AWSGlue; Status Code: 400; Error Code: AccessDeniedException;
+    Request ID: 79211aa0-e210-4840-a529-54bf4ac69ca4; Proxy: null)
+   </pre>
+

@@ -29,6 +29,7 @@ args = getResolvedOptions(sys.argv, ['JOB_NAME',
   'database_name',
   'table_name',
   'primary_key',
+  'partition_key',
   'kinesis_stream_arn',
   'starting_position_of_kinesis_iterator',
   'delta_s3_path',
@@ -41,6 +42,8 @@ DELTA_S3_PATH = args['delta_s3_path']
 DATABASE = args['database_name']
 TABLE_NAME = args['table_name']
 PRIMARY_KEY = args['primary_key']
+PARTITION_KEY = args['partition_key']
+
 KINESIS_STREAM_ARN = args['kinesis_stream_arn']
 #XXX: starting_position_of_kinesis_iterator: ['LATEST', 'TRIM_HORIZON']
 STARTING_POSITION_OF_KINESIS_ITERATOR = args.get('starting_position_of_kinesis_iterator', 'LATEST')
@@ -84,6 +87,7 @@ def processBatch(data_frame, batch_id):
   category STRING,
   updated_at TIMESTAMP
 ) USING DELTA
+PARTITIONED BY ({PARTITION_KEY})
 LOCATION '{DELTA_S3_PATH}'
 '''
 
