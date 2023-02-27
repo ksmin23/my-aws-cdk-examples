@@ -76,6 +76,31 @@ class AuroraMysqlToKinesisStack(Stack):
     db_client_sg_name = self.node.try_get_context('mysql_client_security_group_name')
     db_client_sg = aws_ec2.SecurityGroup.from_lookup_by_name(self, 'MySQLClientSG', db_client_sg_name, vpc)
 
+    iam_client = boto3.client('iam')
+
+    try:
+      iam_client.get_role(RoleName='dms-vpc-role')
+      dms_vpc_role = aws_iam.Role.from_role_name(self, 'DMSVpcRole', role_name='dms-vpc-role')
+    except iam_client.exceptions.NoSuchEntityException as ex:
+      dms_vpc_role = aws_iam.Role(self, 'DMSVpcRole',
+        role_name='dms-vpc-role',
+        assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
+        managed_policies=[
+          aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonDMSVPCManagementRole'),
+        ]
+      )
+
+    try:
+      dms_cloudwatch_logs_role = aws_iam.Role.from_role_name(self, 'DMSCloudWatchLogsRole', role_name='dms-cloudwatch-logs-role')
+    except iam_client.exceptions.NoSuchEntityException as ex:
+      dms_cloudwatch_logs_role = aws_iam.Role(self, 'DMSCloudWatchLogsRole',
+        role_name='dms-cloudwatch-logs-role',
+        assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
+        managed_policies=[
+          aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonDMSCloudWatchLogsRole'),
+        ]
+      )
+
     dms_replication_subnet_group = aws_dms.CfnReplicationSubnetGroup(self, 'DMSReplicationSubnetGroup',
       replication_subnet_group_description='DMS Replication Subnet Group',
       subnet_ids=vpc.select_subnets().subnet_ids
@@ -103,13 +128,13 @@ class AuroraMysqlToKinesisStack(Stack):
     secret_value = sm_client.get_secret_value(SecretId=secret_name)
     secret = json.loads(secret_value['SecretString'])
 
-    source_endpoint_id = secret['dbClusterIdentifier'].lower()
+    source_endpoint_id = secret.get('dbClusterIdentifier', '').lower()
     dms_source_endpoint = aws_dms.CfnEndpoint(self, 'DMSSourceEndpoint',
       endpoint_identifier=source_endpoint_id,
       endpoint_type='source',
-      engine_name=secret.get('engine'),
+      engine_name=secret.get('engine', 'mysql'),
       server_name=secret.get('host'),
-      port=int(secret.get('port')),
+      port=int(secret.get('port', 3306)),
       database_name=secret.get('dbname'),
       username=secret.get('username'),
       password=secret.get('password')
