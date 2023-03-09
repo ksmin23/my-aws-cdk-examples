@@ -35,7 +35,7 @@ class Cloud9Stack(Stack):
     # )
 
     vpc = aws_ec2.Vpc(self, "Cloud9VPC",
-      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/21"),
+      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/16"),
       max_azs=3,
 
       # 'subnetConfiguration' specifies the "subnet groups" to create.
