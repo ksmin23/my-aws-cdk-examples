@@ -53,7 +53,7 @@ class AuroraMysqlToS3Stack(Stack):
     # )
 
     vpc = aws_ec2.Vpc(self, 'DMSAuroraMysqlToS3VPC',
-      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/21"),
+      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/16"),
       max_azs=3,
 
       # 'subnetConfiguration' specifies the "subnet groups" to create.
@@ -81,34 +81,25 @@ class AuroraMysqlToS3Stack(Stack):
     db_client_sg_name = self.node.try_get_context('mysql_client_security_group_name')
     db_client_sg = aws_ec2.SecurityGroup.from_lookup_by_name(self, 'MySQLClientSG', db_client_sg_name, vpc)
 
-    iam_client = boto3.client('iam')
+    dms_vpc_role = aws_iam.Role(self, 'DMSVpcRole',
+      role_name='dms-vpc-role',
+      assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
+      managed_policies=[
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonDMSVPCManagementRole'),
+      ]
+    )
 
-    try:
-      iam_client.get_role(RoleName='dms-vpc-role')
-      dms_vpc_role = aws_iam.Role.from_role_name(self, 'DMSVpcRole', role_name='dms-vpc-role')
-    except iam_client.exceptions.NoSuchEntityException as ex:
-      dms_vpc_role = aws_iam.Role(self, 'DMSVpcRole',
-        role_name='dms-vpc-role',
-        assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
-        managed_policies=[
-          aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonDMSVPCManagementRole'),
-        ]
-      )
-
-    try:
-      dms_cloudwatch_logs_role = aws_iam.Role.from_role_name(self, 'DMSCloudWatchLogsRole', role_name='dms-cloudwatch-logs-role')
-    except iam_client.exceptions.NoSuchEntityException as ex:
-      dms_cloudwatch_logs_role = aws_iam.Role(self, 'DMSCloudWatchLogsRole',
-        role_name='dms-cloudwatch-logs-role',
-        assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
-        managed_policies=[
-          aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonDMSCloudWatchLogsRole'),
-        ]
-      )
+    dms_cloudwatch_logs_role = aws_iam.Role(self, 'DMSCloudWatchLogsRole',
+      role_name='dms-cloudwatch-logs-role',
+      assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
+      managed_policies=[
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonDMSCloudWatchLogsRole'),
+      ]
+    )
 
     dms_replication_subnet_group = aws_dms.CfnReplicationSubnetGroup(self, 'DMSReplicationSubnetGroup',
       replication_subnet_group_description='DMS Replication Subnet Group',
-      subnet_ids=vpc.select_subnets().subnet_ids
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
     )
 
     dms_replication_instance = aws_dms.CfnReplicationInstance(self, 'DMSReplicationInstance',
@@ -121,7 +112,7 @@ class AuroraMysqlToS3Stack(Stack):
       multi_az=False,
       preferred_maintenance_window='sat:03:17-sat:03:47',
       publicly_accessible=False,
-      replication_subnet_group_identifier=dms_replication_subnet_group.replication_subnet_group_identifier,
+      replication_subnet_group_identifier=dms_replication_subnet_group.ref,
       vpc_security_group_ids=[db_client_sg.security_group_id]
     )
 
@@ -157,7 +148,7 @@ class AuroraMysqlToS3Stack(Stack):
     }))
 
     dms_target_s3_access_role = aws_iam.Role(self, 'DMSTargetS3AccessRole',
-      role_name='DMSTargetS3AccessRole-2022-7-24',
+      role_name='DMSTargetS3AccessRole',
       assumed_by=aws_iam.ServicePrincipal('dms.amazonaws.com'),
       inline_policies={
         'S3AccessRole': dms_s3_access_role_policy_doc
