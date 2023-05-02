@@ -1,13 +1,16 @@
 
-# Prerequisites
+# CDK Python project for Kinesis Data Analytics application to Replicate Data from One MSK Cluster to Another in a VPC
+
+## Prerequisites
 
 Before create Kinesis Data Analytics for Flink Application, you need to finish the following steps in [Tutorial: Using a Kinesis Data Analytics application to Replicate Data from One MSK Cluster to Another in a VPC](https://docs.aws.amazon.com/kinesisanalytics/latest/java/example-msk.html)
 - [Create an Amazon VPC with an Amazon MSK cluster](https://docs.aws.amazon.com/kinesisanalytics/latest/java/example-msk.html#example-msk-createcluster)
 - [Create the Application Code](https://docs.aws.amazon.com/kinesisanalytics/latest/java/example-msk.html#example-msk-code)
 - [Upload the Apache Flink Streaming Java Code](https://docs.aws.amazon.com/kinesisanalytics/latest/java/example-msk.html#example-msk-upload)
 
+### Using a Kinesis Data Analytics application to Replicate Data from One Topic in an MSK Cluster to Another in a VPC
 
-# CDK Python project for Kinesis Data Analytics application to Replicate Data from One MSK Cluster to Another in a VPC
+![kda-flink-msk-replication](./kda-flink-msk-replication.svg)
 
 This is a blank project for Python development with CDK.
 
