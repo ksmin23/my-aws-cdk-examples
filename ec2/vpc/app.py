@@ -29,12 +29,12 @@ class VpcStack(Stack):
       # configuration will create `2 groups × 3 AZs = 6` subnets.
       subnet_configuration=[
         {
-          "cidrMask": 24,
+          "cidrMask": 20,
           "name": "Public",
           "subnetType": aws_ec2.SubnetType.PUBLIC,
         },
         {
-          "cidrMask": 24,
+          "cidrMask": 20,
           "name": "Private",
           "subnetType": aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
         }
