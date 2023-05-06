@@ -286,3 +286,5 @@ Enjoy!
  * [Amazon API Gateway - Tutorial: Build a CRUD API with Lambda and DynamoDB](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-dynamo-db.html)
  * [Simple HTTP CRUD API for DynamoDB CDK Typescript Project in AWS CDK v1](https://github.com/aws-samples/simple-crud-api)
  * [Http API Example in AWS CDK Typescript (API Gateway V2)](https://bobbyhadz.com/blog/aws-cdk-http-api-apigateway-v2-example)
+ * [Amazon API Gateway - Working with AWS Lambda proxy integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)
+ * [Amazon API Gateway - Working with HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html)
