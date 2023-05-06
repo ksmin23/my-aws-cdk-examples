@@ -83,7 +83,7 @@ Use the following command to create or update an item. The command includes a re
 curl -X "PUT" -H "Content-Type: application/json" -d "{\"id\": \"123\", \"price\": 12345, \"name\": \"myitem\"}" https://abcdef123.execute-api.us-east-1.amazonaws.com/items
 ```
 
-HTTP Event Example for Lambda function:
+HTTP Request Event Example for Lambda function:
 
 ```
 {
@@ -133,7 +133,7 @@ Use the following command to list all items.
 curl https://abcdef123.execute-api.us-east-1.amazonaws.com/items
 ```
 
-HTTP Event Example for Lambda function:
+HTTP Request Event Example for Lambda function:
 
 ```
 {
@@ -181,7 +181,7 @@ Use the following command to get an item by its ID.
 curl https://abcdef123.execute-api.us-east-1.amazonaws.com/items/123
 ```
 
-HTTP Event Example for Lambda function:
+HTTP Request Event Example for Lambda function:
 
 ```
 {
@@ -230,7 +230,7 @@ Use the following command to delete an item.
 curl -X "DELETE" https://abcdef123.execute-api.us-east-1.amazonaws.com/items/123
 ```
 
-HTTP Event Example for Lambda function:
+HTTP Request Event Example for Lambda function:
 
 ```
 {
