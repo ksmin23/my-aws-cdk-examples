@@ -1,0 +1,8 @@
+{
+  "vpc_name": "default",
+  "dynamodb": {
+    "table_name": "http-crud-tutorial-items",
+    "partition_key": "id",
+    "time_to_live_attribute": "ttl"
+  }
+}
