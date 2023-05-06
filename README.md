@@ -9,6 +9,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [api-gateway/cognito-api-lambda](./api-gateway/cognito-api-lambda/) | ![amazon-cognito-api-lambda](./api-gateway/cognito-api-lambda/amazon-cognito-api-lambda.svg) | api-gateway, cognito, lambda |
 | [api-gateway/dynamodb](./api-gateway/dynamodb/) | ![apigw-dynamodb-arch](./api-gateway/dynamodb/apigw-dynamodb-arch.svg) | api-gateway, dynamodb |
 | [api-gateway/dynamodb-cognito](./api-gateway/dynamodb-cognito/) | ![apigw-cognito-dynamodb-arch](./api-gateway/dynamodb-cognito/apigw-cognito-dynamodb-arch.svg) | api-gateway, cognito, dynamodb |
+| [api-gateway/http-dynamodb-crud-api](./api-gateway/http-dynamodb-crud-api/) | ![http-dynamodb-crud-api](./api-gateway/http-dynamodb-crud-api/dynamodb_crud_http_api.svg) | api-gateway(HTTP API), dynamodb, lambda |
 | [api-gateway/kds-proxy](./api-gateway/kds-proxy/) | ![apigw-kds-proxy-arch](./api-gateway/kds-proxy/apigw-kds-proxy-arch.svg) | api-gateway, kinesis data streams |
 | [api-gateway/kds-proxy-cognito](./api-gateway/kds-proxy-cognito/) | ![apigw-kds-proxy-cognito-arch](./api-gateway/kds-proxy-cognito/apigw-kds-proxy-cognito-arch.svg) | api-gateway, cognito, kinesis data streams |
 | [api-gateway/logging-api-calls-to-firehose](./api-gateway/logging-api-calls-to-firehose/) | ![logging-api-calls-to-firehose](./api-gateway/logging-api-calls-to-firehose/logging-api-calls-to-firehose.svg) | api-gateway, kinesis data firehose |
