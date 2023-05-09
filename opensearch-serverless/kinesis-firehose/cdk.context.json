@@ -3,5 +3,10 @@
     "buffer_size_in_mbs": 100,
     "buffer_interval_in_seconds": 300,
     "opensearch_index_name": "access-logs"
-  }
+  },
+  "opensearch_iam_user": {
+    "user_name": "opss-user",
+    "initial_password": "PassW0rd!"
+  },
+  "collection_name": "log-analysis"
 }

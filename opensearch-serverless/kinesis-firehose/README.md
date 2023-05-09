@@ -50,7 +50,12 @@ For example,
     "buffer_size_in_mbs": 100,
     "buffer_interval_in_seconds": 300,
     "opensearch_index_name": "access-logs"
-  }
+  },
+  "opensearch_iam_user": {
+    "user_name": "opss-user",
+    "initial_password": "PassW0rd!"
+  },
+  "collection_name": "log-analysis"
 }
 </pre>
 
@@ -108,31 +113,44 @@ Enjoy!
    (.venv) $ python tests/gen_fake_data.py --stream-name <i>your-kinesis-firehose-stream-name</i> --max-count 1000
    </pre>
 
+### Login to AWS Web console with the OpenSearch IAM User
+
+To access Amazon OpenSearch Serverless data-plane APIs and OpenSearch Dashboards from the browser, you need to login to AWS Web console with the IAM User that is created.
+
+You can find the IAM User name and initial password in the `cdk.context.json` file.
+
+1. Sign into the Amazon Web console at [https://console.aws.amazon.com/](https://console.aws.amazon.com/console/home)
+  ![aws_sign_in_as_iam_user](./assets/aws_sign_in_as_iam_user.png)
+2. Change the password.
+  ![aws_iam_user_change_password](./assets/aws_iam_user_change_password.png)
+3. Check if successfuly logined.<br/>
+   For example: `opss-user` login into the `N. Virgina (us-east-1)` region.
+  ![aws_login_as_iam_user](./assets/aws_login_as_iam_user.png)
+
 #### View incoming data in OpenSearch
 
 After a couple of minutes, you will have enough data in your OpenSearch cluster for the next step. You can use OpenSearch dashboard to visualize or retrieve the data.
 
-1. Navigate to OpenSearch collection in AWS console, and click on the **OpenSearch Dashboards URL**<br/>
-  Sign in with Access Key and Secret Key.
-   ![01-aos-login](./assets/01-aos-login.png)
-1. If prompted to add data, select *Explore on my own*.
+1. Navigate to OpenSearch collection in AWS console, and click on the **OpenSearch Dashboards URL**
+2. If prompted to add data, select *Explore on my own*.
    ![02-aos-explore-on-my-own](./assets/02-aos-explore-on-my-own.png)
-2. To start using your data, you need to create a **Search Pattern**. From the OpenSearch menu, click on *Stack Management* under **Management**.
+3. To start using your data, you need to create a **Search Pattern**. From the OpenSearch menu, click on *Stack Management* under **Management**.
    ![03-aos-stack-menu](./assets/03-aos-stack-menu.png)
-3. On the left menu, click on *Index Patterns*, and then click on *Create index patterns*.
+4. On the left menu, click on *Index Patterns*, and then click on *Create index patterns*.
    ![04-aos-search-patterns-create](./assets/04-aos-search-patterns-create.png)
-4. For **Index pattern** name, type `access-logs-*`. You should see a green prompt stating that `"Your index pattern matches ... source"`. Click on *Next step*.
+5. For **Index pattern** name, type `access-logs-*`. You should see a green prompt stating that `"Your index pattern matches ... source"`. Click on *Next step*.
    ![05-aos-index-pattern-next](./assets/05-aos-index-pattern-next.png)
-5. In the next screen, Under **Time Field**, select *timestamp*. Then click on *Create index pattern*.
+6. In the next screen, Under **Time Field**, select *timestamp*. Then click on *Create index pattern*.
    ![06-aos-search-patterns-create-last](./assets/06-aos-search-patterns-create-last.png)
-6. Now, let's take a look at some of the data records. Open the OpenSearch menu and click on *Discover* under **OpenSearch Dashboards**.
+7. Now, let's take a look at some of the data records. Open the OpenSearch menu and click on *Discover* under **OpenSearch Dashboards**.
    ![07-aos-discover-menu](./assets/07-aos-discover-menu.png)
-7. You can see a handful of your incoming data. You can search and filter using OpenSearch Dashboard Language here if you want.
+8. You can see a handful of your incoming data. You can search and filter using OpenSearch Dashboard Language here if you want.
    ![08-aos-discover-search](./assets/08-aos-discover-search.png)
 
 ## References
 
  * [Getting started with Amazon OpenSearch Serverless](https://catalog.us-east-1.prod.workshops.aws/workshops/f8d2c175-634d-4c5d-94cb-d83bbc656c6a/en-US)
  * [Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless.html)
+ * [Identity and Access Management for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html)
  * [Amazon Kinesis Data Firehose Immersion Day](https://catalog.us-east-1.prod.workshops.aws/workshops/32e6bc9a-5c03-416d-be7c-4d29f40e55c4/en-US)
 
