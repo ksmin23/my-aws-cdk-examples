@@ -101,12 +101,12 @@ To access Amazon OpenSearch Serverless data-plane APIs and OpenSearch Dashboards
 You can find the IAM User name and initial password in the `cdk.context.json` file.
 
 1. Sign into the Amazon Web console at [https://console.aws.amazon.com/](https://console.aws.amazon.com/console/home)
-  ![aws_sign_in_as_iam_user](./assets/aws_sign_in_as_iam_user.png)
+   ![aws_sign_in_as_iam_user](./assets/aws_sign_in_as_iam_user.png)
 2. Change the password.
-  ![aws_iam_user_change_password](./assets/aws_iam_user_change_password.png)
+   ![aws_iam_user_change_password](./assets/aws_iam_user_change_password.png)
 3. Check if successfuly logined.<br/>
    For example: `opss-user` login into the `N. Virgina (us-east-1)` region.
-  ![aws_login_as_iam_user](./assets/aws_login_as_iam_user.png)
+   ![aws_login_as_iam_user](./assets/aws_login_as_iam_user.png)
 
 ### Step 2: Upload and search data
 
