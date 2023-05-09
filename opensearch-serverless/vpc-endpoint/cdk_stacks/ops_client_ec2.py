@@ -48,7 +48,7 @@ class OpsClientEC2InstanceStack(Stack):
     bastion_host = aws_ec2.Instance(self, "BastionHost",
       vpc=vpc,
       instance_type=ec2_instance_type,
-      machine_image=aws_ec2.MachineImage.latest_amazon_linux(generation=aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2),
+      machine_image=aws_ec2.MachineImage.latest_amazon_linux2(),
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
       security_group=sg_bastion_host,
       role=ec2_instance_role,
