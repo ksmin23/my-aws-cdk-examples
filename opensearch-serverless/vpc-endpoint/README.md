@@ -39,6 +39,20 @@ Once the virtualenv is activated, you can install the required dependencies.
 (.venv) $ pip install -r requirements.txt
 ```
 
+Before synthesizing the CloudFormation, you should set approperly the cdk context configuration file, `cdk.context.json`.
+
+For example:
+
+```
+{
+  "opensearch_iam_user": {
+    "user_name": "opss-user",
+    "initial_password": "PassW0rd!"
+  },
+  "collection_name": "search-movies"
+}
+```
+
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
@@ -171,4 +185,4 @@ Enjoy!
  * [Supported OpenSearch API operations and permissions in Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-genref.html#serverless-operations)
  * [Supported plugins in Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-genref.html#serverless-plugins)
    * check out ***Korean (Nori) Analysis***
-
+ * [Identity and Access Management for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html)

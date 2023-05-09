@@ -1,4 +1,7 @@
 {
-  "collection_name": "search-movies",
-  "vpc_name": "default"
+  "opensearch_iam_user": {
+    "user_name": "opss-user",
+    "initial_password": "PassW0rd!"
+  },
+  "collection_name": "search-movies"
 }
