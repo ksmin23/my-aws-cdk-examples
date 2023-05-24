@@ -15,6 +15,7 @@ class OpsServerlessTimeSeriesStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, pipeline_role_arn, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
+    USER_NAME = self.node.try_get_context('iam_user_name')
     collection_name = self.node.try_get_context('collection_name') or "ingestion-collection"
 
     network_security_policy = json.dumps([{
@@ -35,9 +36,13 @@ class OpsServerlessTimeSeriesStack(Stack):
       "AllowFromPublic": True
     }], indent=2)
 
+    #XXX: max length of policy name is 32
+    network_security_policy_name = f"{collection_name}-net-policy"
+    assert len(network_security_policy_name) <= 32
+
     cfn_network_security_policy = aws_opss.CfnSecurityPolicy(self, "NetworkSecurityPolicy",
       policy=network_security_policy,
-      name=f"{collection_name}-security-policy",
+      name=network_security_policy_name,
       type="network"
     )
 
@@ -53,9 +58,13 @@ class OpsServerlessTimeSeriesStack(Stack):
       "AWSOwnedKey": True
     }, indent=2)
 
+    #XXX: max length of policy name is 32
+    encryption_security_policy_name = f"{collection_name}-encr-policy"
+    assert len(encryption_security_policy_name) <= 32
+
     cfn_encryption_security_policy = aws_opss.CfnSecurityPolicy(self, "EncryptionSecurityPolicy",
       policy=encryption_security_policy,
-      name=f"{collection_name}-security-policy",
+      name=encryption_security_policy_name,
       type="encryption"
     )
 
@@ -98,10 +107,8 @@ class OpsServerlessTimeSeriesStack(Stack):
           }
         ],
         "Principal": [
-          # "arn:aws:iam::{your-account-id}:role/PipelineRole",
           f"{pipeline_role_arn}",
-          "arn:aws:iam::{cdk.Aws.ACCOUNT_ID}:role/Admin"
-          # f"{admin_user_arn}"
+          f"arn:aws:iam::{cdk.Aws.ACCOUNT_ID}:user/{USER_NAME}"
         ],
         "Description": "data-access-rule"
       }

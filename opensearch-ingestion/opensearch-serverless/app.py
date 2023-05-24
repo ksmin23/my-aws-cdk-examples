@@ -23,6 +23,7 @@ ops_serverless_ts_stack = OpsServerlessTimeSeriesStack(app, "OpsServerlessTSStac
 ops_serverless_ts_stack.add_dependency(collection_pipeline_role)
 
 ops_serverless_ingestion_stack = OpsServerlessIngestionStack(app, "OpsServerlessIngestionStack",
+  collection_pipeline_role.iam_role.role_arn,
   ops_serverless_ts_stack.collection_endpoint,
   env=AWS_ENV)
 ops_serverless_ingestion_stack.add_dependency(ops_serverless_ts_stack)

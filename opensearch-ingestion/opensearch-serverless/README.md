@@ -1,6 +1,8 @@
 
 # Amazon OpenSearch Ingestion CDK Python project!
 
+![osis-collection-pipeline](./osis-collection-pipeline.svg)
+
 This is an Amazon OpenSearch ingestion project for CDK development with Python.
 
 This project builds on the following tutorial: [Ingesting data into a collection using Amazon OpenSearch Ingestion](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-serverless-get-started.html).
@@ -43,16 +45,16 @@ Once the virtualenv is activated, you can install the required dependencies.
 
 At this point you can now synthesize the CloudFormation template for this code.
 
-```
+<pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth --all
-```
+(.venv) $ cdk synth -c iam_user_name=<i>OPENSEARCH_IAM_USER_NAME</i> --all
+</pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy --all
+(.venv) $ cdk deploy -c iam_user_name=<i>OPENSEARCH_IAM_USER_NAME</i> --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -64,7 +66,7 @@ command.
 Delete the CloudFormation stack by running the below command.
 
 <pre>
-(.venv) $ cdk destroy --force --all
+(.venv) $ cdk destroy -c iam_user_name=<i>OPENSEARCH_IAM_USER_NAME</i> --force --all
 </pre>
 
 ## Useful commands
@@ -77,12 +79,83 @@ Delete the CloudFormation stack by running the below command.
 
 Enjoy!
 
+## Run Tests
+
+#### Step 1: Ingest some sample data
+
+First, get the ingestion URL from the **Pipeline settings** page:
+
+![osis-pipeline-settings](./assets/osis-pipeline-settings.png)
+
+Then, ingest some sample data. The following sample request uses [awscurl](https://github.com/okigan/awscurl) to send a single log file to the `my_logs` index:
+
+<pre>
+$ awscurl --service osis --region <i>us-east-1</i> \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '[{"time":"2014-08-11T11:40:13+00:00","remote_addr":"122.226.223.69","status":"404","req
+uest":"GET http://www.k2proxy.com//hello.html HTTP/1.1","http_user_agent":"Mozilla/4.0 (compatible; WOW64; SLCC2;)"}]' \
+https://<i>{pipeline-endpoint}.us-east-1</i>.osis.amazonaws.com/log-pipeline/test_ingestion_path
+</pre>
+
+You should see a `200 OK` response.
+
+#### Step 2: Query the sample data
+
+Now, query the `my_logs` index to ensure that the log entry was successfully ingested:
+
+<pre>
+$ awscurl --service aoss --region <i>us-east-1</i> \
+     -X GET \
+     https://<i>{collection-id}.us-east-1</i>.aoss.amazonaws.com/my_logs/_search | jq -r '.'
+</pre>
+
+**Sample response:**
+
+<pre>
+{
+  "took": 367,
+  "timed_out": false,
+  "_shards": {
+    "total": 0,
+    "successful": 0,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "my_logs",
+        "_id": "1%3A0%3ALkidTIgBbiu_ytx_zXnH",
+        "_score": 1,
+        "_source": {
+          "time": "2014-08-11T11:40:13+00:00",
+          "remote_addr": "122.226.223.69",
+          "status": "404",
+          "request": "GET http://www.k2proxy.com//hello.html HTTP/1.1",
+          "http_user_agent": "Mozilla/4.0 (compatible; WOW64; SLCC2;)",
+          "@timestamp": "2023-05-24T07:16:29.708Z"
+        }
+      }
+    ]
+  }
+}
+</pre>
+
 ## References
 
  * [Tutorial: Ingesting data into a collection using Amazon OpenSearch Ingestion](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-serverless-get-started.html)
  * [Amazon OpenSearch Ingestion Developer Guide](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ingestion.html)
  * [Data Prepper](https://opensearch.org/docs/latest/data-prepper/index/) - a server-side data collector capable of filtering, enriching, transforming, normalizing, and aggregating data for downstream analytics and visualization.
  * [Top strategies for high volume tracing with Amazon OpenSearch Ingestion (2023-04-27)](https://aws.amazon.com/blogs/big-data/top-strategies-for-high-volume-tracing-with-amazon-opensearch-ingestion/)
+ * [Use cases for Amazon OpenSearch Ingestion
+](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/use-cases-overview.html) - some common use cases for Amazon OpenSearch Ingestion.
+ * [Best practices for Amazon OpenSearch Ingestion](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-best-practices.html)
  * [AWS Signature Version 4 Signing Examples](https://github.com/aws-samples/sigv4a-signing-examples)
  * [awscurl](https://github.com/okigan/awscurl) - curl-like tool with AWS Signature Version 4 request signing.
 
