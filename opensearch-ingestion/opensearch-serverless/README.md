@@ -48,13 +48,24 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth -c iam_user_name=<i>OPENSEARCH_IAM_USER_NAME</i> --all
+(.venv) $ cdk synth -c iam_user_name=<i>your-iam-user-name</i> --all
 </pre>
+
+:warning: Amazon OpenSearch Serverless requires mandatory IAM permission for access to resources.
+You are required to add these two IAM permissions for your OpenSearch Serverless **"aoss:APIAccessAll"** for Data Plane API access, and **"aoss:DashboardsAccessAll"** for Dashboards access. Failure to add the two new IAM permissions will result in 403 errors starting on May 10th, 2023
+
+For a sample data-plane policy [here](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-data-plane.html):
+
+  - [Using OpenSearch Serverless in the console
+](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_serverless_id-based-policy-examples-console)
+  - [Administering OpenSearch Serverless collections](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-collection-admin)
+  - [Viewing OpenSearch Serverless collections](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-view-collections)
+  - [Using data-plane policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-data-plane)
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy -c iam_user_name=<i>OPENSEARCH_IAM_USER_NAME</i> --all
+(.venv) $ cdk deploy -c iam_user_name=<i>your-iam-user-name</i> --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -156,6 +167,7 @@ $ awscurl --service aoss --region <i>us-east-1</i> \
  * [Use cases for Amazon OpenSearch Ingestion
 ](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/use-cases-overview.html) - some common use cases for Amazon OpenSearch Ingestion.
  * [Best practices for Amazon OpenSearch Ingestion](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/osis-best-practices.html)
+ * [Identity and Access Management for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-data-plane.html)
  * [AWS Signature Version 4 Signing Examples](https://github.com/aws-samples/sigv4a-signing-examples)
  * [awscurl](https://github.com/okigan/awscurl) - curl-like tool with AWS Signature Version 4 request signing.
 
