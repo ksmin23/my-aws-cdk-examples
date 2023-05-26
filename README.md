@@ -34,6 +34,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [opensearch-serverless/time-series](./opensearch-serverless/time-series) | ![opensearch-serverless-timeseries-arch](./opensearch-serverless/time-series/opensearch-serverless-timeseries-arch.svg) | opensearch serverless for time series analysis |
 | [opensearch-serverless/vpc-endpoint](./opensearch-serverless/vpc-endpoint) | ![opensearch-serverless-vpc-endpoint-arch](./opensearch-serverless/vpc-endpoint/opensearch-serverless-vpc-endpoint-arch.svg) | opensearch serverless in VPC |
 | [opensearch-serverless/kinesis-firehose](./opensearch-serverless/kinesis-firehose) | ![opensearch-serverless-firehose-arch](./opensearch-serverless/kinesis-firehose/opensearch-serverless-firehose-arch.svg) | data ingestion to opensearch serverless using kinesis firehose |
+| [opensearch-ingestion/opensearch](./opensearch-ingestion/opensearch) | ![osis-domain-pipeline](./opensearch-ingestion/opensearch/osis-domain-pipeline.svg) | data ingestion to opensearch domain using OpenSearch Ingestion Pipelines |
 | [opensearch-ingestion/opensearch-serverless](./opensearch-ingestion/opensearch-serverless) | ![osis-collection-pipeline](./opensearch-ingestion/opensearch-serverless/osis-collection-pipeline.svg) | data ingestion to opensearch serverless using OpenSearch Ingestion Pipelines |
 | [emr](./emr/) | Launch an Amazon EMR cluster | emr, Hive, Spark, JupyterHub, Hudi, Iceberg  |
 | [emr-serverless](./emr-serverless/) | Launch an Amazon EMR Serverless Applation | emr serverless |
