@@ -129,7 +129,7 @@ Delete the CloudFormation stack by running the below command.
 
 Enjoy!
 
-## Run Tests
+## Run Test
 
 #### Step 1: Ingest some sample data
 
