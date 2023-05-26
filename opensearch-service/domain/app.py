@@ -82,7 +82,7 @@ class OpensearchStack(Stack):
     bastion_host = aws_ec2.Instance(self, "BastionHost",
       vpc=vpc,
       instance_type=ec2_instance_type,
-      machine_image=aws_ec2.MachineImage.latest_amazon_linux(),
+      machine_image=aws_ec2.MachineImage.latest_amazon_linux2(),
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
       security_group=sg_bastion_host,
       key_name=EC2_KEY_PAIR_NAME.value_as_string
@@ -128,7 +128,7 @@ class OpensearchStack(Stack):
       domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
       #XXX: Supported versions of OpenSearch and Elasticsearch
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
-      version=aws_opensearchservice.EngineVersion.OPENSEARCH_1_3,
+      version=aws_opensearchservice.EngineVersion.OPENSEARCH_2_5,
       #XXX: Amazon OpenSearch Service - Current generation instance types
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen
       capacity={
