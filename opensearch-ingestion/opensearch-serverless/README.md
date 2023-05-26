@@ -77,7 +77,7 @@ command.
 Delete the CloudFormation stack by running the below command.
 
 <pre>
-(.venv) $ cdk destroy -c iam_user_name=<i>OPENSEARCH_IAM_USER_NAME</i> --force --all
+(.venv) $ cdk destroy -c iam_user_name=<i>your-iam-user-name</i> --force --all
 </pre>
 
 ## Useful commands
