@@ -1,5 +1,5 @@
 
-# Amazon OpenSearch Ingestion CDK Python project!
+# Ingesting data into a collection using Amazon OpenSearch Ingestion
 
 ![osis-collection-pipeline](./osis-collection-pipeline.svg)
 
