@@ -79,7 +79,7 @@ su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
 '''
 
     commands += f'''
-su -c "/home/ec2-user/.local/bin/pip3 install opensearch-py==2.0.1 requests==2.28.1 requests-aws4auth==1.1.2 --user" -s /bin/sh ec2-user
+su -c "/home/ec2-user/.local/bin/pip3 install opensearch-py==2.0.1 requests==2.31.0 requests-aws4auth==1.1.2 --user" -s /bin/sh ec2-user
 cp {USER_DATA_LOCAL_PATH} /home/ec2-user/run_opensearch_query.py & chown -R ec2-user /home/ec2-user/run_opensearch_query.py
 '''
 
