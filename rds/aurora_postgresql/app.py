@@ -102,17 +102,18 @@ class AuroraPostgresqlStack(Stack):
     db_cluster = aws_rds.DatabaseCluster(self, 'Database',
       engine=rds_engine,
       credentials=rds_credentials, # A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
-      instance_props={
-        'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
-        'parameter_group': rds_db_param_group,
-        'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
-        },
-        'vpc': vpc,
-        'auto_minor_version_upgrade': False,
-        'security_groups': [sg_postgresql_server]
-      },
-      instances=2,
+      writer=aws_rds.ClusterInstance.provisioned("writer",
+        instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
+        parameter_group=rds_db_param_group,
+        auto_minor_version_upgrade=False,
+      ),
+      readers=[
+        aws_rds.ClusterInstance.provisioned("reader",
+          instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
+          parameter_group=rds_db_param_group,
+          auto_minor_version_upgrade=False
+        )
+      ],
       parameter_group=rds_cluster_param_group,
       cloudwatch_logs_retention=aws_logs.RetentionDays.THREE_DAYS,
       cluster_identifier=db_cluster_name,
@@ -120,7 +121,10 @@ class AuroraPostgresqlStack(Stack):
       backup=aws_rds.BackupProps(
         retention=cdk.Duration.days(3),
         preferred_window="03:00-04:00"
-      )
+      ),
+      security_groups=[sg_postgresql_server],
+      vpc=vpc,
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS)
     )
 
     cdk.CfnOutput(self, 'DBClusterEndpoint', value=db_cluster.cluster_endpoint.socket_address, export_name='DBClusterEndpoint')
