@@ -85,7 +85,6 @@ class MariaDBStack(Stack):
       }
     )
 
-    # db_cluster_name = self.node.try_get_context('db_cluster_name')
     #XXX: aws_rds.Credentials.from_username(username, ...) can not be given user specific Secret name
     # therefore, first create Secret and then use it to create database
     db_secret_name = self.node.try_get_context('db_secret_name')
