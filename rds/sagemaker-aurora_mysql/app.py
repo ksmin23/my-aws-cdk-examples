@@ -100,29 +100,22 @@ class SagemakerAuroraMysqlStack(Stack):
     )
 
     db_cluster_name = self.node.try_get_context('db_cluster_name')
-#    #XXX: aws_rds.Credentials.from_username(username, ...) can not be given user specific Secret name
-#    #XXX: therefore, first create Secret and then use it to create database
-#    db_secret_name = self.node.try_get_context('db_secret_name')
-#    #XXX: arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
-#    db_secret_arn = 'arn:aws:secretsmanager:{region}:{account}:secret:{resource_name}'.format(
-#      region=core.Aws.REGION, account=core.Aws.ACCOUNT_ID, resource_name=db_secret_name)
-#    db_secret = aws_secretsmanager.Secret.from_secret_arn(self, 'DBSecretFromArn', db_secret_arn)
-#    rds_credentials = aws_rds.Credentials.from_secret(db_secret)
     rds_credentials = aws_rds.Credentials.from_generated_secret("admin")
     db_cluster = aws_rds.DatabaseCluster(self, 'Database',
       engine=rds_engine,
       credentials=rds_credentials,
-      instance_props={
-        'instance_type': aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
-        'parameter_group': rds_db_param_group,
-        'vpc_subnets': {
-          'subnet_type': aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
-        },
-        'vpc': vpc,
-        'auto_minor_version_upgrade': False,
-        'security_groups': [sg_mysql_server]
-      },
-      instances=2,
+      writer=aws_rds.ClusterInstance.provisioned("writer",
+        instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
+        parameter_group=rds_db_param_group,
+        auto_minor_version_upgrade=False,
+      ),
+      readers=[
+        aws_rds.ClusterInstance.provisioned("reader",
+          instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
+          parameter_group=rds_db_param_group,
+          auto_minor_version_upgrade=False
+        )
+      ],
       parameter_group=rds_cluster_param_group,
       cloudwatch_logs_retention=aws_logs.RetentionDays.THREE_DAYS,
       cluster_identifier=db_cluster_name,
@@ -130,7 +123,10 @@ class SagemakerAuroraMysqlStack(Stack):
       backup=aws_rds.BackupProps(
         retention=cdk.Duration.days(3),
         preferred_window="03:00-04:00"
-      )
+      ),
+      security_groups=[sg_mysql_server],
+      vpc=vpc,
+      vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS)
     )
 
     sagemaker_notebook_role_policy_doc = aws_iam.PolicyDocument()
