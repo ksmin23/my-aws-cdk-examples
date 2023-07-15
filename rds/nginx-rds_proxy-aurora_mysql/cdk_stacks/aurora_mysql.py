@@ -104,7 +104,8 @@ class AuroraMysqlStack(Stack):
         aws_rds.ClusterInstance.provisioned("reader",
           instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
           parameter_group=rds_db_param_group,
-          auto_minor_version_upgrade=False),
+          auto_minor_version_upgrade=False
+        )
       ],
       parameter_group=rds_cluster_param_group,
       cloudwatch_logs_retention=aws_logs.RetentionDays.THREE_DAYS,
