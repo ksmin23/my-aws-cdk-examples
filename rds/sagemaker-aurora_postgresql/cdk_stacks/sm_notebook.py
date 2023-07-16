@@ -62,8 +62,7 @@ pip install --upgrade pretty_errors
 source /home/ec2-user/anaconda3/bin/deactivate
 cd /home/ec2-user/SageMaker
 wget -N https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
-wget -N https://raw.githubusercontent.com/ksmin23/my-aws-cdk-examples/main/rds/sagemaker-aurora_mysql/ipython-sql.ipynb
-# wget -N https://raw.githubusercontent.com/ksmin23/my-aws-cdk-examples/main/rds/sagemaker-aurora_postgresql/ipython-sql.ipynb
+wget -N https://raw.githubusercontent.com/ksmin23/my-aws-cdk-examples/main/rds/sagemaker-aurora_postgresql/ipython-sql-postgresql.ipynb
 EOF
 '''.format(AWS_Region=cdk.Aws.REGION)
 
