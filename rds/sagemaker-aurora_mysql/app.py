@@ -188,7 +188,7 @@ EOF
     cdk.CfnOutput(self, 'DBClusterName', value=db_cluster.cluster_identifier, export_name='DBClusterName')
     cdk.CfnOutput(self, 'DBCluster', value=db_cluster.cluster_endpoint.socket_address, export_name='DBCluster')
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_secretsmanager/README.html
-    # secret_arn="arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>",
+    # secret_arn="arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>"
     cdk.CfnOutput(self, 'DBSecret', value=db_cluster.secret.secret_name, export_name='DBSecret')
 
     cdk.CfnOutput(self, 'SageMakerRole', value=sagemaker_notebook_role.role_name, export_name='SageMakerRole')
