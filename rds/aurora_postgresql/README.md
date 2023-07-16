@@ -153,5 +153,6 @@ Enjoy!
 
  * [PostgreSQL Cheat Sheet](https://postgrescheatsheet.com/#/connections)
  * [Postgresql Manuals](https://www.postgresql.org/docs/)
+ * [PostgreSQL Tutorial](https://www.postgresqltutorial.com/)
  * [Best practices with Amazon Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.BestPractices.html)
  * [Managing PostgreSQL users and roles (2019-03-04)](https://aws.amazon.com/ko/blogs/database/managing-postgresql-users-and-roles/)
