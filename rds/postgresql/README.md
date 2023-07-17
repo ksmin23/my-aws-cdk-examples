@@ -89,6 +89,8 @@ Enjoy!
 
 2. Connect to PostgreSQL
 
+    The user name and password of the master user are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `rds!cluster-xxxxxxxxxxxx`. (For more information, see [here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html).)
+
     <pre>
     $ psql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -Upostgres -W
     psql (13.3, server 13.4)
@@ -143,3 +145,4 @@ Enjoy!
  * [PostgreSQL Cheat Sheet](https://postgrescheatsheet.com/#/connections)
  * [Postgresql Manuals](https://www.postgresql.org/docs/)
  * [PostgreSQL Tutorial](https://www.postgresqltutorial.com/)
+ * [Password management with Amazon RDS and AWS Secrets Manager](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html)
