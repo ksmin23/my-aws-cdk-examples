@@ -45,41 +45,47 @@ class AuroraPostgresqlStack(Stack):
     db_cluster_name = self.node.try_get_context('db_cluster_name')
     rds_credentials = aws_rds.Credentials.from_generated_secret("postgres")
 
-    rds_engine = aws_rds.DatabaseClusterEngine.aurora_postgres(version=aws_rds.AuroraPostgresEngineVersion.VER_15_2)
+    AURORA_POSTGRES_ENGINE_VERSION = aws_rds.AuroraPostgresEngineVersion.of(
+      aurora_postgres_full_version="15.3",
+      aurora_postgres_major_version="15")
+    rds_engine = aws_rds.DatabaseClusterEngine.aurora_postgres(version=AURORA_POSTGRES_ENGINE_VERSION)
 
     #XXX: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Reference.ParameterGroups.html#AuroraPostgreSQL.Reference.Parameters.Cluster
     rds_cluster_param_group = aws_rds.ParameterGroup(self, 'AuroraPostgreSQLClusterParamGroup',
       engine=rds_engine,
-      description='Custom cluster parameter group for aurora-postgresql15',
+      description=f'Custom cluster parameter group for aurora-postgresql{AURORA_POSTGRES_ENGINE_VERSION.aurora_postgres_major_version}',
       parameters={
         'log_min_duration_statement': '15000', # 15 sec
         'default_transaction_isolation': 'read committed',
-        'client_encoding': 'UTF8'
+        'client_encoding': 'UTF8',
+        'rds.allowed_extensions': '*',
+        'shared_preload_libraries': 'pg_stat_statements,pg_similarity'
       }
     )
 
     #XXX: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Reference.ParameterGroups.html#AuroraPostgreSQL.Reference.Parameters.Instance
     rds_db_param_group = aws_rds.ParameterGroup(self, 'AuroraPostgreSQLDBParamGroup',
       engine=rds_engine,
-      description='Custom parameter group for aurora-postgresql15',
+      description=f'Custom parameter group for aurora-postgresql{AURORA_POSTGRES_ENGINE_VERSION.aurora_postgres_major_version}',
       parameters={
         'log_min_duration_statement': '15000', # 15 sec
         'default_transaction_isolation': 'read committed',
-        'shared_preload_libraries': 'pg_stat_statements'
+        'rds.allowed_extensions': '*',
+        'shared_preload_libraries': 'pg_stat_statements,pg_similarity'
       }
     )
 
-    db_cluster = aws_rds.DatabaseCluster(self, 'Database',
+    db_cluster = aws_rds.DatabaseCluster(self, 'AuroraPostgresDBCluster',
       engine=rds_engine,
       credentials=rds_credentials, # A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
-      writer=aws_rds.ClusterInstance.provisioned("writer",
-        instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
+      writer=aws_rds.ClusterInstance.provisioned("Writer",
+        instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.MEMORY6_GRAVITON, aws_ec2.InstanceSize.LARGE),
         parameter_group=rds_db_param_group,
         auto_minor_version_upgrade=False,
       ),
       readers=[
-        aws_rds.ClusterInstance.provisioned("reader",
-          instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
+        aws_rds.ClusterInstance.provisioned("Reader",
+          instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.MEMORY6_GRAVITON, aws_ec2.InstanceSize.LARGE),
           parameter_group=rds_db_param_group,
           auto_minor_version_upgrade=False
         )

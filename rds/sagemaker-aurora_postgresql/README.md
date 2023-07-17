@@ -86,3 +86,8 @@ Enjoy!
 
  * [PostgreSQL Tutorial](https://www.postgresqltutorial.com/)
  * [psycopg2-binary](https://pypi.org/project/psycopg2-binary/) - Python-PostgreSQL Database Adapter that is a stand-alone package, not requiring a compiler or external libraries
+ * [Supported DB engines for DB instance classes](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support)
+ * [Extension versions for Amazon Aurora PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/AuroraPostgreSQL.Extensions.html)
+ * [Amazon Aurora PostgreSQL now supports pgvector for vector storage and similarity search (2023-07-13)](https://aws.amazon.com/about-aws/whats-new/2023/07/amazon-aurora-postgresql-pgvector-vector-storage-similarity-search/)
+ * [Amazon RDS for PostgreSQL now supports pgvector for simplified ML model integration (2023-05-03)](https://aws.amazon.com/about-aws/whats-new/2023/05/amazon-rds-postgresql-pgvector-ml-model-integration/)
+
