@@ -25,7 +25,6 @@ class SageMakerNotebookStack(Stack):
       description='security group for sagmaker notebook instances',
       security_group_name='sagemaker-nb-sg'
     )
-    sg_sagemaker_nb.add_egress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.all_traffic())
     sg_sagemaker_nb.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(5432),
       description='postgresql')
     sg_sagemaker_nb.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(443),
