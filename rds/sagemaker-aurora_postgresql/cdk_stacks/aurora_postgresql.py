@@ -103,7 +103,6 @@ class AuroraPostgresqlStack(Stack):
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS)
     )
 
-    self.rds_credentials = db_cluster.secret
     self.sg_rds_client = sg_postgresql_client
 
     cdk.CfnOutput(self, 'DBClusterEndpoint', value=db_cluster.cluster_endpoint.socket_address, export_name='DBClusterEndpoint')

@@ -28,7 +28,6 @@ aurora_pgsql_stack.add_dependency(vpc_stack)
 sm_notebook_stack = SageMakerNotebookStack(app, 'SMAuroraPgSQLNotebookStack',
   vpc_stack.vpc,
   aurora_pgsql_stack.sg_rds_client,
-  aurora_pgsql_stack.rds_credentials,
   env=APP_ENV
 )
 sm_notebook_stack.add_dependency(aurora_pgsql_stack)

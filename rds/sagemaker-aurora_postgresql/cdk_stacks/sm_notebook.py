@@ -16,7 +16,7 @@ from constructs import Construct
 
 class SageMakerNotebookStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, vpc, sg_rds_client, rds_credentials, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str, vpc, sg_rds_client, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
     sg_sagemaker_nb = aws_ec2.SecurityGroup(self, 'SageMakerNotebookSG',
@@ -25,17 +25,24 @@ class SageMakerNotebookStack(Stack):
       description='security group for sagmaker notebook instances',
       security_group_name='sagemaker-nb-sg'
     )
-    sg_sagemaker_nb.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(5432),
-      description='postgresql')
     sg_sagemaker_nb.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(443),
-      description='httos')
+      description='https')
     cdk.Tags.of(sg_sagemaker_nb).add('Name', 'sagemaker-nb-sg')
 
     sagemaker_notebook_role_policy_doc = aws_iam.PolicyDocument()
     sagemaker_notebook_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
-      "resources": [rds_credentials.secret_full_arn],
+      "resources": ["*"],
       "actions": ["secretsmanager:GetSecretValue"]
+    }))
+
+    sagemaker_notebook_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:s3:::sagemaker-*"],
+      "actions": ["s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"]
     }))
 
     sagemaker_notebook_role = aws_iam.Role(self, 'SageMakerNotebookRoleForRDS',
@@ -43,7 +50,11 @@ class SageMakerNotebookStack(Stack):
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       inline_policies={
         'sagemaker-nb-custom-policy': sagemaker_notebook_role_policy_doc
-      }
+      },
+      managed_policies=[
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AWSCloudFormationReadOnlyAccess')
+      ]
     )
 
     cf_readonly_access_policy = aws_iam.ManagedPolicy.from_aws_managed_policy_name('AWSCloudFormationReadOnlyAccess')
