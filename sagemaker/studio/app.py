@@ -14,7 +14,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-random.seed(47)
+random.seed(23)
 
 class SageMakerStudioStack(Stack):
 
@@ -45,89 +45,149 @@ class SageMakerStudioStack(Stack):
       }
     )
 
-    sg_sm_instance = aws_ec2.SecurityGroup(self, "SageMakerStudioSG",
-      vpc=vpc,
-      allow_all_outbound=True,
-      description='Security group with no ingress rule',
-      security_group_name='sagemaker-studio-sg'
-    )
-    sg_sm_instance.add_ingress_rule(peer=sg_sm_instance, connection=aws_ec2.Port.all_traffic(), description='sagemaker studio security group')
-    cdk.Tags.of(sg_sm_instance).add('Name', 'sagemaker-studio-sg')
-
     sagemaker_execution_policy_doc = aws_iam.PolicyDocument()
     sagemaker_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
       "resources": ["arn:aws:s3:::*"],
-      "actions": ["s3:GetObject",
+      "actions": [
+        "s3:GetObject",
         "s3:PutObject",
         "s3:DeleteObject",
-        "s3:ListBucket"]
+        "s3:ListBucket"
+      ]
     }))
 
-    sagemaker_emr_execution_policy_doc = aws_iam.PolicyDocument()
-    sagemaker_emr_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+    sagemaker_docker_build_policy_doc = aws_iam.PolicyDocument()
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
       "resources": ["*"],
-      "actions": ["iam:PassRole"],
+      "actions": ["ecr:GetAuthorizationToken"]
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:ListImages",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart",
+        "ecr:CreateRepository",
+        "ecr:GetAuthorizationToken",
+        "ec2:DescribeAvailabilityZones"
+      ]
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:codebuild:*:*:project/sagemaker-studio*"],
+      "actions": [
+        "codebuild:DeleteProject",
+        "codebuild:CreateProject",
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild"
+      ]
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*"],
+      "actions": ["logs:CreateLogStream"],
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*:log-stream:*"], 
+      "actions": [
+        "logs:GetLogEvents",
+        "logs:PutLogEvents"
+      ]
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": ["logs:CreateLogGroup"]
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:s3:::sagemaker-*/*"],
+      "actions": [
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutObject"
+      ]
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:s3:::sagemaker*"],
+      "actions": ["s3:CreateBucket"],
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "iam:GetRole",
+        "iam:ListRoles"
+      ]
+    }))
+
+    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:iam::*:role/*"],
       "conditions": {
-        "StringEquals": {
-          "iam:PassedToService": "sagemaker.amazonaws.com"
+        "StringLikeIfExists": {
+          "iam:PassedToService": [
+            "codebuild.amazonaws.com"
+          ]
         }
       },
-      "sid": "AllowPassRoleSageMaker"
+      "actions": ["iam:PassRole"]
     }))
 
-    sagemaker_emr_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["*"],
-      "actions": ["elasticmapreduce:ListInstances",
-        "elasticmapreduce:DescribeCluster",
-        "elasticmapreduce:DescribeSecurityConfiguration",
-        "iam:CreateServiceLinkedRole",
-        "iam:GetRole"]
-    }))
-
-    sagemaker_emr_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:elasticmapreduce:*:*:cluster/*"],
-      "actions": ["elasticmapreduce:DescribeCluster",
-        "elasticmapreduce:ListInstanceGroups"]
-    }))
-
-    sagemaker_emr_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["*"],
-      "actions": ["elasticmapreduce:ListClusters"]
-    }))
-
-    sagemaker_emr_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
+    sagemaker_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
       role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=''.join(random.choices((string.digits), k=5))),
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       path='/',
       inline_policies={
         'sagemaker-execution-policy': sagemaker_execution_policy_doc,
-        #XXX: add additional IAM Policy to use EMR in SageMaker Studio
-        # https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-studio-notebooks-backed-by-spark-in-amazon-emr/
-        'sagemaker-emr': sagemaker_emr_execution_policy_doc
+        'sagemaker-docker-build-policy': sagemaker_docker_build_policy_doc,
       },
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerCanvasFullAccess')
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerCanvasFullAccess'),
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AWSCloudFormationReadOnlyAccess'),
       ]
     )
 
+    #XXX: To use the sm-docker CLI, the Amazon SageMaker execution role used by the Studio notebook
+    # environment should have a trust policy with CodeBuild
+    sagemaker_execution_role.assume_role_policy.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "principals": [aws_iam.ServicePrincipal('codebuild.amazonaws.com')],
+      "actions": ["sts:AssumeRole"]
+    }))
+
     sm_studio_user_settings = aws_sagemaker.CfnDomain.UserSettingsProperty(
-      execution_role=sagemaker_emr_execution_role.role_arn,
-      security_groups=[sg_sm_instance.security_group_id]
+      execution_role=sagemaker_execution_role.role_arn
     )
 
     sagemaker_studio_domain = aws_sagemaker.CfnDomain(self, 'SageMakerStudioDomain',
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
-      domain_name='sm-studio-workshop',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
+      domain_name='studio-public',
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PUBLIC).subnet_ids,
       vpc_id=vpc.vpc_id,
-      app_network_access_type='VpcOnly' # [PublicInternetOnly | VpcOnly]
+      app_network_access_type='PublicInternetOnly' # [PublicInternetOnly | VpcOnly]
     )
 
     #XXX: https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set
@@ -140,8 +200,7 @@ class SageMakerStudioStack(Stack):
           instance_type="system",
           sage_maker_image_arn=sagmaker_jupyerlab_arn
         )
-      ),
-      security_groups=[sg_sm_instance.security_group_id]
+      )
     )
 
     sagemaker_user_profile = aws_sagemaker.CfnUserProfile(self, 'SageMakerStudioUserProfile',
@@ -155,7 +214,7 @@ class SageMakerStudioStack(Stack):
 
 
 app = cdk.App()
-SageMakerStudioStack(app, "SageMakerStudioStack", env=cdk.Environment(
+SageMakerStudioStack(app, "SageMakerStudioPublicStack", env=cdk.Environment(
   account=os.getenv('CDK_DEFAULT_ACCOUNT'),
   region=os.getenv('CDK_DEFAULT_REGION')))
 

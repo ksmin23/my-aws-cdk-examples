@@ -1,7 +1,13 @@
 
 # Amazon SageMaker Studio
 
-This is Amazon SageMaker Studio with CDK (Python).
+![studio-vpc-internet](./studio-vpc-internet.png)
+
+This CDK Python project is for Amazon SageMaker Studio.
+
+By default, SageMaker Studio provides a network interface that allows communication with the internet through a VPC managed by SageMaker.
+Traffic to AWS services like Amazon S3 and CloudWatch goes through an internet gateway, as does traffic that accesses the SageMaker API and SageMaker runtime. Traffic between the domain and your Amazon EFS volume goes through the VPC that you specified when you onboarded to Studio or called the [CreateDomain](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateDomain.html) API.
+The above diagram shows the default configuration.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -92,10 +98,9 @@ Delete the CloudFormation stack by running the below command.
 
 ## Learn more
 
+ * [Securing Amazon SageMaker Studio connectivity using a private VPC (2020-10-22)](https://aws.amazon.com/blogs/machine-learning/securing-amazon-sagemaker-studio-connectivity-using-a-private-vpc/)
+ * [Connect SageMaker Studio Notebooks in a VPC to External Resources](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html)
  * [Amazon SageMaker - Setting a default JupyterLab version](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set)
- * [Perform interactive data processing using Spark in Amazon SageMaker Studio Notebooks (2021-03-17)](https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-studio-notebooks-backed-by-spark-in-amazon-emr/)
- * [Build Amazon SageMaker notebooks backed by Spark in Amazon EMR (2018-01-05)](https://aws.amazon.com/blogs/machine-learning/build-amazon-sagemaker-notebooks-backed-by-spark-in-amazon-emr/)
- * [Amazon SageMaker - Set Up a Connection to an Amazon EMR Cluster](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-emr.html)
  * [SageMaker Studio Permissions Required to Use Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-studio-updates.html)
  * [Automate Amazon SageMaker Studio setup using AWS CDK (2021-06-16)](https://aws.amazon.com/ko/blogs/machine-learning/automate-amazon-sagemaker-studio-setup-using-aws-cdk/)
    * [aws-samples/aws-cdk-sagemaker-studio](https://github.com/aws-samples/aws-cdk-sagemaker-studio)
