@@ -3,7 +3,11 @@
 
 ![sagemaker-studio-in-vpc](./studio-vpc-private.png)
 
-This is Amazon SageMaker Studio with CDK (Python).
+This CDK Python project is for Amazon SageMaker Studio with `VPC only` network access type.
+
+As a result, you won't be able to run a Studio notebook unless your VPC has an interface endpoint to the SageMaker API and runtime,
+or a NAT gateway with internet access, and your security groups allow outbound connections.
+The above diagram shows a configuration for using `VPC-only` mode.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
