@@ -79,6 +79,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [redshift-streaming-ingestion/from-msk-serverless](./redshift-streaming-ingestion/from-msk-serverless/) | ![redshift_streaming_from_msk_serverless](./redshift-streaming-ingestion/from-msk-serverless/redshift_streaming_from_msk_serverless.svg) | redshift streaming ingestion from msk serverless |
 | [sagemaker/notebook](./sagemaker/notebook/) | Launch an Amazon SageMaker Notebook Instance | sagemaker notebook instance |
 | [sagemaker/studio](./sagemaker/studio/) | Launch an Amazon SageMaker Studio | sagemaker studio |
+| [sagemaker/studio-in-vpc](./sagemaker/studio-in-vpc/) | ![studio-vpc-private](./sagemaker/studio-in-vpc/studio-vpc-private.png) | sagemaker studio in a Private VPC |
 | [sagemaker/fsx-lustre](./sagemaker/fsx-lustre/) | Training Jobs with FileSystemInput using Amazon FSx for Lustre | sagemaker studio, FSx for Lustre (FSxLustre) |
 
 Enjoy!
