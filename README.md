@@ -71,6 +71,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [rds/nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/) | ![nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/nginx-rds-proxy-aurora_mysql-arch.svg) | NGINX, aurora mysql, secrets manager |
 | [rds/sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/) | ![sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/mysql-sagemaker-arch.svg) | aurora mysql, secrets manager, sagemaker notebook |
 | [rds/sagemaker-aurora_postgresql](./rds/sagemaker-aurora_postgresql/) | ![sagemaker-aurora_postgresql](./rds/sagemaker-aurora_postgresql/postgresql-sagemaker-arch.svg) | aurora postgresql, secrets manager, sagemaker notebook |
+| [rds/sagemaker-studio-aurora_postgresql](./rds/sagemaker-studio-aurora_postgresql/) | ![sagemaker-studio-aurora_postgresql](./rds/sagemaker-studio-aurora_postgresql/postgresql-sagemaker-in-vpc-arch.svg) | aurora postgresql, secrets manager, sagemaker studio in vpc |
 | [redshift/cfn](./redshift/cfn) | ![redshift-cfn-arch](./redshift/cfn/redshift-cfn-arch.svg) | redshift |
 | [redshift/alpha](./redshift/redshift_alpha/) | ![redshift-cfn-arch](./redshift/redshift_alpha/redshift-alpha-arch.svg) | redshift |
 | [redshift-serverless](./redshift-serverless/) | ![redshift-serverless-arch](./redshift-serverless/redshift-serverless-arch.svg) | redshift-serverless |
