@@ -86,7 +86,7 @@ class SageMakerStudioStack(Stack):
 
     sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*:log-stream:*"], 
+      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*:log-stream:*"],
       "actions": [
         "logs:GetLogEvents",
         "logs:PutLogEvents"
@@ -176,7 +176,7 @@ class SageMakerStudioStack(Stack):
     sg_sagemaker_domain.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(443),
       description='https')
     cdk.Tags.of(sg_sagemaker_domain).add('Name', 'sagemaker-studio-domain-sg')
-  
+
     sagemaker_studio_domain = aws_sagemaker.CfnDomain(self, 'SageMakerStudioDomain',
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
@@ -209,7 +209,10 @@ class SageMakerStudioStack(Stack):
       user_settings=default_user_settings
     )
 
-    cdk.CfnOutput(self, f'{self.stack_name}-DomainUrl', value=sagemaker_studio_domain.attr_url)
-    cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
-    cdk.CfnOutput(self, f'{self.stack_name}-UserProfileName', value=sagemaker_user_profile.user_profile_name)
+    cdk.CfnOutput(self, 'DomainUrl', value=sagemaker_studio_domain.attr_url,
+                  export_name=f'{self.stack_name}-DomainUrl')
+    cdk.CfnOutput(self, 'DomainId', value=sagemaker_user_profile.domain_id,
+                  export_name=f'{self.stack_name}-DomainId')
+    cdk.CfnOutput(self, 'UserProfileName', value=sagemaker_user_profile.user_profile_name,
+                  export_name=f'{self.stack_name}-UserProfileName')
 
