@@ -82,6 +82,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [sagemaker/studio](./sagemaker/studio/) | ![studio-vpc-internet](./sagemaker/studio/studio-vpc-internet.png) | sagemaker studio |
 | [sagemaker/studio-in-vpc](./sagemaker/studio-in-vpc/) | ![studio-vpc-private](./sagemaker/studio-in-vpc/studio-vpc-private.png) | sagemaker studio in a Private VPC |
 | [sagemaker/fsx-lustre](./sagemaker/fsx-lustre/) | Training Jobs with FileSystemInput using Amazon FSx for Lustre | sagemaker studio, FSx for Lustre (FSxLustre) |
+| [sagemaker/sagemaker-glue](./sagemaker/sagemaker-glue/) | ![studio-glue-arch](./sagemaker/sagemaker-glue/sagemaker-glue-arch.svg)  | sagemaker studio, aws glue |
 
 Enjoy!
 
