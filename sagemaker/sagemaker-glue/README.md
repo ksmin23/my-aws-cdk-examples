@@ -73,9 +73,11 @@ Delete the CloudFormation stack by running the below command.
 
 Enjoy!
 
+
 ## Launch a Glue interactive session on SageMaker Studio
 
 After you have created the roles, policies, and SageMaker domain, you can launch your Glue interactive session in SageMaker Studio by following the instructions: [Launch your Glue interactive session on SageMaker Studio](https://docs.aws.amazon.com/sagemaker/latest/dg/getting-started-glue-sm.html#glue-sm-launch)
+
 
 ## References
 
