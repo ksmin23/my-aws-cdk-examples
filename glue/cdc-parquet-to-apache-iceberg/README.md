@@ -71,7 +71,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth 
+(.venv) $ cdk synth
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
@@ -157,7 +157,7 @@ command.
    (.venv) $ ls src/main/python/etl/
     employee-details-cdc-etl.py
    (.venv) $ aws s3 mb <i>s3://aws-glue-assets-123456789012-us-east-1</i> --region <i>us-east-1</i>
-   (.venv) $ aws s3 cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-12345678912-us-east-1/scripts/employee-details-cdc-etl.py</i>
+   (.venv) $ aws s3 cp employee-details-cdc-etl.py <i>s3://aws-glue-assets-123456789012-us-east-1/scripts/employee-details-cdc-etl.py</i>
    (.venv) $ cdk deploy --require-approval never
    </pre>
 5. Make sure the glue job to access the Iceberg tables in the database, otherwise grant the glue job to permissions

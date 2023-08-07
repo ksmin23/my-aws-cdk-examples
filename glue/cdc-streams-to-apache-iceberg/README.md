@@ -390,7 +390,7 @@ command.
      </pre>
    * Solution:
 
-     The role assumed by cdk is not a data lake administrator. (e.g., `cdk-hnb659fds-deploy-role-12345678912-us-east-1`) <br/>
+     The role assumed by cdk is not a data lake administrator. (e.g., `cdk-hnb659fds-deploy-role-123456789012-us-east-1`) <br/>
      So, deploying PrincipalPermissions meets the error such as:
 
      `Resource does not exist or requester is not authorized to access requested permissions.`

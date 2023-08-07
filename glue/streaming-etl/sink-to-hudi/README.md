@@ -58,7 +58,7 @@ For example:
   "glue_job_name": "hudi-streaming-from-kds-to-s3",
   "glue_job_input_arguments": {
     "--spark_checkpoint_s3_path": "s3://hudi-demo-bucket-atq4q5u/spark_checkpoints/",
-    "--s3_path_hudi": "s3://hudi-demo-bucket-atq4q5u/hudi_stuff/hudi_demo_table_cow/", 
+    "--s3_path_hudi": "s3://hudi-demo-bucket-atq4q5u/hudi_stuff/hudi_demo_table_cow/",
     "--database_name": "hudi_demo_db",
     "--hudi_table_name": "hudi_demo_table_cow",
     "--kinesis_table_name": "hudi_demo_kinesis_stream_table",
@@ -286,7 +286,7 @@ command.
      </pre>
    * Solution:
 
-     The role assumed by cdk is not a data lake administrator. (e.g., `cdk-hnb659fds-deploy-role-12345678912-us-east-1`) <br/>
+     The role assumed by cdk is not a data lake administrator. (e.g., `cdk-hnb659fds-deploy-role-123456789012-us-east-1`) <br/>
      So, deploying PrincipalPermissions meets the error such as:
 
      `Resource does not exist or requester is not authorized to access requested permissions.`
