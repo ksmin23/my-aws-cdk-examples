@@ -2,7 +2,7 @@
 
 ![elasticache-for-redis-arch](./elasticache-for-redis-arch.svg)
 
-This is a CDK Python project for Amazon ElastiCache for Redis Cluster.
+This is a CDK Python project for Amazon ElastiCache for Redis Cluster with only a primary node.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
