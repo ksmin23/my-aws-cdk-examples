@@ -19,10 +19,10 @@ app = cdk.App()
 vpc_stack = VpcStack(app, 'RedisClusterVPCStack',
   env=APP_ENV)
 
-sm_studio_stack = RedisClusterStack(app, 'RedisClusterStack',
+redis_cluster_stack = RedisClusterStack(app, 'RedisClusterStack',
   vpc_stack.vpc,
   env=APP_ENV
 )
-sm_studio_stack.add_dependency(vpc_stack)
+redis_cluster_stack.add_dependency(vpc_stack)
 
 app.synth()
