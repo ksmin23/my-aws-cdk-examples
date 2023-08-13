@@ -1,4 +1,4 @@
-# ElastiCache for Redis
+# ElastiCache for Redis Cluster
 
 ![elasticache-for-redis-arch](./elasticache-for-redis-cluster-arch.svg)
 
