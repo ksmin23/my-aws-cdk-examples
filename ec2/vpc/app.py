@@ -62,12 +62,16 @@ class VpcStack(Stack):
       subnet_selection=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC)
     )
 
-    cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id, export_name='BastionHostId')
-    cdk.CfnOutput(self, 'BastionHostPublicDNSName', value=bastion_host.instance_public_dns_name, export_name='BastionHostPublicDNSName')
+    cdk.CfnOutput(self, 'BastionHostId', value=bastion_host.instance_id,
+      export_name=f'{self.stack_name}-BastionHostId')
+    cdk.CfnOutput(self, 'BastionHostPublicDNSName', value=bastion_host.instance_public_dns_name,
+      export_name=f'{self.stack_name}-BastionHostPublicDNSName')
+    cdk.CfnOutput(self, 'VPCID', value=vpc.vpc_id,
+      export_name=f'{self.stack_name}-VPCID')
 
 
 app = cdk.App()
-VpcStack(app, "vpc", env=cdk.Environment(
+VpcStack(app, "VpcStack", env=cdk.Environment(
   account=os.environ["CDK_DEFAULT_ACCOUNT"],
   region=os.environ["CDK_DEFAULT_REGION"]))
 
