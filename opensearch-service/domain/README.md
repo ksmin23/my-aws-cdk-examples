@@ -85,53 +85,66 @@ aws iam create-service-linked-role --aws-service-name es.amazonaws.com
 Enjoy!
 
 ## Remotely access your Amazon OpenSearch Cluster using SSH tunnel from local machine
-1. To access the OpenSearch Cluster, add the ssh tunnel configuration to the ssh config file of the personal local PC as follows
+1. The Amazon OpenSearch cluster is provisioned in a VPC. Hence, the Amazon OpenSearch endpoint and dashboard are not available over the internet. In order to access the endpoints, we have to create a ssh tunnel and do local port forwarding.
+   1. **using SSH tunnel**
+      1. To access the OpenSearch Cluster, add the ssh tunnel configuration to the ssh config file of the personal local PC as follows
 
-    <pre>
-    # OpenSearch Tunnel
-    Host opstunnel
-        HostName <i>EC2-Public-IP-of-Bastion-Host</i>
-        User ec2-user
-        IdentitiesOnly yes
-        IdentityFile <i>Path-to-SSH-Public-Key</i>
-        LocalForward 9200 <i>OpenSearch-Endpoint</i>:443
-    </pre>
+         <pre>
+         # OpenSearch Tunnel
+         Host opstunnel
+             HostName <i>EC2-Public-IP-of-Bastion-Host</i>
+             User ec2-user
+             IdentitiesOnly yes
+             IdentityFile <i>Path-to-SSH-Public-Key</i>
+             LocalForward 9200 <i>OpenSearch-Endpoint</i>:443
+         </pre>
 
-    ex)
+         ex)
 
-    ```
-    ~$ ls -1 .ssh/
-    config
-    my-ec2-key-pair.pem
+         ```
+         ~$ ls -1 .ssh/
+         config
+         my-ec2-key-pair.pem
 
-    ~$ tail .ssh/config
-    # OpenSearch Tunnel
-    Host opstunnel
-        HostName 214.132.71.219
-        User ec2-user
-        IdentitiesOnly yes
-        IdentityFile ~/.ssh/my-ec2-key-pair.pem
-        LocalForward 9200 vpc-search-domain-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
+         ~$ tail .ssh/config
+         # OpenSearch Tunnel
+         Host opstunnel
+             HostName 214.132.71.219
+             User ec2-user
+             IdentitiesOnly yes
+             IdentityFile ~/.ssh/my-ec2-key-pair.pem
+             LocalForward 9200 vpc-search-domain-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
 
-    ~$
-    ```
+         ~$
+         ```
 
-    You can find the bastion host's public ip address as running the commands like this:
+         You can find the bastion host's public ip address as running the commands like this:
 
-    <pre>
-    $ BASTION_HOST_ID=$(aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "BastionHostBastionHostId")) | .[0].OutputValue')
-    $ aws ec2 describe-instances --instance-ids ${BASTION_HOST_ID} | jq -r '.Reservations[0].Instances[0].PublicIpAddress'
-    </pre>
+         <pre>
+         $ BASTION_HOST_ID=$(aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "BastionHostBastionHostId")) | .[0].OutputValue')
+         $ aws ec2 describe-instances --instance-ids ${BASTION_HOST_ID} | jq -r '.Reservations[0].Instances[0].PublicIpAddress'
+         </pre>
 
-2. Run `ssh -N opstunnel` in Terminal.
-3. Connect to `https://localhost:9200/_dashboards/` in a web browser.
-4. Enter the master user and password that you set up when you created the Amazon OpenSearch Service endpoint. The user and password is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `OpenSearchMasterUserSecret1-xxxxxxxxxxxx`.
-5. In the Welcome screen, click the toolbar icon to the left side of **Home** button. Choose **Stack Managerment**
+      2. Run `ssh -N opstunnel` in Terminal.
+   2. **using EC2 Instance Connect CLI** (`mssh`)
+      1. Install EC2 Instance Connect CLI
+         ```
+         sudo pip install ec2instanceconnectcli
+         ```
+      2. Run
+         <pre>mssh --region {<i>region</i>} ec2-user@{<i>bastion-ec2-instance-id</i>} -N -L 9200:{<i>opensearch-endpoint</i>}:443</pre>
+         + ex)
+         ```
+         $ mssh --region us-east-1 ec2-user@i-0203f0d6f37ccbe5b -N -L 9200:vpc-retail-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
+         ```
+2. Connect to `https://localhost:9200/_dashboards/app/login?` in a web browser.
+3. Enter the master user and password that you set up when you created the Amazon OpenSearch Service endpoint. The user and password is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `OpenSearchMasterUserSecret1-xxxxxxxxxxxx`.
+4. In the Welcome screen, click the toolbar icon to the left side of **Home** button. Choose **Stack Managerment**
    ![ops-dashboards-sidebar-menu](./resources/ops-dashboards-sidebar-menu.png)
-6. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.
+5. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.
    Since the log creation time of the test data is based on UTC, OpenSearch Dashboard’s Timezone is also set to UTC.
    ![ops-dashboards-stack-management-advanced-setting.png](./resources/ops-dashboards-stack-management-advanced-setting.png)
-7. If you would like to access the OpenSearch Cluster in a termial, open another terminal window, and then run the following commands: (in here, <i>`your-cloudformation-stack-name`</i> is `OpensearchStack`)
+6. If you would like to access the OpenSearch Cluster in a termial, open another terminal window, and then run the following commands: (in here, <i>`your-cloudformation-stack-name`</i> is `OpensearchStack`)
 
     <pre>
     $ MASTER_USER_SECRET_ID=$(aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "MasterUserSecretId")) | .[0].OutputValue')
@@ -149,6 +162,11 @@ Enjoy!
 - [Amazon OpenSearch Plugins by engine version](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html)
 - [Supported versions of OpenSearch and Elasticsearch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version)
 - [Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen)
+- [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
+   <pre>
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh --region us-east-1 ec2-user@i-001234a4bf70dec41EXAMPLE
+   </pre>
 
 #### Known Issues
 - [(aws-elasticsearch): Vpc.fromLookup returns dummy VPC if the L2 elasticsearch.Domain availabilityZoneCount is set to 3](https://github.com/aws/aws-cdk/issues/12078)
