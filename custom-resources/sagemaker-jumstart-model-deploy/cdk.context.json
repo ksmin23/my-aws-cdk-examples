@@ -1,0 +1,7 @@
+{
+    "lambda_layer_lib_s3_path": "s3://lambda-layer-resources/pylambda-layer/sagemaker-python-sdk-lib.zip",
+    "sagemaker_jumpstart_model_info": {
+      "model_id": "meta-textgeneration-llama-2-7b-f",
+      "endpoint_name": "meta-textgen-llama-2-7b-f"
+    }
+}
