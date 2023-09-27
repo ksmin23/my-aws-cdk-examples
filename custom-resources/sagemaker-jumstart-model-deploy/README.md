@@ -136,6 +136,45 @@ command.
 
 Once all CDK stacks have been successfully created, we can use SageMaker Endpoint.
 
+## Test
+
+For example, we can test SageMaker Endpoint that `meta-textgeneration-llama-2-7b-f` is deployed by running the following code in SageMaker Studio.
+
+```python
+import base64
+import json
+import boto3
+
+region = boto3.session.Session().region_name
+
+def query_endpoint(payload, endpoint_name=None, region_name='us-east-1'):
+    client = boto3.client("sagemaker-runtime", region_name=region_name)
+    response = client.invoke_endpoint(
+        EndpointName=endpoint_name,
+        ContentType="application/json",
+        Body=json.dumps(payload),
+        CustomAttributes="accept_eula=true", # eula: End User Licence Agreement
+    )
+    response = response["Body"].read().decode("utf8")
+    response = json.loads(response)
+    return response
+
+#TODO: Should create a right payload based on your ML model
+payload = {
+    "inputs": [
+        [
+            {"role": "system", "content": "Always answer with Haiku"},
+            {"role": "user", "content": "I am going to Paris, what should I see?"}
+        ]
+    ],
+    "parameters": {"max_new_tokens": 256, "top_p": 0.9, "temperature": 0.6}
+}
+
+TEXT2TEXT_ENDPOINT_NAME = "meta-textgen-llama-2-7b-f" #TODO: Replace your endpoint name
+result = query_endpoint(payload, TEXT2TEXT_ENDPOINT_NAME)[0]
+print(result)
+```
+
 ## Clean Up
 
 Delete the CloudFormation stack by running the below command.
@@ -156,6 +195,7 @@ Enjoy!
 
 ## References
 
+  * [SageMaker Python SDK - Deploy a Pre-Trained Model Directly to a SageMaker Endpoint](https://sagemaker.readthedocs.io/en/stable/overview.html#deploy-a-pre-trained-model-directly-to-a-sagemaker-endpoint)
   * [Use proprietary foundation models from Amazon SageMaker JumpStart in Amazon SageMaker Studio (2023-06-27)](https://aws.amazon.com/blogs/machine-learning/use-proprietary-foundation-models-from-amazon-sagemaker-jumpstart-in-amazon-sagemaker-studio/)
   * [AWS CDK TypeScript Example - Custom Resource](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/custom-resource)
   * [How to create a Lambda layer using a simulated Lambda environment with Docker](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)

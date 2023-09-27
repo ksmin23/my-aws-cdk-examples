@@ -32,7 +32,7 @@ class JumpStartModelDeployLambdaStack(Stack):
     lambda_fn_env = {
       'MODEL_ID': model_id,
       'ENDPOINT_NAME': endpoint_name,
-      'SAGEMAKER_IAM_ROLE_ARN': sagemaker_iam_role_arn,
+      'SAGEMAKER_IAM_ROLE_ARN': sagemaker_iam_role_arn
     }
 
     lambda_fn = aws_lambda.Function(self, "SMJumpStartModelDeployLambdaFn",
@@ -44,7 +44,7 @@ class JumpStartModelDeployLambdaStack(Stack):
       layers=[lambda_layer],
       environment=lambda_fn_env,
       timeout=cdk.Duration.minutes(15),
-      memory_size=1024,
+      memory_size=512,
       role=lambda_execution_role
     )
 

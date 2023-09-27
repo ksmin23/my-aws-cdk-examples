@@ -18,15 +18,15 @@ app = cdk.App()
 lambda_layer_stack = SageMakerLambdaLayerStack(app, "SageMakerPySDKLambdaLayerStack",
   env=AWS_ENV)
 
-sagemaker_exec_iam_role_stack = SageMakerIAMRoleStack(app, "SageMakerExecIAMRoleStack",
+sagemaker_endpoint_iam_role_stack = SageMakerIAMRoleStack(app, "SageMakerEndpointIAMRoleStack",
   env=AWS_ENV)
-sagemaker_exec_iam_role_stack.add_dependency(lambda_layer_stack)
+sagemaker_endpoint_iam_role_stack.add_dependency(lambda_layer_stack)
 
 lambda_function_stack = JumpStartModelDeployLambdaStack(app, "SMJumpStartModelDeployLambdaStack",
   lambda_layer_stack.lambda_layer,
-  sagemaker_iam_role_arn=sagemaker_exec_iam_role_stack.sagemaker_execution_role_arn,
+  sagemaker_iam_role_arn=sagemaker_endpoint_iam_role_stack.sagemaker_endpoint_role_arn,
   env=AWS_ENV)
-lambda_function_stack.add_dependency(sagemaker_exec_iam_role_stack)
+lambda_function_stack.add_dependency(sagemaker_endpoint_iam_role_stack)
 
 custom_resource_stack = CustomResourceStack(app, "SMJumpStartModelEndpointStack",
   lambda_function_stack.lambda_function_arn,

@@ -24,7 +24,7 @@ def deploy_sagemaker_jumpstart_model(model_id, endpoint_name, iam_role_arn):
       role=iam_role_arn)
     predictor = model.deploy(endpoint_name=endpoint_name,
       wait=False)
-    logger.info("SageMaker Endpoint Name: {predictor.endpoint_name}")
+    logger.info(f"SageMaker Endpoint Name: {predictor.endpoint_name}")
     return predictor
   except Exception as ex:
     traceback.print_exc()
@@ -46,9 +46,11 @@ def lambda_handler(event, context):
   if request_type == 'Update': pass
   if request_type == 'Delete':
     try:
+      logger.info(f"Deleting SageMaker Endpoint: {ENDPOINT_NAME}")
+
       predictor = Predictor(ENDPOINT_NAME)
       predictor.delete_model()
-      predictor.delete_endpoint()
+      predictor.delete_endpoint(delete_endpoint_config=True)
     except ClientError as ex:
       status = cfnresponse.SUCCESS
       traceback.print_exc()
