@@ -99,7 +99,7 @@ Or, we can provision each CDK stack one at a time like this:
 ```
 (.venv) $ cdk list
 SageMakerPySDKLambdaLayerStack
-SageMakerExecIAMRoleStack
+SageMakerEndpointIAMRoleStack
 SMJumpStartModelDeployLambdaStack
 SMJumpStartModelEndpointStack
 ```
@@ -113,7 +113,7 @@ SMJumpStartModelEndpointStack
 #### Step 3: Create IAM Role for SageMaker Endpoint
 
 ```
-(.venv) $ cdk deploy --require-approval never SageMakerExecIAMRoleStack
+(.venv) $ cdk deploy --require-approval never SageMakerEndpointIAMRoleStack
 ```
 
 #### Step 2: Create Amazon Lambda Function for Custome Resource Provider
