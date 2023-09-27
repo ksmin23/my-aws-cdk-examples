@@ -134,7 +134,7 @@ SMJumpStartModelEndpointStack
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
-Once all CDK stacks have been successfully created, we can use SageMaker Endpoint.**
+Once all CDK stacks have been successfully created, we can use SageMaker Endpoint.
 
 ## Clean Up
 
