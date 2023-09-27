@@ -1,0 +1,22 @@
+{
+  "lambda_layer_lib_s3_path": "s3://lambda-layer-resources/pylambda-layer/cfnresponse-lib.zip",
+  "kendra_index": {
+    "name": "webcrawl-index",
+    "edition": "ENTERPRISE_EDITION"
+  },
+  "kendra_data_source": {
+   "name": "webcrawl-ds",
+   "web_crawler_configuration": {
+    "site_maps": [
+     "https://docs.aws.amazon.com/lex/latest/dg/sitemap.xml",
+     "https://docs.aws.amazon.com/kendra/latest/dg/sitemap.xml",
+     "https://docs.aws.amazon.com/sagemaker/latest/dg/sitemap.xml"
+    ],
+    "url_inclusion_patterns": [
+     ".*https://docs.aws.amazon.com/lex/.*",
+     ".*https://docs.aws.amazon.com/kendra/.*",
+     ".*https://docs.aws.amazon.com/sagemaker/.*"
+    ]
+   }
+  }
+}
