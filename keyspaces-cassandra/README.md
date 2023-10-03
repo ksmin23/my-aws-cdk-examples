@@ -263,7 +263,7 @@ Enjoy!
 ## References
 
  * [Using **cqlsh** to connect to Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/programmatic.cqlsh.html)
- * [cqlsh-expansion](https://pypi.org/project/cqlsh-expansion/)
+ * [cqlsh-expansion](https://pypi.org/project/cqlsh-expansion/) - The utility extends native `cqlsh` functionality to include cloud native capabilities
  * [Loading data into Amazon Keyspaces with cqlsh (2020-04-21)](https://aws.amazon.com/blogs/database/loading-data-into-amazon-mcs-with-cqlsh/)
  * [How to set up command-line access to Amazon Keyspaces (for Apache Cassandra) by using the new developer toolkit Docker image (2021-01-06)](https://aws.amazon.com/blogs/database/how-to-set-up-command-line-access-to-amazon-keyspaces-for-apache-cassandra-by-using-the-new-developer-toolkit-docker-image/)
  * [CQL language reference for Amazon Keyspaces (for Apache Cassandra)](https://docs.aws.amazon.com/keyspaces/latest/devguide/cql.html)
