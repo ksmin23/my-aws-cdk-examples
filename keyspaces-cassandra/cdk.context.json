@@ -1,0 +1,44 @@
+{
+  "keyspace_config": {
+    "keyspace_name": "amazon",
+    "replication_specification": {
+      "replication_strategy": "SingleRegionStrategy"
+    }
+  },
+  "keyspace_tables": [
+    {
+      "keyspace_name": "amazon",
+      "partition_key_columns": [
+        {
+          "column_name": "id",
+          "column_type": "text"
+        }
+      ],
+      "clustering_key_columns": [
+        {
+          "column": {
+            "column_name": "time",
+            "column_type": "timeuuid"
+          },
+          "order_by": "ASC"
+        }
+      ],
+      "regular_columns": [
+        {
+          "column_name": "event",
+          "column_type": "text"
+        }
+      ],
+      "table_name": "eventstore",
+      "billing_mode": {
+        "mode": "ON_DEMAND"
+      },
+      "point_in_time_recovery_enabled": true,
+      "tags": {
+        "domain": "shoppingcart",
+        "app": "acme-commerce",
+        "pii": "true"
+      }
+    }
+  ]
+}
