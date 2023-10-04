@@ -30,7 +30,7 @@ class MskStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    # vpc_name = self.node.try_get_context('vpc_name')
+    # vpc_name = self.node.try_get_context('vpc_name') or "default"
     # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
     #   is_default=True,
     #   vpc_name=vpc_name)
@@ -127,7 +127,7 @@ class MskStack(Stack):
     msk_broker_storage_info = aws_msk.CfnCluster.StorageInfoProperty(
       ebs_storage_info=msk_broker_ebs_storage_info
     )
-    
+
     msk_broker_node_group_info = aws_msk.CfnCluster.BrokerNodeGroupInfoProperty(
       client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       instance_type=KAFA_BROKER_INSTANCE_TYPE.value_as_string,
@@ -149,17 +149,11 @@ class MskStack(Stack):
       # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
       kafka_version=KAFA_VERSION.value_as_string,
       number_of_broker_nodes=3,
-      encryption_info=msk_encryption_info, 
+      encryption_info=msk_encryption_info,
       enhanced_monitoring='PER_TOPIC_PER_BROKER'
     )
 
-    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux(
-      generation=aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-      edition=aws_ec2.AmazonLinuxEdition.STANDARD,
-      virtualization=aws_ec2.AmazonLinuxVirt.HVM,
-      storage=aws_ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
-      cpu_type=aws_ec2.AmazonLinuxCpuType.X86_64
-    )
+    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux2()
 
     KAFKA_CLIENT_EC2_SG_NAME = 'kafka-client-ec2-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_kafka_client_ec2_instance = aws_ec2.SecurityGroup(self, 'KafkaClientEC2InstanceSG',
@@ -195,8 +189,7 @@ class MskStack(Stack):
     msk_client_ec2_instance.add_security_group(sg_use_msk)
 
     commands = '''
-yum update -y 
-yum install python3.7 -y
+yum update -y
 yum install java-1.8.0-openjdk-devel -y
 
 cd /home/ec2-user
@@ -206,10 +199,6 @@ tar -xzf kafka_2.12-2.8.1.tgz
 ln -nsf kafka_2.12-2.8.1 kafka
 
 cd /home/ec2-user
-wget https://bootstrap.pypa.io/get-pip.py
-su -c "python3.7 get-pip.py --user" -s /bin/sh ec2-user
-su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
-
 chown -R ec2-user ./opt
 chgrp -R ec2-user ./opt
 
@@ -218,14 +207,25 @@ echo 'export PATH=$HOME/.local/bin:$HOME/opt/kafka/bin:$PATH' >> .bash_profile
 
     msk_client_ec2_instance.user_data.add_commands(commands)
 
-    cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name='StackName')
-    cdk.CfnOutput(self, 'VpcId', value=vpc.vpc_id, export_name='VpcId')
+    cdk.CfnOutput(self, 'StackName', value=self.stack_name, export_name=f'{self.stack_name}-StackName')
+    cdk.CfnOutput(self, 'VpcId', value=vpc.vpc_id, export_name=f'{self.stack_name}-VPCID')
 
-    cdk.CfnOutput(self, 'MSKSecurityGroupID', value=sg_msk_cluster.security_group_id, export_name='MSKSecurityGroupID')
-    cdk.CfnOutput(self, 'KafkaClientSecurityGroupID', value=sg_use_msk.security_group_id, export_name='KafkaClientSecurityGroupID')
-    cdk.CfnOutput(self, 'MSKClusterArn', value=msk_cluster.ref, export_name='MSKClusterArn')
+    cdk.CfnOutput(self, 'MSKSecurityGroupID', value=sg_msk_cluster.security_group_id,
+      export_name=f'{self.stack_name}-ClusterSecurityGroupID')
+    cdk.CfnOutput(self, 'KafkaClientSecurityGroupID', value=sg_use_msk.security_group_id,
+      export_name=f'{self.stack_name}-ClientSecurityGroupID')
+    cdk.CfnOutput(self, 'MSKClusterArn', value=msk_cluster.ref,
+      export_name=f'{self.stack_name}-MSKClusterArn')
 
-    cdk.CfnOutput(self, 'KafkaClientEC2InstancePublicDNS', value=msk_client_ec2_instance.instance_public_dns_name, export_name='KafkaClientEC2InstancePublicDNS')
+    cdk.CfnOutput(self, 'KafkaClientEC2InstancePublicDNS',
+      value=msk_client_ec2_instance.instance_public_dns_name,
+      export_name=f'{self.stack_name}-EC2InstancePublicDNS')
+    cdk.CfnOutput(self, 'KafkaClientEC2InstanceId',
+      value=msk_client_ec2_instance.instance_id,
+      export_name=f'{self.stack_name}-EC2InstanceId')
+    cdk.CfnOutput(self, 'KafkaClientEC2InstanceAZ',
+      value=msk_client_ec2_instance.instance_availability_zone,
+      export_name=f'{self.stack_name}-EC2InstanceAZ')
 
 
 app = cdk.App()

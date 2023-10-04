@@ -1,5 +1,5 @@
 
-# Managed Service for Kafka (MSK) CDK Python project!
+# Amazon Managed Service for Kafka (MSK) CDK Python project!
 
 ![msk-arch](./msk-arch.svg)
 
@@ -65,27 +65,10 @@ command.
 
 After MSK is succesfully created, you can now create topic, and produce and consume data on the topic in MSK as the following example.
 
-First, you should generate ssh key to access MSK client EC2 Host.
-```
-$ ssh-keygen
-Generating public/private rsa key pair.
-Enter file in which to save the key (~/.ssh/id_rsa): path/my-rsa-key
-```
-
-Next, you send the ssh public key into your EC2 Host.
-
-```
-$ aws ec2-instance-connect send-ssh-public-key \
-    --instance-id i-1234567890abcdef0 \
-    --instance-os-user ec2-user \
-    --availability-zone us-east-1a \
-    --ssh-public-key file://path/my-rsa-key.pub
-$ ssh -i /path/my-rsa-key ec2-user@10.0.0.0
-```
-
-After connect your EC2 Host, you can create a topic on the client host.
+First connect your EC2 Host using `mssh` command, you can create a topic on the client host.
 
 <pre>
+$ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
 $ cd opt/kafka
 $ export ZooKeeperConnectionString=<i>Your-ZooKeeper-Servers</i>
 $ bin/kafka-topics.sh --create \
@@ -106,18 +89,13 @@ $ bin/kafka-console-producer.sh \
 
 To consume data on the topic, open another terminal and connect the client host, and then run `kafka-console-consumer.sh` command.
 
-```
-$ aws ec2-instance-connect send-ssh-public-key \
-    --instance-id i-1234567890abcdef0 \
-    --instance-os-user ec2-user \
-    --availability-zone us-east-1a \
-    --ssh-public-key file://path/my-rsa-key.pub
-$ ssh -i /path/my-rsa-key ec2-user@10.0.0.0
+<pre>
+$ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
 $ bin/kafka-console-consumer.sh \
     --bootstrap-server $BootstrapBrokerString \
     --topic AWSKafkaTutorialTopic \
     --from-beginning
-```
+</pre>
 
 ## Useful commands
 
