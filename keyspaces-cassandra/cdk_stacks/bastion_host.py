@@ -46,10 +46,6 @@ yum -q update -y
 yum -q install -y jq
 
 cd /home/ec2-user
-# wget -q https://bootstrap.pypa.io/get-pip.py
-# su -c "python3.7 get-pip.py --user" -s /bin/sh ec2-user
-# su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
-
 curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
