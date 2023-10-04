@@ -76,18 +76,10 @@ class KafkaClientEC2InstanceStack(Stack):
 
     kafka_client_iam_policy.attach_to_role(kafka_client_ec2_instance_role)
 
-    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux(
-      generation=aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-      edition=aws_ec2.AmazonLinuxEdition.STANDARD,
-      virtualization=aws_ec2.AmazonLinuxVirt.HVM,
-      storage=aws_ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
-      cpu_type=aws_ec2.AmazonLinuxCpuType.X86_64
-    )
-
     msk_client_ec2_instance = aws_ec2.Instance(self, 'KafkaClientEC2Instance',
       instance_type=aws_ec2.InstanceType.of(instance_class=aws_ec2.InstanceClass.BURSTABLE2,
         instance_size=aws_ec2.InstanceSize.MICRO),
-      machine_image=amzn_linux,
+      machine_image=aws_ec2.MachineImage.latest_amazon_linux2(),
       vpc=vpc,
       availability_zone=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).availability_zones[0],
       instance_name='KafkaClientInstance',
@@ -98,7 +90,7 @@ class KafkaClientEC2InstanceStack(Stack):
     msk_client_ec2_instance.add_security_group(sg_msk_client)
 
     commands = '''
-yum update -y 
+yum update -y
 yum install python3.7 -y
 yum install java-11 -y
 
@@ -115,10 +107,6 @@ chown -R ec2-user /home/ec2-user/opt
 chgrp -R ec2-user /home/ec2-user/opt
 
 cd /home/ec2-user
-wget https://bootstrap.pypa.io/get-pip.py
-su -c "python3.7 get-pip.py --user" -s /bin/sh ec2-user
-su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
-
 cat <<EOF > msk_serverless_client.properties
 security.protocol=SASL_SSL
 sasl.mechanism=AWS_MSK_IAM
