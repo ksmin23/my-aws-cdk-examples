@@ -42,17 +42,15 @@ $ pip install -r requirements.txt
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk synth -c vpc_name=<i>your-vpc-name</i> \
-            -c msk_cluster_name=<i>your-msk-cluster-name</i> \
-            --all
+(.venv) $ cdk synth -c msk_cluster_name=<i>your-msk-cluster-name</i> \
+                    --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above,
 
 <pre>
-(.venv) $ cdk deploy -c vpc_name=<i>your-vpc-name</i> \
-            -c msk_cluster_name=<i>your-msk-cluster-name</i> \
-            --all
+(.venv) $ cdk deploy -c msk_cluster_name=<i>your-msk-cluster-name</i> \
+                     --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add

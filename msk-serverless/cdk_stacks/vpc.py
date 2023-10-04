@@ -21,21 +21,38 @@ class VpcStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    vpc_name = self.node.try_get_context("vpc_name")
-    vpc = aws_ec2.Vpc.from_lookup(self, "MSKServerlessVpc",
-      is_default=True,
-      vpc_name=vpc_name)
+    # vpc_name = self.node.try_get_context("vpc_name") or "default"
+    # vpc = aws_ec2.Vpc.from_lookup(self, 'MSKServerlessVpc',
+    #   is_default=True,
+    #   vpc_name=vpc_name)
 
     #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    # vpc = aws_ec2.Vpc(self, "MSKServerlessVpc",
-    #   max_azs=2,
-    #   gateway_endpoints={
-    #     "S3": aws_ec2.GatewayVpcEndpointOptions(
-    #       service=aws_ec2.GatewayVpcEndpointAwsService.S3
-    #     )
-    #   }
-    # )
+    vpc = aws_ec2.Vpc(self, 'MSKServerlessVpc',
+      ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/16"),
+      max_azs=3,
+
+      # 'subnetConfiguration' specifies the "subnet groups" to create.
+      # Every subnet group will have a subnet for each AZ, so this
+      # configuration will create `2 groups × 3 AZs = 6` subnets.
+      subnet_configuration=[
+        {
+          "cidrMask": 20,
+          "name": "Public",
+          "subnetType": aws_ec2.SubnetType.PUBLIC,
+        },
+        {
+          "cidrMask": 20,
+          "name": "Private",
+          "subnetType": aws_ec2.SubnetType.PRIVATE_WITH_EGRESS
+        }
+      ],
+      gateway_endpoints={
+        "S3": aws_ec2.GatewayVpcEndpointOptions(
+          service=aws_ec2.GatewayVpcEndpointAwsService.S3
+        )
+      }
+    )
 
     self.vpc = vpc
 
