@@ -46,7 +46,8 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 (.venv) $ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> synth \
     --parameters KafkaClusterName=<i>'your-kafka-cluster-name'</i> \
-    --parameters KafkaVersion=<i>'your-kafka-version'</i>
+    --parameters KafkaVersion=<i>'your-kafka-version'</i> \
+    --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above,
@@ -54,7 +55,8 @@ Use `cdk deploy` command to create the stack shown above,
 <pre>
 (.venv) $ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> deploy
     --parameters KafkaClusterName=<i>'your-kafka-cluster-name'</i> \
-    --parameters KafkaVersion=<i>'your-kafka-version'</i>
+    --parameters KafkaVersion=<i>'your-kafka-version'</i> \
+    --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -68,7 +70,7 @@ After MSK is succesfully created, you can now create topic, and produce and cons
 First connect your EC2 Host using `mssh` command, you can create a topic on the client host.
 
 <pre>
-$ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
+(.venv) $ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
 $ cd opt/kafka
 $ export ZooKeeperConnectionString=<i>Your-ZooKeeper-Servers</i>
 $ bin/kafka-topics.sh --create \
@@ -90,12 +92,20 @@ $ bin/kafka-console-producer.sh \
 To consume data on the topic, open another terminal and connect the client host, and then run `kafka-console-consumer.sh` command.
 
 <pre>
-$ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
+(.venv) $ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
 $ bin/kafka-console-consumer.sh \
     --bootstrap-server $BootstrapBrokerString \
     --topic AWSKafkaTutorialTopic \
     --from-beginning
 </pre>
+
+## Clean Up
+
+Delete the CloudFormation stacks by running the below command.
+
+```
+(.venv) $ cdk destroy --all
+```
 
 ## Useful commands
 
