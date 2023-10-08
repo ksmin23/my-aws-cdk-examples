@@ -10,6 +10,7 @@ import aws_cdk as cdk
 from aws_cdk import (
   Stack,
   aws_ec2,
+  aws_logs,
   aws_msk
 )
 from constructs import Construct
@@ -117,6 +118,21 @@ class MSKProvisionedStack(Stack):
       )
     )
 
+    msk_log_group = aws_logs.CfnLogGroup(self, "MSKCloudWatchLogGroup",
+      log_group_name=f"/aws/msk/{MSK_CLUSTER_NAME.value_as_string}",
+      retention_in_days=7
+    )
+    msk_log_group.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
+
+    msk_logging_info = aws_msk.CfnCluster.LoggingInfoProperty(
+      broker_logs=aws_msk.CfnCluster.BrokerLogsProperty(
+        cloud_watch_logs=aws_msk.CfnCluster.CloudWatchLogsProperty(
+          enabled=True,
+          log_group=msk_log_group.log_group_name
+        )
+      )
+    )
+
     msk_cluster = aws_msk.CfnCluster(self, 'AWSKafkaCluster',
       broker_node_group_info=msk_broker_node_group_info,
       cluster_name=MSK_CLUSTER_NAME.value_as_string,
@@ -125,7 +141,8 @@ class MSKProvisionedStack(Stack):
       kafka_version=KAFA_VERSION.value_as_string,
       number_of_broker_nodes=3,
       encryption_info=msk_encryption_info,
-      enhanced_monitoring='PER_TOPIC_PER_BROKER'
+      enhanced_monitoring='PER_TOPIC_PER_BROKER',
+      logging_info=msk_logging_info
     )
 
     self.sg_msk_client = sg_use_msk
