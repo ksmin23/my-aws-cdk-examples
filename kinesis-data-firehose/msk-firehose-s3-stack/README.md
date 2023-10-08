@@ -153,7 +153,6 @@ cluster_info_list = client.list_clusters_v2(ClusterNameFilter=cluster_name)['Clu
 cluster_info = [elem for elem in cluster_info_list if elem['ClusterName'] == cluster_name][0]
 
 cluster_arn = cluster_info['ClusterArn']
-current_version = cluster_info['CurrentVersion']
 
 cluster_policy = {
     "Version": "2012-10-17",
@@ -170,8 +169,7 @@ cluster_policy = {
 }
 
 response = client.put_cluster_policy(ClusterArn=cluster_arn,
-                                    Policy=json.dumps(cluster_policy),
-                                    CurrentVersion=current_version)
+                                    Policy=json.dumps(cluster_policy))
 </pre>
 
 
