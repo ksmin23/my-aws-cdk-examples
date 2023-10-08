@@ -1,5 +1,5 @@
 
-# Amazon MSK Managed Data Delivery from Apache Kafka to Amazon S3 CDK Python project!
+# Amazon MSK Serverless Managed Data Delivery from Apache Kafka to Amazon S3 CDK Python project!
 
 ![msk-serverless-firehose-s3-arch](./msk-serverless-firehose-s3-arch.svg)
 
