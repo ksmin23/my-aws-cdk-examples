@@ -52,6 +52,7 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+We can provision each CDK stack one at a time like this:
 
 #### Step 1: List all CDK Stacks
 
