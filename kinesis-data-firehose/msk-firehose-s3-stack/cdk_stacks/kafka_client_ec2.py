@@ -24,7 +24,7 @@ class KafkaClientEC2InstanceStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, sg_msk_client, msk_cluster_name, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    KAFKA_CLIENT_EC2_SG_NAME = 'kafka-client-ec2-sg-x{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    KAFKA_CLIENT_EC2_SG_NAME = 'kafka-client-ec2-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_kafka_client_ec2_instance = aws_ec2.SecurityGroup(self, 'KafkaClientEC2InstanceSG',
       vpc=vpc,
       allow_all_outbound=True,
