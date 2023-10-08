@@ -10,7 +10,7 @@ import aws_cdk as cdk
 from aws_cdk import (
   Stack,
   aws_ec2,
-  aws_iam,
+  aws_logs,
   aws_msk
 )
 from constructs import Construct
@@ -25,7 +25,7 @@ class MSKProvisionedStack(Stack):
     MSK_CLUSTER_NAME = cdk.CfnParameter(self, 'KafkaClusterName',
       type='String',
       description='Managed Streaming for Apache Kafka cluster name',
-      default='msk-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5))),
+      default='MSK-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5))),
       allowed_pattern='[A-Za-z0-9\-]+'
     )
 
@@ -68,7 +68,7 @@ class MSKProvisionedStack(Stack):
       max_value=16384
     )
 
-    MSK_CLIENT_SG_NAME = 'use-msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLIENT_SG_NAME = 'msk-client-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_use_msk = aws_ec2.SecurityGroup(self, 'KafkaClientSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -77,7 +77,7 @@ class MSKProvisionedStack(Stack):
     )
     cdk.Tags.of(sg_use_msk).add('Name', MSK_CLIENT_SG_NAME)
 
-    MSK_CLUSTER_SG_NAME = 'msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLUSTER_SG_NAME = 'msk-cluster-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     sg_msk_cluster = aws_ec2.SecurityGroup(self, 'MSKSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -132,6 +132,21 @@ class MSKProvisionedStack(Stack):
       )
     )
 
+    msk_log_group = aws_logs.CfnLogGroup(self, "MSKCloudWatchLogGroup",
+      log_group_name=f"/aws/msk/{MSK_CLUSTER_NAME.value_as_string}",
+      retention_in_days=7
+    )
+    msk_log_group.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
+
+    msk_logging_info = aws_msk.CfnCluster.LoggingInfoProperty(
+      broker_logs=aws_msk.CfnCluster.BrokerLogsProperty(
+        cloud_watch_logs=aws_msk.CfnCluster.CloudWatchLogsProperty(
+          enabled=True,
+          log_group=msk_log_group.log_group_name
+        )
+      )
+    )
+
     msk_cluster = aws_msk.CfnCluster(self, 'AWSKafkaCluster',
       broker_node_group_info=msk_broker_node_group_info,
       cluster_name=MSK_CLUSTER_NAME.value_as_string,
@@ -141,6 +156,7 @@ class MSKProvisionedStack(Stack):
       number_of_broker_nodes=3,
       encryption_info=msk_encryption_info,
       enhanced_monitoring='PER_TOPIC_PER_BROKER',
+      logging_info=msk_logging_info,
       #XXX: When creating a cluster, all vpcConnectivity auth schemes must be disabled.
       # You can enable auth schemes after the cluster is created.
       #

@@ -138,7 +138,7 @@ response = client.update_connectivity(ClusterArn=cluster_arn,
 
 </pre>
 
-(3) Update **Cluster Policy**
+(3) Update **Cluster Policy** - Grant Kinesis Data Firehose Access to your Private Amazon MSK Cluster
 
 <pre>
 import json
@@ -175,7 +175,7 @@ response = client.put_cluster_policy(ClusterArn=cluster_arn,
 </pre>
 
 
-#### Step 3: Create a EC2 Instance to access MSK Cluster
+#### Step 3: Set up a EC2 Instance to access MSK Cluster
 
 ```
 (.venv) $ cdk deploy --require-approval never MSKClientEC2InstanceStack
@@ -317,6 +317,10 @@ Enjoy!
 
  * [Amazon MSK Introduces Managed Data Delivery from Apache Kafka to Your Data Lake (2023-09-27)](https://aws.amazon.com/blogs/aws/amazon-msk-introduces-managed-data-delivery-from-apache-kafka-to-your-data-lake/)
    ![amazon-msk-managed-delivery-to-s3](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2023/09/14/diagram-msk-v1.png)
+ * [Grant Kinesis Data Firehose Access to your Private Amazon MSK Clusters](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#access-to-msk)
+ * [Amazon MSK multi-VPC private connectivity in a single Region](https://docs.aws.amazon.com/msk/latest/developerguide/aws-access-mult-vpc.html)
+ * [Connect Kafka client applications securely to your Amazon MSK cluster from different VPCs and AWS accounts (2023-04-28)](https://aws.amazon.com/blogs/big-data/connect-kafka-client-applications-securely-to-your-amazon-msk-cluster-from-different-vpcs-and-aws-accounts/)
+   ![amazon_msk_multi-vpc_connectivity_and_cluster-policy](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2023/04/06/bdb-2832-image002.png)
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
