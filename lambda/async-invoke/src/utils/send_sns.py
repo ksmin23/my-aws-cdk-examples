@@ -21,7 +21,7 @@ def main():
   res = cfn_client.describe_stacks(StackName='LambdaAsyncInvokeStack')['Stacks'][0]['Outputs']
   stack_outputs = {e['OutputKey']: e['OutputValue'] for e in res}
 
-  sns_client = boto3.client('sns', region_name='us-east-1')
+  sns_client = boto3.client('sns', region_name=options.region_name)
   sns_topic_arn = stack_outputs['SNSTopicArn']
 
   subject = 'On_Failure' if options.on_failure else 'On_Success'
