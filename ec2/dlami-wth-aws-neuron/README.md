@@ -80,7 +80,7 @@ After then, you can access to the jupyter server through the browser by the foll
 
    <pre>
    $ sudo pip install ec2instanceconnectcli
-   $ mssh -r {<i>region (i.e., us-east-1)</i>} @<i>i-001234a4bf70dec41EXAMPLE</i>
+   $ mssh -r {<i>region (i.e., us-east-1)</i>} ubuntu@<i>i-001234a4bf70dec41EXAMPLE</i>
    </pre>
 
 #### Run Jupyter Lab on the DLAMI EC2 Instance
@@ -90,7 +90,7 @@ After then, you can access to the jupyter server through the browser by the foll
 
 4. Run Jupyter Lab by running the command:
    <pre>
-   $ mssh -r {<i>region (i.e., us-east-1)</i>} @<i>i-001234a4bf70dec41EXAMPLE</i>
+   $ mssh -r {<i>region (i.e., us-east-1)</i>} ubuntu@<i>i-001234a4bf70dec41EXAMPLE</i>
    =============================================================================
        __|  __|_  )
        _|  (     /   Deep Learning AMI GPU PyTorch 1.13.1 (Ubuntu 20.04)
@@ -118,7 +118,7 @@ After then, you can access to the jupyter server through the browser by the foll
 
 5. Open another terminal on your local PC and do ssh tunneling by running the command:
    <pre>
-   $ mssh -r {<i>region (i.e., us-east-1)</i>} @<i>i-001234a4bf70dec41EXAMPLE</i> -N -f -L 8888:localhost:8888
+   $ mssh -r {<i>region (i.e., us-east-1)</i>} ubuntu@<i>i-001234a4bf70dec41EXAMPLE</i> -N -L 8888:localhost:8888
    </pre>
 6. In the address bar of your browser, copy and paste one of the URLs shown in the console when launching jupyter lab.<br/>
    For example, `http://localhost:8888/lab?token=168f50883c5c5a78cca01b2d436f0b79e6446d16394276a7`
