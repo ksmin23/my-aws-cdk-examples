@@ -160,6 +160,7 @@ Enjoy!
  * [Using the DLAMI with AWS Neuron](https://docs.aws.amazon.com/dlami/latest/devguide/tutorial-inferentia-using.html)
    * [Using PyTorch-Neuron and the AWS Neuron Compiler](https://docs.aws.amazon.com/dlami/latest/devguide/tutorial-inferentia-pytorch-neuron.html)
  * [(GitHub) PyTorch Neuron (torch-neuron) Samples for AWS Inf1](https://github.com/aws-neuron/aws-neuron-samples/tree/master/torch-neuron)
+ * [SageMaker Examples - Get started with model compilation with Neo](https://sagemaker-examples.readthedocs.io/en/latest/sagemaker_neo_compilation_jobs/index.html)
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
