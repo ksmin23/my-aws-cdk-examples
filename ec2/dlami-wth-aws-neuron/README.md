@@ -80,7 +80,7 @@ After then, you can access to the jupyter server through the browser by the foll
 
    <pre>
    $ sudo pip install ec2instanceconnectcli
-   $ mssh -r {<i>region (i.e., us-east-1)</i>} ubuntu@<i>i-001234a4bf70dec41EXAMPLE</i>
+   $ mssh -r {<i>region (i.e., us-east-1)</i>} ubuntu@<i>i-001234a4bf70dec41EXAMPLE</i> # <i>ubuntu</i>: Ubuntu Linux's user name
    </pre>
 
 #### Run Jupyter Lab on the DLAMI EC2 Instance
@@ -164,6 +164,6 @@ Enjoy!
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
-   $ mssh --region us-east-1 ec2-user@i-001234a4bf70dec41EXAMPLE
+   $ mssh --region us-east-1 ec2-user@i-001234a4bf70dec41EXAMPLE # <i>ec2-user</i>: Amazon Linux's user name
    </pre>
  * [[Solved] Working with Jupyter notebook on Remote server – on Mac and Windows: Connection refused?](https://ctcoding.wordpress.com/2019/10/19/working-with-jupyter-notebook-on-remote-server-on-mac-and-windows/)
