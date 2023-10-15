@@ -122,6 +122,7 @@ After then, you can access to the jupyter server through the browser by the foll
    </pre>
 6. In the address bar of your browser, copy and paste one of the URLs shown in the console when launching jupyter lab.<br/>
    For example, `http://localhost:8888/lab?token=168f50883c5c5a78cca01b2d436f0b79e6446d16394276a7`
+   ![jupyter-lab-with-aws-neuron](./jupyter-lab-with-aws-neuron.png)
 
 #### Compile the model for AWS Inferentia with NeuronSDK
 
