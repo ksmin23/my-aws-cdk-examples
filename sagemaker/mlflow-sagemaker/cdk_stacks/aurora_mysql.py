@@ -111,8 +111,6 @@ class AuroraMysqlStack(Stack):
         parameter_group=rds_db_param_group,
         auto_minor_version_upgrade=False,
       ),
-      serverless_v2_min_capacity=2,
-      serverless_v2_max_capacity=8,
       readers=[
         aws_rds.ClusterInstance.provisioned("reader",
           instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.BURSTABLE3, aws_ec2.InstanceSize.MEDIUM),
