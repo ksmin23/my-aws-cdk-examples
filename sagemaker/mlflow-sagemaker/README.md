@@ -104,6 +104,8 @@ Enjoy!
 
 ## References
 
+ * [(AWS Blog) Managing your machine learning lifecycle with MLflow and Amazon SageMaker (2021-01-28)](https://aws.amazon.com/blogs/machine-learning/managing-your-machine-learning-lifecycle-with-mlflow-and-amazon-sagemaker/)
+   * [(GitHub Repo) amazon-sagemaker-mlflow-fargate](https://github.com/ksmin23/amazon-sagemaker-mlflow-fargate)
  * [MLflow Documentation](https://mlflow.org/docs/latest/index.html)
  * [Supervisor: A Process Control System](http://supervisord.org/)
    * Installing `supervisor`
