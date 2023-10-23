@@ -1,5 +1,5 @@
 
-# CRUD HTTP API Gwateway for DynamoDB CDK Python project!
+# CRUD HTTP API Gateway for DynamoDB CDK Python project!
 
 ![dynamodb_crud_http_api](./dynamodb_crud_http_api.svg)
 
