@@ -109,7 +109,7 @@ Enjoy!
     </pre>
 
 2. Creating MySQL User
-   
+
     ```
     mysql> SHOW DATABASES;
     +--------------------+
@@ -267,4 +267,5 @@ Enjoy!
    </pre>
 
 # References
+
  * [Build Data Analytics using AWS Amazon Data Migration Service(DMS)](https://github.com/aws-samples/aws-dms-cdc-data-pipeline)
