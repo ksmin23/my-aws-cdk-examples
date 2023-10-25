@@ -17,7 +17,7 @@ AWS_ENV = cdk.Environment(
 app = cdk.App()
 
 vpc_stack = VpcStack(app, "AuroraMySQLServerlessV2ReplicaVpcStack",
-    env=AWS_ENV)
+  env=AWS_ENV)
 
 rds_stack = AuroraMySQLwithServerlessV2ReplicaStack(app, "AuroraMySQLServerlessV2RDSStack",
   vpc_stack.vpc,
