@@ -36,6 +36,8 @@ class MLflowOnEC2InstanceStack(Stack):
     #TODO: SHOULD restrict IP range allowed to ssh acces
     sg_mlflow_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
       connection=aws_ec2.Port.tcp(22), description='SSH access')
+    sg_mlflow_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4(vpc.vpc_cidr_block),
+      connection=aws_ec2.Port.tcp(5000), description='Access to MLflow Server')
     sg_mlflow_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
       connection=aws_ec2.Port.tcp(5000), description='Access to MLflow Server')
     # sg_dlami_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
