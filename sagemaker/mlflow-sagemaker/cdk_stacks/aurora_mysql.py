@@ -43,7 +43,7 @@ class AuroraMysqlStack(Stack):
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'MySQLSubnetGroup',
       description='subnet group for mysql',
-      subnet_group_name='aurora-mysql',
+      subnet_group_name=f'{self.stack_name}-aurora-mysql',
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS),
       vpc=vpc
     )
