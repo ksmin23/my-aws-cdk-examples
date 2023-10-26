@@ -73,13 +73,13 @@ command.
 
 ## Running Test
 
-1. Open the jupyter notebook, `training_job_on_premise.ipynb` in `example/regression` directory on your jupyter lab.
+1. Open the jupyter notebook, `training_job_on_premise.ipynb` in `example/sklearn_diabetes_regression` directory on your jupyter lab.
 2. Replace `MLFLOW_TRACKING_URI` with the mlflow server deployed on Amazon EC2 instance.
 3. Run all cells in `training_job_on_premise.ipynb`.
 4. Open the mlflow web in your browser and you can see the screen like this:
    ![mlflow-v2.6.0-web-ui](./mlflow-v2.6.0-web-ui.png)
 5. Launch Amazon SageMaker Studio
-6. Upload `mflow_with_sagemaker.ipynb` file in `example/regression` directory to the SageMaker Studio.
+6. Upload `mflow_with_sagemaker.ipynb` file in `example/sklearn_diabetes_regression` directory to the SageMaker Studio.
 7. Set `MLFLOW_TRACKING_URI`
 8. Run all cells in `mflow_with_sagemaker.ipynb`.
 
