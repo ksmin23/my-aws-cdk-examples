@@ -85,7 +85,7 @@ class AuroraMysqlStack(Stack):
       }
     )
 
-    db_cluster_name = self.node.try_get_context('db_cluster_name')
+    db_cluster_name = self.node.try_get_context('db_cluster_name') or 'mlflow'
     DB_NAME = "mlflowdb"
 
     #XXX: In order to exclude punctuations when generating a password
@@ -142,7 +142,7 @@ class AuroraMysqlStack(Stack):
                   export_name=f'{self.stack_name}-DatabaseName')
     cdk.CfnOutput(self, 'DBSecretName', value=self.database_secret.secret_name,
                   export_name=f'{self.stack_name}-DBSecretName')
-    cdk.CfnOutput(self, 'DBClusterEndpoint', value=self.database_endpoint,
+    cdk.CfnOutput(self, 'DBClusterEndpoint', value=self.database_endpoint.socket_address,
                   export_name=f'{self.stack_name}-DBClusterEndpoint')
     cdk.CfnOutput(self, 'DBClusterReadEndpoint', value=db_cluster.cluster_read_endpoint.socket_address,
                   export_name=f'{self.stack_name}-DBClusterReadEndpoint')
