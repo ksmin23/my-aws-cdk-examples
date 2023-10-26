@@ -67,7 +67,14 @@ For example:
 
 ```
 {
-  "ami_name": "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20230517",
+  "ecs": {
+    "cluster_name": "mlflow",
+    "service_name": "mlflow"
+  },
+  "container": {
+    "repository_name": "mlflow",
+    "image_tag": "latest"
+  },
   "vpc_name": "default"
 }
 ```
