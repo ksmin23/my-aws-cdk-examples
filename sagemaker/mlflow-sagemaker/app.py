@@ -48,5 +48,6 @@ sagemaker_studio_stack = SageMakerStudioStack(app, "MLflowSageMakerStudioStack",
   vpc_stack.vpc,
   env=AWS_ENV
 )
+sagemaker_studio_stack.add_dependency(mlflow_ec2_instance_stack)
 
 app.synth()
