@@ -16,7 +16,8 @@ class S3Stack(Stack):
 
     self.artifact_bucket = s3.Bucket(self, "s3bucket",
       removal_policy=cdk.RemovalPolicy.DESTROY, #XXX: Default: core.RemovalPolicy.RETAIN - The bucket will be orphaned
-      bucket_name=f"mlflow-sagemaker-artifacts-{cdk.Aws.REGION}-{cdk.Aws.ACCOUNT_ID}")
+      #XXX: create MLflow default S3 bucket name
+      bucket_name=f"mlflow-sagemaker-{cdk.Aws.REGION}-{cdk.Aws.ACCOUNT_ID}")
 
     cdk.CfnOutput(self, 'MLflowArtifactBucketName',
       value=self.artifact_bucket.bucket_name,
