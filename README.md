@@ -93,7 +93,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [sagemaker/studio-in-vpc](./sagemaker/studio-in-vpc/) | ![studio-vpc-private](./sagemaker/studio-in-vpc/studio-vpc-private.png) | sagemaker studio in a Private VPC |
 | [sagemaker/fsx-lustre](./sagemaker/fsx-lustre/) | Training Jobs with FileSystemInput using Amazon FSx for Lustre | sagemaker studio, FSx for Lustre (FSxLustre) |
 | [sagemaker/sagemaker-glue](./sagemaker/sagemaker-glue/) | ![studio-glue-arch](./sagemaker/sagemaker-glue/sagemaker-glue-arch.svg)  | sagemaker studio, aws glue |
-| [sagemaker/mlflow-sagemaker](./sagemaker/mlflow-sagemaker/) | ![mlflow-sagemaker-arch](./sagemaker/mlflow-sagemaker/mlflow-sagemaker-arch.svg) | MLflow, sagemaker studio |
+| [sagemaker/mlflow-ec2-sagemaker](./sagemaker/mlflow-ec2-sagemaker/) | ![mlflow-sagemaker-arch](./sagemaker/mlflow-ec2-sagemaker/mlflow-sagemaker-arch.svg) | MLflow, sagemaker studio |
 | [sagemaker/mlflow-ecs-sagemaker](./sagemaker/mlflow-ecs-sagemaker/) | ![mlflow-ecs-sagemaker-arch](./sagemaker/mlflow-ecs-sagemaker/mlflow-ecs-sagemaker-arch.svg) | MLflow, ecs, fargate, sagemaker studio |
 
 
