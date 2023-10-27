@@ -108,9 +108,9 @@ command.
 4. Open the mlflow web in your browser and you can see the screen like this:
    ![mlflow-v2.6.0-web-ui](./mlflow-v2.6.0-web-ui.png)
 5. Launch Amazon SageMaker Studio
-6. Upload `mflow_with_sagemaker.ipynb` file in `example/sklearn_diabetes_regression` directory to the SageMaker Studio.
+6. Upload `deploy_mlflow_model_to_sagemaker.ipynb` file in `example/sklearn_diabetes_regression` directory to the SageMaker Studio.
 7. Set `MLFLOW_TRACKING_URI`
-8. Run all cells in `mflow_with_sagemaker.ipynb`.
+8. Run all cells in `deploy_mlflow_model_to_sagemaker.ipynb`.
 
 
 ## Clean Up
