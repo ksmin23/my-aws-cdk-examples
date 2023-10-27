@@ -1,7 +1,9 @@
 
 # Amazon EMR CDK Python project!
 
-This is a blank project for Python development with CDK.
+![amazon-emr-on_demand](./amazon-emr-on_demand.svg)
+
+This is an Amazon EMR project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 

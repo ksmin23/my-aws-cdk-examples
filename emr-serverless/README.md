@@ -1,6 +1,8 @@
 
 # Amazon EMR Serverless CDK Python project!
 
+![amazon-emr-serverless](./amazon-emr-serverless.svg)
+
 This is an Amazon EMR Serverless project for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.

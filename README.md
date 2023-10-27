@@ -40,8 +40,8 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [opensearch-serverless/kinesis-firehose](./opensearch-serverless/kinesis-firehose) | ![opensearch-serverless-firehose-arch](./opensearch-serverless/kinesis-firehose/opensearch-serverless-firehose-arch.svg) | data ingestion to opensearch serverless using kinesis firehose |
 | [opensearch-ingestion/opensearch](./opensearch-ingestion/opensearch) | ![osis-domain-pipeline](./opensearch-ingestion/opensearch/osis-domain-pipeline.svg) | data ingestion to opensearch domain using OpenSearch Ingestion Pipelines |
 | [opensearch-ingestion/opensearch-serverless](./opensearch-ingestion/opensearch-serverless) | ![osis-collection-pipeline](./opensearch-ingestion/opensearch-serverless/osis-collection-pipeline.svg) | data ingestion to opensearch serverless using OpenSearch Ingestion Pipelines |
-| [emr](./emr/) | Launch an Amazon EMR cluster | emr, Hive, Spark, JupyterHub, Hudi, Iceberg  |
-| [emr-serverless](./emr-serverless/) | Launch an Amazon EMR Serverless Applation | emr serverless |
+| [emr](./emr/) | ![amazon-emr-on_demand](./emr/amazon-emr-on_demand.svg) | emr, Hive, Spark, JupyterHub, Hudi, Iceberg  |
+| [emr-serverless](./emr-serverless/) | ![amazon-emr-serverless](./emr-serverless/amazon-emr-serverless.svg) | emr serverless |
 | [emr-studio](./emr-studio/) | Launch an Amazon EMR Studio | emr studio |
 | [glue/cdc-parquet-to-apache-iceberg](./glue/cdc-parquet-to-apache-iceberg/) | ![glue-job-cdc-parquet-to-iceberg-arch](./glue/cdc-parquet-to-apache-iceberg/glue-job-cdc-parquet-to-iceberg-arch.svg) | aws glue, Apache Iceberg, Parquet |
 | [glue/cdc-streams-to-apache-iceberg](./glue/cdc-streams-to-apache-iceberg/) | ![glue-streaming-cdc-to-iceberg-table](./glue/cdc-streams-to-apache-iceberg/glue-streaming-cdc-to-iceberg-table.svg) | aws glue streaming, Apache Iceberg |
