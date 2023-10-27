@@ -40,11 +40,6 @@ class AuroraMysqlClusterStack(Stack):
     sg_mysql_server.add_ingress_rule(peer=sg_mysql_server, connection=aws_ec2.Port.all_tcp(),
       description='aurora_mysql-server-sg')
 
-    #XXX: Allow inbound from VPC for mlflow on ECS Fargate
-    sg_mysql_server.add_ingress_rule(peer=aws_ec2.Peer.ipv4(vpc.vpc_cidr_block),
-      connection=aws_ec2.Port.tcp(3306),
-      description='Allow inbound from VPC for mlflow on ECS Fargate')
-
     cdk.Tags.of(sg_mysql_server).add('Name', 'aurora_mysql-server-sg')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'MySQLSubnetGroup',

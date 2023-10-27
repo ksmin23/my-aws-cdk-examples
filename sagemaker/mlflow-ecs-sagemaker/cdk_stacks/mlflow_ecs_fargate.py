@@ -6,8 +6,8 @@ from aws_cdk import (
   aws_ec2,
   aws_ecs,
   aws_ecr,
+  aws_elasticloadbalancingv2 as aws_elbv2,
   aws_iam,
-  aws_ecs_patterns,
 )
 
 from constructs import Construct
@@ -18,6 +18,7 @@ class MLflowECSFargateStack(Stack):
   def __init__(self, scope: Construct, construct_id: str,
     vpc,
     artifact_bucket,
+    sg_rds_client,
     database_secret,
     database_name,
     **kwargs) -> None:
@@ -82,30 +83,52 @@ class MLflowECSFargateStack(Stack):
     )
     container.add_port_mappings(port_mapping)
 
-    service_name = ecs_cluster_config.get('service_name', 'mlflow')
-    fargate_service = aws_ecs_patterns.NetworkLoadBalancedFargateService(self, 'MLflowNLBFargateService',
-      service_name=service_name,
-      cluster=ecs_cluster,
-      task_definition=task_definition,
+
+    sg_fargate_service = aws_ec2.SecurityGroup(self, 'FargateServiceSG',
+      vpc=vpc,
+      allow_all_outbound=True,
+      description='ECS Fargate Service Security Group for MLflow',
+      security_group_name='mlflow-ecs-fargate-service-sg'
     )
 
-    # Setup security group
-    fargate_service.service.connections.security_groups[0].add_ingress_rule(
+    sg_fargate_service.add_ingress_rule(
       peer=aws_ec2.Peer.ipv4(vpc.vpc_cidr_block),
       connection=aws_ec2.Port.tcp(5000),
       description="Allow inbound from VPC for mlflow",
     )
+    cdk.Tags.of(sg_fargate_service).add('Name', 'mlflow-ecs-fargate-service-sg')
 
-    # Setup autoscaling policy
-    scaling = fargate_service.service.auto_scale_task_count(max_capacity=2)
-    scaling.scale_on_cpu_utilization(
+    service_name = ecs_cluster_config.get('service_name', 'mlflow')
+    fargate_service = aws_ecs.FargateService(self, "MLflowFargateService",
+      service_name=service_name,
+      cluster=ecs_cluster,
+      task_definition=task_definition,
+      security_groups=[sg_fargate_service, sg_rds_client],
+    )
+
+    scalalbe_task_count = fargate_service.auto_scale_task_count(max_capacity=2)
+    scalalbe_task_count.scale_on_cpu_utilization(
       'ECSFargateAutoScaling',
       target_utilization_percent=70,
       scale_in_cooldown=cdk.Duration.seconds(60),
       scale_out_cooldown=cdk.Duration.seconds(60),
     )
 
+    nlb = aws_elbv2.NetworkLoadBalancer(self, "LB",
+      vpc=vpc,
+      internet_facing=True
+    )
+
+    listener = nlb.add_listener("PublicListener",
+      port=80
+    )
+
+    target_group = listener.add_targets("ECS",
+      port=80,
+      targets=[fargate_service]
+    )
+
     cdk.CfnOutput(self, 'MLflowTrakingURI',
-      value=fargate_service.load_balancer.load_balancer_dns_name,
+      value=nlb.load_balancer_dns_name,
       export_name=f'{self.stack_name}-MLflowTrakingURI'
     )

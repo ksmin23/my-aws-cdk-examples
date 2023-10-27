@@ -36,6 +36,7 @@ rds_stack.add_dependency(s3_stack)
 mlflow_ecs_fargate_stack = MLflowECSFargateStack(app, "MLflowOnECSFargateStack",
   vpc_stack.vpc,
   s3_stack.artifact_bucket,
+  rds_stack.sg_rds_client,
   rds_stack.database_secret,
   rds_stack.database_name,
   env=AWS_ENV
