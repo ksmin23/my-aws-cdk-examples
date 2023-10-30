@@ -168,9 +168,29 @@ Enjoy!
    <pre>
    aws opensearch describe-packages --filters "Name=PackageName,Value=analysis-nori"
    </pre>
+   For example:
+   <pre>
+   $ aws opensearch describe-packages --filters "Name=PackageName,Value=analysis-nori"
+   {
+      "PackageDetailsList": [
+         ...
+         {
+            "PackageID": "G240285063",
+            "PackageName": "analysis-nori",
+            "PackageType": "ZIP-PLUGIN",
+            "PackageDescription": "Korean Analysis plugin that integrates Lucene Nori analysis module into OpenSearch.",
+            "PackageStatus": "AVAILABLE",
+            "CreatedAt": "2023-10-13T05:16:33.607000+09:00",
+            "LastUpdatedAt": "2023-10-13T05:16:33.607000+09:00",
+            "AvailablePackageVersion": "v1"
+         },
+         ...
+      ]
+   }
+   </pre>
 2. Associate the package to your opensearch domain:
    <pre>
-   aws opensearch associate-package --package-id <i>G16029449</i> --domain-name <i>opensearch-domain-name</i>
+   aws opensearch associate-package --package-id <i>G240285063</i> --domain-name <i>opensearch-domain-name</i>
    </pre>
    If you encounter the following error, select the right package id.
    ```
@@ -183,13 +203,13 @@ Enjoy!
    {
       "DomainPackageDetailsList": [
          {
-            "PackageID": "G240285063",
-            "PackageName": "analysis-nori",
-            "PackageType": "ZIP-PLUGIN",
-            "LastUpdated": "2023-10-30T13:24:04.230000+09:00",
-            "DomainName": "opensearch-lcnro",
-            "DomainPackageStatus": "ACTIVE",
-            "PackageVersion": "v1"
+               "PackageID": "G240285063",
+               "PackageName": "analysis-nori",
+               "PackageType": "ZIP-PLUGIN",
+               "LastUpdated": "2023-10-30T13:24:04.230000+09:00",
+               "DomainName": "opensearch-lcnro",
+               "DomainPackageStatus": "ACTIVE",
+               "PackageVersion": "v1"
          }
       ]
    }
