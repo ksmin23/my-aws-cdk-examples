@@ -42,7 +42,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
               --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
               --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
@@ -50,7 +50,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy --all \
               --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
               --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
@@ -72,6 +72,14 @@ To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/Use
 
 ```
 aws iam create-service-linked-role --aws-service-name es.amazonaws.com
+```
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
 ```
 
 ## Useful commands
@@ -155,20 +163,59 @@ Enjoy!
     $ curl -XGET --insecure -u "${OPS_SECRETS}" https://localhost:9200/_nodes/stats?pretty=true
     </pre>
 
-#### References
+## Associate Nori (Korean Analysis plugin) to your Amazon OpenSearch Cluster
+1. Find the avialable package by running the following command:
+   <pre>
+   aws opensearch describe-packages --filters "Name=PackageName,Value=analysis-nori"
+   </pre>
+2. Associate the package to your opensearch domain:
+   <pre>
+   aws opensearch associate-package --package-id <i>G16029449</i> --domain-name <i>opensearch-domain-name</i>
+   </pre>
+   If you encounter the following error, select the right package id.
+   ```
+   An error occurred (ValidationException) when calling the AssociatePackage operation: Operation not allowed.
+   Plugin version is not compatible with the engine version running on the domain.
+   ```
+3. Lists all packages associated with an Amazon OpenSearch Service domain:
+   <pre>
+   aws opensearch list-packages-for-domain --domain-name <i>opensearch-domain-name</i>
+   {
+      "DomainPackageDetailsList": [
+         {
+            "PackageID": "G240285063",
+            "PackageName": "analysis-nori",
+            "PackageType": "ZIP-PLUGIN",
+            "LastUpdated": "2023-10-30T13:24:04.230000+09:00",
+            "DomainName": "opensearch-lcnro",
+            "DomainPackageStatus": "ACTIVE",
+            "PackageVersion": "v1"
+         }
+      ]
+   }
+   </pre>
+
+
+## References
 - [Windows SSH / Tunnel for Kibana Instructions - Amazon Elasticsearch Service](https://search-sa-log-solutions.s3-us-east-2.amazonaws.com/logstash/docs/Kibana_Proxy_SSH_Tunneling_Windows.pdf)
 - [Use an SSH Tunnel to access Kibana within an AWS VPC with PuTTy on Windows](https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/createesdashboard.html)
 - [OpenSearch Popular APIs](https://opensearch.org/docs/latest/opensearch/popular-api/)
 - [Amazon OpenSearch Plugins by engine version](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html)
 - [Supported versions of OpenSearch and Elasticsearch](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version)
 - [Supported instance types in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen)
+- [Plugins by engine version in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-plugins.html)
+  - For a complete list of all plugins running on your opensearch domain, make the following request:
+    <pre>
+    GET _cat/plugins?v
+    </pre>
+- [Amazon OpenSearch Service - Importing and associating packages](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/custom-packages.html#custom-packages-assoc)
 - [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
-   $ mssh --region us-east-1 ec2-user@i-001234a4bf70dec41EXAMPLE
+   $ mssh --region <i>us-east-1</i> ec2-user@<i>i-001234a4bf70dec41EXAMPLE</i> # <i>ec2-user</i>: Amazon Linux's user name
    </pre>
 
-#### Known Issues
+## Known Issues
 - [(aws-elasticsearch): Vpc.fromLookup returns dummy VPC if the L2 elasticsearch.Domain availabilityZoneCount is set to 3](https://github.com/aws/aws-cdk/issues/12078)
   - **What did you expect to happen?**
     The lookup should find the VPC and populate the `cdk.context.json`. The synth should successfully show the resource template with the correct subnets and values.
