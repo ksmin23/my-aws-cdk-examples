@@ -71,7 +71,9 @@ MSKtoS3Stack
                                               MSKProvisionedStack
 ```
 
-Once MSK cluster has been successfully created, update the MSK cluster configuration by running the following python scripts
+Once MSK cluster has been successfully created, update the MSK cluster configuration by running the following python scripts.
+It will take at least `20~25` minutes to update the settings.
+Please wait until the MSK cluster status is `ACTIVE`.
 
 (1) Update **Security settings**
 
