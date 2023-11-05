@@ -116,6 +116,7 @@ client = boto3.client('kafka', region_name=region)
 
 cluster_info_list = client.list_clusters_v2(ClusterNameFilter=cluster_name)['ClusterInfoList']
 cluster_info = [elem for elem in cluster_info_list if elem['ClusterName'] == cluster_name][0]
+cluster_arn = cluster_info['ClusterArn']
 current_version = cluster_info['CurrentVersion']
 
 connectivity_info= {
@@ -123,10 +124,10 @@ connectivity_info= {
         "ClientAuthentication": {
             "Sasl": {
                 "Scram": {
-                    "Enabled": false
+                    "Enabled": False
                 },
                 "Iam": {
-                    "Enabled": true
+                    "Enabled": True
                 }
             }
         }
