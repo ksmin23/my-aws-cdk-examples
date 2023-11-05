@@ -119,6 +119,13 @@ chown -R ec2-user /home/ec2-user/msk_serverless_client.properties
 chown -R ec2-user /home/ec2-user/client.properties
 
 echo 'export PATH=$HOME/opt/kafka/bin:$PATH' >> .bash_profile
+
+cd /home/ec2-user
+curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
+
+echo 'alias aws=/usr/local/bin/aws' >> .bash_profile
 '''
 
     msk_client_ec2_instance.user_data.add_commands(commands)

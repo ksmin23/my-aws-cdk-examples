@@ -70,6 +70,13 @@ chown -R ec2-user ./opt
 chgrp -R ec2-user ./opt
 
 echo 'export PATH=$HOME/.local/bin:$HOME/opt/kafka/bin:$PATH' >> .bash_profile
+
+cd /home/ec2-user
+curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
+
+echo 'alias aws=/usr/local/bin/aws' >> .bash_profile
 '''
 
     msk_client_ec2_instance.user_data.add_commands(commands)
