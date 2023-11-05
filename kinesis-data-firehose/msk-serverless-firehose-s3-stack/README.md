@@ -49,7 +49,14 @@ For example:
 ```
 {
   "vpc_name": "default",
-  "msk_cluster_name": "msk-demo"
+  "msk_cluster_name": "demo-msk",
+  "firehose": {
+    "buffering_hints": {
+      "intervalInSeconds": 300,
+      "sizeInMBs": 100
+    },
+    "topic_name": "ev_stream_data"
+  }
 }
 ```
 
@@ -72,51 +79,19 @@ command.
 (.venv) $ cdk list
 MSKServerlessVpcStack
 MSKServerlessStack
+MSKClusterPolicyForFirehose
 MSKClientEC2InstanceStack
-MSKServerlessToS3Stack
+S3AsFirehoseDestinationStack
+FirehosefromMSKtoS3Stack
 ```
 
 #### Step 2: Create MSK cluster
 
 ```
 (.venv) $ cdk deploy --require-approval never MSKServerlessVpcStack \
-                                              MSKServerlessStack
+                                              MSKServerlessStack \
+                                              MSKClusterPolicyForFirehose
 ```
-
-Once MSK cluster has been successfully created, update the MSK cluster configuration by running the following python scripts
-- Update **Cluster Policy** - Grant Kinesis Data Firehose Access to your Private Amazon MSK Cluster
-<pre>
-import json
-import boto3
-
-cluster_name = '<i>{msk-cluster-name}</i>'
-region = '<i>{region}</i>'
-
-client = boto3.client('kafka', region_name=region)
-
-cluster_info_list = client.list_clusters_v2(ClusterNameFilter=cluster_name)['ClusterInfoList']
-cluster_info = [elem for elem in cluster_info_list if elem['ClusterName'] == cluster_name][0]
-
-cluster_arn = cluster_info['ClusterArn']
-
-cluster_policy = {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "firehose.amazonaws.com"
-            },
-            "Action": "kafka:CreateVpcConnection",
-            "Resource": cluster_arn
-        }
-    ]
-}
-
-response = client.put_cluster_policy(ClusterArn=cluster_arn,
-                                     Policy=json.dumps(cluster_policy))
-</pre>
-
 
 #### Step 3: Set up a EC2 Instance to access MSK Cluster
 
@@ -127,7 +102,7 @@ response = client.put_cluster_policy(ClusterArn=cluster_arn,
 #### Step 4: Create a S3 bucket for Kinesis Data Firehose's destination to store incoming data from MSK
 
 ```
-(.venv) $ cdk deploy --require-approval never MSKServerlessToS3Stack
+(.venv) $ cdk deploy --require-approval never S3AsFirehoseDestinationStack
 ```
 
 **Once all CDK stacks have been successfully created, proceed with the remaining steps.**
@@ -180,6 +155,12 @@ sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbac
 
 #### Step 6: Create a Kinesis Data Firehose
 
+```
+(.venv) $ cdk deploy --require-approval never FirehosefromMSKtoS3Stack
+```
+
+The above command creates the Kinesis Data Firehose with the following configurations:
+
 (1) Choose source and destination
   - Source: `Amazon MSK`
   - Destination: `Amazon S3`
@@ -190,12 +171,12 @@ sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbac
   - Topic: <pre>{<i>kafka-topic-name</i> (e.g., <i>ev_stream_data</i>)}</pre>
 
 (3) Delivery stream name
-  - Delivery stream name: `MSK-S3-demo`
+  - Delivery stream name: `demo-msk-to-s3`
 
 (4) Destination settings
-  - S3 bucket: `s3://msk-serverless-firehose-s3-us-east-1-bgaq4xr`
-  - S3 bucket prefix: `json-data/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/`
-  - S3 bucket error output prefix: `error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}`
+  - S3 bucket: <pre>s3://msk-serverless-firehose-s3-us-east-1-{<i>random-identifier</i>}</pre>
+  - S3 bucket prefix: <pre>json-data/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/</pre>
+  - S3 bucket error output prefix: <pre>error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}</pre>
 
 
 ## Run Test

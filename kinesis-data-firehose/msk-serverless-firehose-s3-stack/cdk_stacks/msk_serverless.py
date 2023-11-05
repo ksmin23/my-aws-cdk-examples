@@ -59,7 +59,7 @@ class MSKServerlessStack(Stack):
 
     self.sg_msk_client = sg_msk_client
     self.msk_cluster_name = msk_serverless_cluster.cluster_name
-    self.msk_cluster_arn = msk_serverless_cluster.ref
+    self.msk_cluster_arn = msk_serverless_cluster.attr_arn
 
     cdk.CfnOutput(self, 'KafkaSecurityGroupID', value=sg_msk_cluster.security_group_id,
       export_name=f'{self.stack_name}-ClusterSecurityGroupID')

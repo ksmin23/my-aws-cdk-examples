@@ -95,7 +95,7 @@ client_authentication= {
         }
     },
     "Unauthenticated": {
-        "Enabled": True
+        "Enabled": False
     }
 }
 

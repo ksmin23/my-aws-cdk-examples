@@ -10,6 +10,8 @@ from cdk_stacks import (
   VpcStack,
   KafkaClientEC2InstanceStack,
   MSKServerlessStack,
+  MSKClusterPolicyStack,
+  KinesisFirehoseStack,
   S3Stack
 )
 
@@ -30,17 +32,32 @@ msk_stack = MSKServerlessStack(app, "MSKServerlessStack",
 )
 msk_stack.add_dependency(vpc_stack)
 
+msk_cluster_policy_stack = MSKClusterPolicyStack(app, "MSKClusterPolicyForFirehose",
+  vpc_stack.vpc,
+  msk_stack.msk_cluster_name,
+  env=AWS_ENV
+)
+msk_cluster_policy_stack.add_dependency(msk_stack)
+
 kafka_client_ec2_stack = KafkaClientEC2InstanceStack(app, "MSKClientEC2InstanceStack",
   vpc_stack.vpc,
   msk_stack.sg_msk_client,
   msk_stack.msk_cluster_name,
   env=AWS_ENV
 )
-kafka_client_ec2_stack.add_dependency(msk_stack)
+kafka_client_ec2_stack.add_dependency(msk_cluster_policy_stack)
 
-s3_stack = S3Stack(app, "MSKServerlessToS3Stack",
+s3_stack = S3Stack(app, "S3AsFirehoseDestinationStack",
   env=AWS_ENV
 )
 s3_stack.add_dependency(kafka_client_ec2_stack)
+
+firehose_stack = KinesisFirehoseStack(app, 'FirehosefromMSKtoS3Stack',
+  msk_stack.msk_cluster_name,
+  msk_stack.msk_cluster_arn,
+  s3_stack.s3_bucket,
+  env=AWS_ENV
+)
+firehose_stack.add_dependency(s3_stack)
 
 app.synth()
