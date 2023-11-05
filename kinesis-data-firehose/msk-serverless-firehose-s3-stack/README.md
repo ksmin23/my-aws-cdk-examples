@@ -99,15 +99,9 @@ FirehosefromMSKtoS3Stack
 (.venv) $ cdk deploy --require-approval never MSKClientEC2InstanceStack
 ```
 
-#### Step 4: Create a S3 bucket for Kinesis Data Firehose's destination to store incoming data from MSK
+**Once MSK Serverless cluster has been successfully created, proceed with the remaining steps.**
 
-```
-(.venv) $ cdk deploy --require-approval never S3AsFirehoseDestinationStack
-```
-
-**Once all CDK stacks have been successfully created, proceed with the remaining steps.**
-
-#### Step 5: Create a Kafka Topic
+#### Step 4: Create a Kafka Topic
 
 (1) Get Broker servers information
 
@@ -152,6 +146,12 @@ sasl.mechanism=AWS_MSK_IAM
 sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
 sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
 </pre>
+
+#### Step 5: Create a S3 bucket for Kinesis Data Firehose's destination to store incoming data from MSK
+
+```
+(.venv) $ cdk deploy --require-approval never S3AsFirehoseDestinationStack
+```
 
 #### Step 6: Create a Kinesis Data Firehose
 
