@@ -86,17 +86,17 @@ cluster_info = client.describe_cluster_v2(ClusterArn=cluster_arn)
 current_version = cluster_info['ClusterInfo']['CurrentVersion']
 
 client_authentication= {
-    "Sasl": {
-        "Scram": {
-            "Enabled": False
-        },
-        "Iam": {
-            "Enabled": True
-        }
+  "Sasl": {
+    "Scram": {
+      "Enabled": False
     },
-    "Unauthenticated": {
-        "Enabled": False
+    "Iam": {
+      "Enabled": True
     }
+  },
+  "Unauthenticated": {
+    "Enabled": False
+  }
 }
 
 response = client.update_security(ClientAuthentication=client_authentication,
@@ -120,18 +120,18 @@ cluster_arn = cluster_info['ClusterArn']
 current_version = cluster_info['CurrentVersion']
 
 connectivity_info= {
-    "VpcConnectivity": {
-        "ClientAuthentication": {
-            "Sasl": {
-                "Scram": {
-                    "Enabled": False
-                },
-                "Iam": {
-                    "Enabled": True
-                }
-            }
+  "VpcConnectivity": {
+    "ClientAuthentication": {
+      "Sasl": {
+        "Scram": {
+          "Enabled": False
+        },
+        "Iam": {
+          "Enabled": True
         }
+      }
     }
+  }
 }
 
 response = client.update_connectivity(ClusterArn=cluster_arn,
@@ -157,17 +157,17 @@ cluster_info = [elem for elem in cluster_info_list if elem['ClusterName'] == clu
 cluster_arn = cluster_info['ClusterArn']
 
 cluster_policy = {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "firehose.amazonaws.com"
-            },
-            "Action": "kafka:CreateVpcConnection",
-            "Resource": cluster_arn
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "firehose.amazonaws.com"
+      },
+      "Action": "kafka:CreateVpcConnection",
+      "Resource": cluster_arn
+    }
+  ]
 }
 
 response = client.put_cluster_policy(ClusterArn=cluster_arn,
@@ -319,6 +319,7 @@ Enjoy!
    ![amazon-msk-managed-delivery-to-s3](https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2023/09/14/diagram-msk-v1.png)
  * [Grant Kinesis Data Firehose Access to your Private Amazon MSK Clusters](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#access-to-msk)
  * [Amazon MSK multi-VPC private connectivity in a single Region](https://docs.aws.amazon.com/msk/latest/developerguide/aws-access-mult-vpc.html)
+   * [Amazon MSK - Update the authorization schemes on a cluster](https://docs.aws.amazon.com/msk/latest/developerguide/mvpc-cross-account-update-authschemes.html)
  * [Connect Kafka client applications securely to your Amazon MSK cluster from different VPCs and AWS accounts (2023-04-28)](https://aws.amazon.com/blogs/big-data/connect-kafka-client-applications-securely-to-your-amazon-msk-cluster-from-different-vpcs-and-aws-accounts/)
    ![amazon_msk_multi-vpc_connectivity_and_cluster-policy](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2023/04/06/bdb-2832-image002.png)
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
