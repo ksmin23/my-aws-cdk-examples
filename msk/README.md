@@ -149,7 +149,7 @@ Enjoy!
  * Get Bootstrap server information
    <pre>
    $ aws kafka get-bootstrap-brokers --cluster-arn <i>msk_cluster_arn</i>
-   $ export BS=<i>{BootstrapBrokerString}</i>
+   $ export BS=<i>{BootstrapBrokerStringSaslIam}</i>
    </pre>
 
  * List Kafka toipics
