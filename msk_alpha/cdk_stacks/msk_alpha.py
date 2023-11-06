@@ -60,7 +60,7 @@ class MSKClusterStack(Stack):
       cluster_name=msk_cluster_name,
       kafka_version=msk.KafkaVersion.V2_8_1,
       instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.M5, aws_ec2.InstanceSize.LARGE),
-      number_of_broker_nodes=3,
+      number_of_broker_nodes=1, # Number of Apache Kafka brokers deployed in each Availability Zone
       security_groups=[sg_msk_cluster],
       vpc=vpc,
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS),
