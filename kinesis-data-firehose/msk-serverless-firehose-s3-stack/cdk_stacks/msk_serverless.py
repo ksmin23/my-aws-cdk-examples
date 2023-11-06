@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import random
-import string
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -11,8 +11,6 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-random.seed(47)
-
 
 class MSKServerlessStack(Stack):
 
@@ -21,7 +19,7 @@ class MSKServerlessStack(Stack):
 
     msk_cluster_name = self.node.try_get_context("msk_cluster_name")
 
-    MSK_CLIENT_SG_NAME = 'msk-client-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLIENT_SG_NAME = f'msk-client-sg-{msk_cluster_name}'
     sg_msk_client = aws_ec2.SecurityGroup(self, 'KafkaClientSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -30,7 +28,7 @@ class MSKServerlessStack(Stack):
     )
     cdk.Tags.of(sg_msk_client).add('Name', MSK_CLIENT_SG_NAME)
 
-    MSK_CLUSTER_SG_NAME = 'msk-cluster-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLUSTER_SG_NAME = f'msk-cluster-sg-{msk_cluster_name}'
     sg_msk_cluster = aws_ec2.SecurityGroup(self, 'MSKSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
