@@ -115,6 +115,8 @@ Delete the CloudFormation stacks by running the below command.
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
 
+Enjoy!
+
 
 ## References
 
@@ -128,4 +130,56 @@ Delete the CloudFormation stacks by running the below command.
    $ mssh <i>i-001234a4bf70dec41EXAMPLE</i> # ec2-instance-id
    </pre>
 
-Enjoy!
+
+## Kafka Commands CheatSheet
+
+ * Set up `client.properties`
+
+   <pre>
+   $ cat client.properties
+   security.protocol=SASL_SSL
+   sasl.mechanism=AWS_MSK_IAM
+   sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+   sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+   </pre>
+
+    :information_source: `client.properties` is a property file containing configs to be passed to Admin Client. This is used only with `--bootstrap-server` option for describing and altering broker configs.<br/>
+    For more information, see [Getting started using MSK Serverless clusters - Step 3: Create a client machine](https://docs.aws.amazon.com/msk/latest/developerguide/create-serverless-cluster-client.html)
+
+ * Get Bootstrap server information
+   <pre>
+   $ aws kafka get-bootstrap-brokers --cluster-arn <i>msk_cluster_arn</i>
+   $ export BS=<i>{BootstrapBrokerString}</i>
+   </pre>
+
+ * List Kafka toipics
+   <pre>
+   $ kafka-topics.sh --bootstrap-server $BS \
+                     --command-config client.properties \
+                     --list
+   </pre>
+
+ * Create a Kafka toipic
+   <pre>
+   $ kafka-topics.sh --bootstrap-server $BS \
+                     --command-config client.properties \
+                     --create \
+                     --topic <i>topic_name</i> \
+                     --partitions 3 \
+                     --replication-factor 2
+   </pre>
+
+ * Consume records from a Kafka toipic
+   <pre>
+   $ kafka-console-consumer.sh --bootstrap-server $BS \
+                               --consumer.config client.properties \
+                               --topic <i>topic_name</i> \
+                               --from-beginning
+   </pre>
+
+ * Produce records into a Kafka toipic
+   <pre>
+   $ kafka-console-producer.sh --bootstrap-server $BS \
+                               --producer.config client.properties \
+                               --topic <i>topic_name</i>
+   </pre>
