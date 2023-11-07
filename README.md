@@ -69,6 +69,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [lambda/lambda-custom-container](./lambda/lambda-custom-container/) | ![aws-lambda-custom-container](./lambda/lambda-custom-container/aws-lambda-custom-container.svg) | lambda, ecr, custom container |
 | [memorydb-for-redis](./memorydb/) | ![memorydb-for-redis](./memorydb/amazon-memorydb.svg) | memorydb |
 | [msk](./msk/) | ![msk-arch](./msk/msk-arch.svg) | msk(kafka) |
+| [msk_aplha](./msk_alpha/) | ![msk-arch](./msk_alpha/msk-arch.svg) | msk(kafka) |
 | [msk-serverless](./msk-serverless/) | ![msk-serverless-arch](./msk-serverless/msk-serverless-arch.svg) | msk serverless(kafka) |
 | [mwaa(airflow)](./mwaa/) | ![mwaa-arch](./mwaa/mwaa-arch.svg) | mwaa(airflow) |
 | [neptune](./neptune/) | ![neptune-arch](./neptune/neptune-arch.svg) | sagemaker, neptune |
