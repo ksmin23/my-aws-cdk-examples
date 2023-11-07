@@ -58,6 +58,9 @@ class MSKClusterStack(Stack):
 
     msk_cluster = msk.Cluster(self, "MSKCluster",
       cluster_name=msk_cluster_name,
+      #XXX: Supported Apache Kafka versions
+      # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
+      # https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_msk_alpha/KafkaVersion.html
       kafka_version=msk.KafkaVersion.V2_8_1,
       instance_type=aws_ec2.InstanceType.of(aws_ec2.InstanceClass.M5, aws_ec2.InstanceSize.LARGE),
       number_of_broker_nodes=1, # Number of Apache Kafka brokers deployed in each Availability Zone
