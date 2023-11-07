@@ -68,16 +68,16 @@ class MSKProvisionedStack(Stack):
       max_value=16384
     )
 
-    MSK_CLIENT_SG_NAME = 'use-msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
-    sg_use_msk = aws_ec2.SecurityGroup(self, 'KafkaClientSecurityGroup',
+    MSK_CLIENT_SG_NAME = f'msk-client-sg-{MSK_CLUSTER_NAME.value_as_string}'
+    sg_msk_client = aws_ec2.SecurityGroup(self, 'KafkaClientSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for Amazon MSK client',
       security_group_name=MSK_CLIENT_SG_NAME
     )
-    cdk.Tags.of(sg_use_msk).add('Name', MSK_CLIENT_SG_NAME)
+    cdk.Tags.of(sg_msk_client).add('Name', MSK_CLIENT_SG_NAME)
 
-    MSK_CLUSTER_SG_NAME = 'msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLUSTER_SG_NAME = f'msk-cluster-sg-{MSK_CLUSTER_NAME.value_as_string}'
     sg_msk_cluster = aws_ec2.SecurityGroup(self, 'MSKSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -86,15 +86,15 @@ class MSKProvisionedStack(Stack):
     )
     # For more information about the numbers of the ports that Amazon MSK uses to communicate with client machines,
     # see https://docs.aws.amazon.com/msk/latest/developerguide/port-info.html
-    sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(2181),
+    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(2181),
       description='allow msk client to communicate with Apache ZooKeeper in plaintext')
-    sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(2182),
+    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(2182),
       description='allow msk client to communicate with Apache ZooKeeper by using TLS encryption')
-    sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9092),
+    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(9092),
       description='allow msk client to communicate with brokers in plaintext')
-    sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9094),
+    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(9094),
       description='allow msk client to communicate with brokers by using TLS encryption')
-    sg_msk_cluster.add_ingress_rule(peer=sg_use_msk, connection=aws_ec2.Port.tcp(9098),
+    sg_msk_cluster.add_ingress_rule(peer=sg_msk_client, connection=aws_ec2.Port.tcp(9098),
       description='msk client security group')
     cdk.Tags.of(sg_msk_cluster).add('Name', MSK_CLUSTER_SG_NAME)
 
@@ -107,7 +107,7 @@ class MSKProvisionedStack(Stack):
     msk_broker_node_group_info = aws_msk.CfnCluster.BrokerNodeGroupInfoProperty(
       client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       instance_type=KAFA_BROKER_INSTANCE_TYPE.value_as_string,
-      security_groups=[sg_use_msk.security_group_id, sg_msk_cluster.security_group_id],
+      security_groups=[sg_msk_client.security_group_id, sg_msk_cluster.security_group_id],
       storage_info=msk_broker_storage_info
     )
 
@@ -118,7 +118,7 @@ class MSKProvisionedStack(Stack):
       )
     )
 
-    msk_log_group = aws_logs.CfnLogGroup(self, "MSKCloudWatchLogGroup",
+    msk_log_group = aws_logs.CfnLogGroup(self, 'MSKCloudWatchLogGroup',
       log_group_name=f"/aws/msk/{MSK_CLUSTER_NAME.value_as_string}",
       retention_in_days=7
     )
@@ -145,11 +145,11 @@ class MSKProvisionedStack(Stack):
       logging_info=msk_logging_info
     )
 
-    self.sg_msk_client = sg_use_msk
+    self.sg_msk_client = sg_msk_client
 
     cdk.CfnOutput(self, 'MSKSecurityGroupID', value=sg_msk_cluster.security_group_id,
       export_name=f'{self.stack_name}-ClusterSecurityGroupID')
-    cdk.CfnOutput(self, 'KafkaClientSecurityGroupID', value=sg_use_msk.security_group_id,
+    cdk.CfnOutput(self, 'KafkaClientSecurityGroupID', value=sg_msk_client.security_group_id,
       export_name=f'{self.stack_name}-ClientSecurityGroupID')
     cdk.CfnOutput(self, 'MSKClusterArn', value=msk_cluster.ref,
       export_name=f'{self.stack_name}-MSKClusterArn')
