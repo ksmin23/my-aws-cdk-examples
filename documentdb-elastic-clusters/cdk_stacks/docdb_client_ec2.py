@@ -2,21 +2,16 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
-import os
-import random
-import string
 
 import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
   aws_ec2,
-  aws_iam,
-  aws_s3_assets
+  aws_iam
 )
 from constructs import Construct
 
-random.seed(47)
 
 
 class DocDBClientEC2InstanceStack(Stack):
@@ -24,7 +19,7 @@ class DocDBClientEC2InstanceStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, sg_docdb_client, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    DOCDB_CLIENT_EC2_SG_NAME = 'docdb-client-ec2-sg-{}'.format(''.join(random.choices((string.ascii_lowercase), k=5)))
+    DOCDB_CLIENT_EC2_SG_NAME = f'docdb-client-ec2-sg-{self.stack_name}'
     sg_docdb_client_ec2_instance = aws_ec2.SecurityGroup(self, 'DocDBClientEC2InstanceSG',
       vpc=vpc,
       allow_all_outbound=True,
@@ -66,8 +61,7 @@ class DocDBClientEC2InstanceStack(Stack):
       ]
     )
 
-    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux(
-      generation=aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux2(
       edition=aws_ec2.AmazonLinuxEdition.STANDARD,
       virtualization=aws_ec2.AmazonLinuxVirt.HVM,
       storage=aws_ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
@@ -110,13 +104,13 @@ su -c "/home/ec2-user/.local/bin/pip3 install boto3 pymongo --user" -s /bin/sh e
 
     docdb_client_ec2_instance.user_data.add_commands(commands)
 
-    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstancePublicDNS',
+    cdk.CfnOutput(self, 'EC2InstancePublicDNS',
       value=docdb_client_ec2_instance.instance_public_dns_name,
       export_name=f'{self.stack_name}-EC2InstancePublicDNS')
-    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstanceId',
+    cdk.CfnOutput(self, 'EC2InstanceId',
       value=docdb_client_ec2_instance.instance_id,
       export_name=f'{self.stack_name}-EC2InstanceId')
-    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstanceAZ',
+    cdk.CfnOutput(self, 'EC2InstanceAZ',
       value=docdb_client_ec2_instance.instance_availability_zone,
       export_name=f'{self.stack_name}-EC2InstanceAZ')
 

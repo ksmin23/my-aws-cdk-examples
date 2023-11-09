@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import os
 import json
 
@@ -83,7 +86,8 @@ class DocumentDbElasticClustersStack(Stack):
 
     self.sg_docdb_client = sg_docdb_client
 
-    cdk.CfnOutput(self, f'{self.stack_name}-DocDbElasticClusterArn', value=docdb_cluster.attr_cluster_arn,
+    cdk.CfnOutput(self, 'DocDbElasticClusterArn',
+        value=docdb_cluster.attr_cluster_arn,
         export_name=f'{self.stack_name}-DocDbElasticClusterArn')
 
 
