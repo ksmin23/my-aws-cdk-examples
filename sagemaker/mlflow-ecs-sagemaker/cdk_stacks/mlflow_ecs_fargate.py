@@ -43,11 +43,7 @@ class MLflowECSFargateStack(Stack):
     task_definition = aws_ecs.FargateTaskDefinition(self, "MLflowFargateTaskDef",
       task_role=task_role,
       cpu=4*1024,
-      memory_limit_mib=8*1024,
-      runtime_platform=aws_ecs.RuntimePlatform(
-        operating_system_family=aws_ecs.OperatingSystemFamily.LINUX,
-        cpu_architecture=aws_ecs.CpuArchitecture.ARM64
-      )
+      memory_limit_mib=8*1024
     )
 
     container_info = self.node.try_get_context('container')
