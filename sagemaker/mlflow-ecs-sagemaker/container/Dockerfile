@@ -1,10 +1,10 @@
-FROM python:3.10.12
+FROM --platform=linux/amd64 python:3.10.12
 
 RUN pip install \
     mlflow==2.6.0 \
     pymysql==1.0.2 \
     boto3 && \
-    mkdir /mlflow/
+    mkdir -p /mlflow/
 
 EXPOSE 5000
 
