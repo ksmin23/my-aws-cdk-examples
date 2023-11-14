@@ -6,6 +6,7 @@ from aws_cdk import (
   aws_ec2,
   aws_ecs,
   aws_ecr,
+  aws_ecr_assets,
   aws_elasticloadbalancingv2 as aws_elbv2,
   aws_iam,
 )
@@ -46,23 +47,9 @@ class MLflowECSFargateStack(Stack):
       memory_limit_mib=8*1024
     )
 
-    container_info = self.node.try_get_context('container')
-    container_repo_name = container_info.get('repository_name', 'mlflow')
-    container_repo_arn = aws_ecr.Repository.arn_for_local_repository(container_repo_name,
-      self, cdk.Aws.ACCOUNT_ID)
-
-    # container_repository = aws_ecr.Repository.from_repository_arn(self, "ContainerRepository",
-    #   repository_arn=repository_arn)
-    #
-    # jsii.errors.JSIIError: "repositoryArn" is a late-bound value,
-    # and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead
-    container_repository = aws_ecr.Repository.from_repository_attributes(self, "ContainerRepository",
-      repository_arn=container_repo_arn,
-      repository_name=container_repo_name)
-
-    container_image_tag = container_info.get('image_tag', 'latest')
     container = task_definition.add_container('TaskContainer',
-      image=aws_ecs.ContainerImage.from_ecr_repository(container_repository, tag=container_image_tag),
+      image=aws_ecs.ContainerImage.from_asset(directory="container",
+        asset_name="mlflow"),
       environment={
         "BUCKET": f"s3://{artifact_bucket.bucket_name}",
         "DATABASE": database_name

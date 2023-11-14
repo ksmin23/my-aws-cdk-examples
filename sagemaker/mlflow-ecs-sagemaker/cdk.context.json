@@ -3,9 +3,5 @@
     "cluster_name": "mlflow",
     "service_name": "mlflow"
   },
-  "container": {
-    "repository_name": "mlflow",
-    "image_tag": "latest"
-  },
   "vpc_name": "default"
 }

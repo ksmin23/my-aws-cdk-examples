@@ -5,31 +5,9 @@
 
 This is a MLflow project on Amazon EC2 instance for CDK development with Python.
 
-### Prerequisites
-
-We will use [the AWS CDK](https://cdkworkshop.com/) to deploy the MLflow server.
-
-To go through this example, make sure you have the following:
-* [Docker](https://www.docker.com) to build and push the MLflow container image to ECR
-* This [Github repository](https://github.com/ksmin23/my-aws-cdk-examples.git) cloned into your environment to follow the steps
-
-Execute the following commands to build and push the MLflow container image to ECR:
-
-<pre>
-git clone https://github.com/ksmin23/my-aws-cdk-examples.git
-cd sagemaker/mlflow-ecs-sagemaker/container
-docker build -t mlflow .
-docker tag mlflow:latest {<i>account-id</i>}.dkr.ecr.{<i>region</i>}.amazonaws.com/mlflow:latest
-aws ecr create-repository --repository-name mlflow
-aws ecr get-login-password --region {<i>region</i>} | docker login --username AWS --password-stdin {<i>account-id</i>}.dkr.ecr.{<i>region</i>}.amazonaws.com
-docker push {<i>account-id</i>}.dkr.ecr.{<i>region</i>}.amazonaws.com/mlflow:latest
-</pre>
-
-### Deploying the stack
-
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-This project is set up like a standard Python project.  The initialization
+This project is set up like a standard Python project. The initialization
 process also creates a virtualenv within this project, stored under the `.venv`
 directory.  To create the virtualenv it assumes that there is a `python3`
 (or `python` for Windows) executable in your path with access to the `venv`
@@ -70,10 +48,6 @@ For example:
   "ecs": {
     "cluster_name": "mlflow",
     "service_name": "mlflow"
-  },
-  "container": {
-    "repository_name": "mlflow",
-    "image_tag": "latest"
   },
   "vpc_name": "default"
 }
