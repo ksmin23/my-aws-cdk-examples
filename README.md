@@ -1,6 +1,8 @@
 # AWS CDK Python Examples
 
+![Stats](https://img.shields.io/badge/100-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+
 
 This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.amazon.com/cdk/api/latest/) Python examples with architecture diagrams for frequently used AWS services.
 
@@ -28,6 +30,8 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [ec2/jenkins-on-ec2](./ec2/jenkins-on-ec2/) | ![jenkins-on-ec2](./ec2/jenkins-on-ec2/jenkins-on-ec2.svg) | jenkins, ec2 |
 | [ec2/jupyter-on-dlami](./ec2/jupyter-on-dlami/) | Launch Jupyter Server on Amazon Deep Learning AMI | jupyter, ec2, DLAMI |
 | [ec2/dlami-wth-aws-neuron](./ec2/dlami-wth-aws-neuron/) | Launch Jupyter Server on Amazon Deep Learning AMI with AWS Neuron | jupyter, ec2, DLAMI, AWS Neuron |
+| [ecs-patterns/alb-fargate-service](./ecs-patterns/alb-fargate-service/) | ![ecs-alb-fargate-service-arch](./ecs-patterns/alb-fargate-service/ecs-alb-fargate-service-arch.svg) | ecs patterns, Application Loadbalancer Fargate Service |
+| [ecs-patterns/nlb-fargate-service](./ecs-patterns/nlb-fargate-service/) | ![ecs-nlb-fargate-service-arch](./ecs-patterns/nlb-fargate-service/ecs-nlb-fargate-service-arch.svg)  | ecs patterns, Network Loadbalancer Fargate Service |
 | [elasticache/redis](./elasticache/redis/) | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) | redis |
 | [elasticache/redis-primary-replica](./elasticache/redis-primary-replica/) | ![elasticache-redis-primary-replica-arch](./elasticache/redis-primary-replica/elasticache-for-redis-primary-replica-arch.svg) | redis primary-replica cluster |
 | [elasticache/redis-cluster](./elasticache/redis-cluster/) | ![elasticache-redis-cluster-arch](./elasticache/redis-cluster/elasticache-for-redis-cluster-arch.svg) | redis-cluster |
