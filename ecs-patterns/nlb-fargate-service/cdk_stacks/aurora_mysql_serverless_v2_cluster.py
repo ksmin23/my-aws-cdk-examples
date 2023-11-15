@@ -40,6 +40,14 @@ class AuroraMysqlServerlessV2ClusterStack(Stack):
       description='aurora_mysql-client-sg')
     sg_mysql_server.add_ingress_rule(peer=sg_mysql_server, connection=aws_ec2.Port.all_tcp(),
       description='aurora_mysql-server-sg')
+
+    # Adds an ingress rule which allows resources in the VPC's CIDR to access the database.
+    sg_mysql_server.add_ingress_rule(
+      peer=aws_ec2.Peer.ipv4(vpc.vpc_cidr_block),
+      connection=aws_ec2.Port.tcp(3306),
+      description="Allow inbound from resources in the VPC"
+    )
+
     cdk.Tags.of(sg_mysql_server).add('Name', 'aurora_mysql-server-sg')
 
     rds_subnet_group = aws_rds.SubnetGroup(self, 'MySQLSubnetGroup',
