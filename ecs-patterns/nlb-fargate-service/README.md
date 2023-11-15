@@ -81,7 +81,7 @@ In order to set up the Aurora MySQL, you need to connect the Aurora MySQL cluste
      <pre>
      $ BASTION_HOST_ID=$(aws cloudformation describe-stacks --stack-name <i>BastionHostStack</i> | jq -r '.Stacks[0].Outputs | .[] | select(.OutputKey | endswith("EC2InstanceId")) | .OutputValue')
      $ ssh -i /path/to/ec2_key_pair_name.pem ec2-user@${BASTION_HOST_ID}
-     [ec2-user@ip-172-31-7-186 ~]$ mysql -hdb-cluster-name.cluster-xxxxxxxxxxxx.region-name.rds.amazonaws.com -uadmin -p
+     [ec2-user@ip-172-31-7-186 ~]$ mysql -h<i>db-cluster-name.cluster-xxxxxxxxxxxx.region-name.rds.amazonaws.com</i> -u<i>clusteradmin</i> -p
      Enter password:
      Welcome to the MariaDB monitor.  Commands end with ; or \g.
      Your MySQL connection id is 10
@@ -152,8 +152,8 @@ In order to set up the Aurora MySQL, you need to connect the Aurora MySQL cluste
      +------------------+
      | Tables_in_testdb |
      +------------------+
-     | movies           |
      | movie_ratings    |
+     | movies           |
      +------------------+
      1 row in set (0.00 sec)
 
@@ -173,6 +173,8 @@ Download a sample data and populate `movies`, `movies_ratings` table by runing `
    --user ${<i>DB_USER</i>} \
    --password ${<i>DB_PASSWORD}</i>
 </pre>
+
+> :information_source: The dataset is available for download here - https://grouplens.org/datasets/movielens/20m/
 
 ### (Step 4) Deploy Dashboard application on ECS Fargate
 
@@ -215,11 +217,13 @@ Delete the CloudFormation stack by running the below command.
 
 Enjoy!
 
+
 ## References
 
  * [Streamlit](https://streamlit.io/) - Streamlit turns data scripts into shareable web apps in minutes.
  * [Build a Data Dashboard with Streamlit in Python](https://earthly.dev/blog/streamlit-python-dashboard/)
  * [How to build a real-time live dashboard with Streamlit](https://blog.streamlit.io/how-to-build-a-real-time-live-dashboard-with-streamlit/)
+ * [MovieLens 20M Dataset](https://grouplens.org/datasets/movielens/20m/)
 
 
 ## Troubleshooting
