@@ -50,13 +50,13 @@ ecs_task_stack = ECSTaskStack(app, "ECSTaskStack",
 )
 ecs_task_stack.add_dependency(ecs_cluster_stack)
 
-ecs_alb_fargate_stack = ECSAlbFargateServiceStack(app, "ECSAlbFargateServiceStack",
+ecs_fargate_stack = ECSAlbFargateServiceStack(app, "ECSAlbFargateServiceStack",
   vpc_stack.vpc,
   rds_stack.sg_mysql_client,
   ecs_cluster_stack.ecs_cluster,
   ecs_task_stack.ecs_task_definition,
   env=AWS_ENV
 )
-ecs_alb_fargate_stack.add_dependency(ecs_fargate_stack)
+ecs_fargate_stack.add_dependency(ecs_task_stack)
 
 app.synth()
