@@ -55,7 +55,7 @@ Now let's try to deploy.
 
 ```
 (.venv) $ cdk list
-ECSAlbFargateServiceVpcStack
+ECSNlbFargateServiceVpcStack
 AuroraMySQLServerlessV2Stack
 BastionHostStack
 ECSClusterStack
@@ -67,7 +67,7 @@ ECSNlbFargateServiceStack
 
 ```
 (.venv) $ cdk deploy --require-approval never \
-                     ECSAlbFargateServiceVpcStack \
+                     ECSNlbFargateServiceVpcStack \
                      AuroraMySQLServerlessV2Stack \
                      BastionHostStack
 ```
