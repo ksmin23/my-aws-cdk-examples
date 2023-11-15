@@ -31,15 +31,11 @@ class ECSAlbFargateServiceStack(Stack):
       task_definition=ecs_task_definition
     )
 
-    # fargate_service.target_group.configure_health_check(
-    #   path="/"
-    # )
-
     # Setup security group
     fargate_service.service.connections.security_groups[0].add_ingress_rule(
       peer=aws_ec2.Peer.ipv4(vpc.vpc_cidr_block),
       connection=aws_ec2.Port.tcp(8501),
-      description="Allow inbound from VPC for mlflow",
+      description="Allow inbound from VPC for ECS Fargate Service",
     )
 
     fargate_service.load_balancer.add_security_group(sg_rds_client)
