@@ -60,7 +60,6 @@ AuroraMySQLServerlessV2Stack
 BastionHostStack
 ECSClusterStack
 ECSTaskStack
-ECSNlbFargateServiceStack
 ECSAlbFargateServiceStack
 ```
 
