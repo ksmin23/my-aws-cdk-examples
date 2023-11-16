@@ -168,8 +168,8 @@ Download a sample data and populate `movies`, `movies_ratings` table by runing `
 
 <pre>
 [ec2-user@ip-172-31-7-186 ~]$ wget https://files.grouplens.org/datasets/movielens/ml-20m.zip
-[ec2-user@ip-172-31-7-186 ~]$ $ unzip ml-20m.zip
-[ec2-user@ip-172-31-7-186 ~]$ $ python3 gen_fake_mysql_data.py \
+[ec2-user@ip-172-31-7-186 ~]$ unzip ml-20m.zip
+[ec2-user@ip-172-31-7-186 ~]$ python3 gen_fake_mysql_data.py \
    --host ${<i>DB_HOST</i>} \
    --user ${<i>DB_USER</i>} \
    --password ${<i>DB_PASSWORD}</i>
