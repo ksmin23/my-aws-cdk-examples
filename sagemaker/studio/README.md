@@ -48,21 +48,32 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth -c vpc_name='<i>your-existing-vpc-name</i>' \
-              -c sagmaker_jupyterlab_arn='<i>default-JupterLab-image-arn</i>'
+(.venv) $ cdk synth
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy -c vpc_name='<i>your-existing-vpc-name</i>' \
-              -c sagmaker_jupyterlab_arn='<i>default-JupterLab-image-arn</i>'
+(.venv) $ cdk deploy
+</pre>
+
+If you want to set `JupyterLab3` to the default JupyterLab, you can do like this:
+
+<pre>
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk synth -c sagmaker_jupyterlab_arn='(optional) <i>default-JupterLab-image-arn</i>'
+</pre>
+
+Use `cdk deploy` command to create the stack shown above with `JupyterLab3` as the default JupyerLab.
+
+<pre>
+(.venv) $ cdk deploy -c sagmaker_jupyterlab_arn='(optional) <i>default-JupterLab-image-arn</i>'
 </pre>
 
 For example, if we try to set `JupyterLab3` to the default JupyterLab in `us-east-1` region, we can deploy like this:
 <pre>
-(.venv) $ cdk deploy -c vpc_name=default \
-              -c sagmaker_jupyterlab_arn='arn:aws:sagemaker:<i>us-east-1:081325390199:image/jupyter-server-3</i>'
+(.venv) $ cdk deploy -c sagmaker_jupyterlab_arn='arn:aws:sagemaker:<i>us-east-1:081325390199:image/jupyter-server-3</i>'
 </pre>
 
 Otherwise, you can pass context varialbes by `cdk.contex.json` file. Here is an example:
@@ -75,6 +86,8 @@ Otherwise, you can pass context varialbes by `cdk.contex.json` file. Here is an 
 </pre>
 
 For more information about the available JupyterLab versions for each Region, see [Amazon SageMaker - Setting a default JupyterLab version](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set)
+
+> :information_source: `-c sagmaker_jupyterlab_arn` option is not required when synthizing or deploying CDK stacks.
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
