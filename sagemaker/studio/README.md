@@ -87,7 +87,7 @@ Otherwise, you can pass context varialbes by `cdk.contex.json` file. Here is an 
 
 For more information about the available JupyterLab versions for each Region, see [Amazon SageMaker - Setting a default JupyterLab version](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set)
 
-> :information_source: `-c sagmaker_jupyterlab_arn` option is not required when synthizing or deploying CDK stacks.
+> :information_source: `-c sagmaker_jupyterlab_arn` option is not required when synthizing or deploying CDK stacks if you do not want to set `JupyterLab3` to the default JupyterLab.
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
