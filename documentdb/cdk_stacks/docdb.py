@@ -9,9 +9,7 @@ import aws_cdk as cdk
 from aws_cdk import (
   Stack,
   aws_ec2,
-  aws_iam,
-  aws_docdb,
-  aws_sagemaker
+  aws_docdb
 )
 from constructs import Construct
 
