@@ -51,7 +51,8 @@ class DocumentdbStack(Stack):
       vpc=vpc,
       security_group=sg_docdb_server,
       preferred_maintenance_window='sun:18:00-sun:18:30',
-      removal_policy=cdk.RemovalPolicy.RETAIN
+      enable_performance_insights=True,
+      removal_policy=cdk.RemovalPolicy.DESTROY
     )
 
     #[Warning at /docdb-sm/Database/RotationSingleUser/SecurityGroup] Ignoring Egress rule since 'allowAllOutbound' is set to true;
