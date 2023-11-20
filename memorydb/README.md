@@ -44,6 +44,7 @@ You need two CloudFormation stack. One is for ACL, the other is for Amazon Memor
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk synth MemoryDBVPCStack
 (.venv) $ cdk synth \
   --parameters MemoryDBUserName=<i>'your-memory-db-user-name'</i> \
   --parameters MemoryDBUserPassword=<i>'your-memory-db-user-password'</i> \
@@ -57,6 +58,7 @@ and then deploy the CDK Stack for Amazon MemoryDB like this:
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk deploy MemoryDBVPCStack
 (.venv) $ cdk deploy \
   --parameters MemoryDBUserName=<i>'your-memory-db-user-name'</i> \
   --parameters MemoryDBUserPassword=<i>'your-memory-db-user-password'</i> \
@@ -111,7 +113,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> redis = RedisCluster(**redis_cluster_options)
 >>> if redis.ping():
 ...     print("Connected to Redis")
-... 
+...
 Connected to Redis
 >>>
 </pre>
