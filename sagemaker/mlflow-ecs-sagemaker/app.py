@@ -20,7 +20,7 @@ AWS_ENV = cdk.Environment(
 app = cdk.App()
 
 vpc_stack = VpcStack(app, "MLflowVpcStack",
-    env=AWS_ENV)
+  env=AWS_ENV)
 
 s3_stack = S3Stack(app, "MLflowS3ArtifactsStack",
   env=AWS_ENV
