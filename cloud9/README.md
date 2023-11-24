@@ -1,7 +1,9 @@
 
 # Amazon Cloud9
 
-This is a Amazon Cloud9 project for Python development with CDK.
+![aws-cloud9](./aws-cloud9.svg)
+
+This is an Amazon Cloud9 project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -43,19 +45,27 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 (.venv) $ cdk synth \
-              --parameters Cloud9OwnerName='<i>cloud9-owner-name</i>'
+              -c Cloud9OwnerName='<i>cloud9-owner-name</i>'
 </pre>
 
 Use `cdk deploy` command to create the stack shown above,
 
 <pre>
 (.venv) $ cdk deploy --require-approval never \
-              --parameters Cloud9OwnerName='<i>cloud9-owner-name</i>'
+              -c Cloud9OwnerName='<i>cloud9-owner-name</i>'
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
@@ -67,3 +77,6 @@ command.
 
 Enjoy!
 
+## References
+
+ * [AWS Cloud9 - Resize an Amazon EBS volume that an environment uses](https://docs.aws.amazon.com/cloud9/latest/user-guide/move-environment.html#move-environment-resize)
