@@ -220,6 +220,7 @@ Enjoy!
 
 ## References
 
+ * [Amazon ECS Blueprints](https://github.com/aws-ia/ecs-blueprints)
  * [Streamlit](https://streamlit.io/) - Streamlit turns data scripts into shareable web apps in minutes.
  * [Build a Data Dashboard with Streamlit in Python](https://earthly.dev/blog/streamlit-python-dashboard/)
  * [How to build a real-time live dashboard with Streamlit](https://blog.streamlit.io/how-to-build-a-real-time-live-dashboard-with-streamlit/)
