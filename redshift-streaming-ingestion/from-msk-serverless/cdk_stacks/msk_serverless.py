@@ -28,7 +28,7 @@ class MskServerlessStack(Stack):
     MSK_CLUSTER_NAME = msk_cluster_name or _MSK_DEFAULT_CLUSTER_NAME
     assert len(MSK_CLUSTER_NAME) <= 64 and re.fullmatch(r'[a-zA-Z]+[a-zA-Z0-9-]*', MSK_CLUSTER_NAME)
 
-    MSK_CLIENT_SG_NAME = 'msk-client-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLIENT_SG_NAME = f'msk-client-sg-{MSK_CLUSTER_NAME}'
     sg_msk_client = aws_ec2.SecurityGroup(self, 'KafkaClientSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -37,7 +37,7 @@ class MskServerlessStack(Stack):
     )
     cdk.Tags.of(sg_msk_client).add('Name', MSK_CLIENT_SG_NAME)
 
-    MSK_CLUSTER_SG_NAME = 'msk-cluster-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLUSTER_SG_NAME = f'msk-cluster-sg-{MSK_CLUSTER_NAME}'
     sg_msk_cluster = aws_ec2.SecurityGroup(self, 'MSKSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -67,8 +67,8 @@ class MskServerlessStack(Stack):
     self.sg_msk_client = sg_msk_client
     self.msk_cluster_name = msk_serverless_cluster.cluster_name
 
-    cdk.CfnOutput(self, f'{self.stack_name}-MSKClusterName', value=msk_serverless_cluster.cluster_name,
+    cdk.CfnOutput(self, 'MSKClusterName', value=msk_serverless_cluster.cluster_name,
       export_name=f'{self.stack_name}-MSKClusterName')
-    cdk.CfnOutput(self, f'{self.stack_name}-MSKClusterArn', value=msk_serverless_cluster.attr_arn,
+    cdk.CfnOutput(self, 'MSKClusterArn', value=msk_serverless_cluster.attr_arn,
       export_name=f'{self.stack_name}-MSKClusterArn')
 
