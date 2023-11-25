@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -21,14 +23,14 @@ class VpcStack(Stack):
     # for example,
     # cdk -c vpc_name=your-existing-vpc syth
     #
-    # vpc_name = self.node.try_get_context("vpc_name")
-    # vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
+    # vpc_name = self.node.try_get_context("vpc_name") or "default"
+    # self.vpc = aws_ec2.Vpc.from_lookup(self, "ExistingVPC",
     #   is_default=True,
     #   vpc_name=vpc_name)
 
     #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    vpc = aws_ec2.Vpc(self, "RedshiftStreamingStackVPC",
+    self.vpc = aws_ec2.Vpc(self, "RedshiftStreamingStackVPC",
       max_azs=2,
       gateway_endpoints={
         "S3": aws_ec2.GatewayVpcEndpointOptions(
@@ -37,7 +39,5 @@ class VpcStack(Stack):
       }
     )
 
-    self.vpc = vpc
-
-    cdk.CfnOutput(self, f'{self.stack_name}-VPCID', value=self.vpc.vpc_id,
+    cdk.CfnOutput(self, 'VPCID', value=self.vpc.vpc_id,
       export_name=f'{self.stack_name}-VPCID')

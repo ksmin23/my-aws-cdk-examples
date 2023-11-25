@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import random
 import string
@@ -13,6 +15,7 @@ from aws_cdk import (
 from constructs import Construct
 
 random.seed(31)
+
 
 class KdsStack(Stack):
 
@@ -29,5 +32,6 @@ class KdsStack(Stack):
 
     self.source_kinesis_stream = source_kinesis_stream
 
-    cdk.CfnOutput(self, f'{self.stack_name}-KinesisDataStreamName',
-      value=self.source_kinesis_stream.stream_name, export_name=f'{self.stack_name}-KinesisDataStreamName')
+    cdk.CfnOutput(self, 'KinesisDataStreamName',
+      value=self.source_kinesis_stream.stream_name,
+      export_name=f'{self.stack_name}-KinesisDataStreamName')
