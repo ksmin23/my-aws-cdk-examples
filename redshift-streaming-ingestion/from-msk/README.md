@@ -44,7 +44,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
               -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c aws_secret_name='<i>your_redshift_secret_name</i>'
 </pre>
@@ -61,7 +61,7 @@ $ aws secretsmanager create-secret \
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy --all \
               -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c aws_secret_name='<i>your_redshift_secret_name</i>'
 </pre>
@@ -75,7 +75,7 @@ command.
 Delete the CloudFormation stack by running the below command.
 
 <pre>
-(.venv) $ cdk destroy --force \
+(.venv) $ cdk destroy --force --all \
               -c vpc_name='<i>your-existing-vpc-name</i>' \
               -c aws_secret_name=<i>your_redshift_secret_name</i>
 </pre>
@@ -223,7 +223,7 @@ These steps show you how to configure the materialized view to ingest data.
    For information about how to configure the IAM role, see [Getting started with streaming ingestion from Amazon Managed Streaming for Apache Kafka](https://docs.aws.amazon.com/redshift/latest/dg/materialized-view-streaming-ingestion-getting-started-MSK.html).
 
 3. Create a materialized view to consume the stream data.
-   
+
    Note that MSK cluster names are case-sensitive and can contain both uppercase and lowercase letters. To use case-sensitive identifiers, you can set the configuration setting `enable_case_sensitive_identifier` to true at either the session or cluster level.
    <pre>
    -- To create and use case sensitive identifiers
@@ -258,7 +258,7 @@ These steps show you how to configure the materialized view to ingest data.
    The code above filters records larger than **65355** bytes. This is because `json_extract_path_text` is limited to varchar data type. The Materialized view should be defined so that there aren’t any type conversion errors.
 
 4. Refreshing materialized views for streaming ingestion
-   
+
    The materialized view is auto-refreshed as long as there is new data on the MSK stream. You can also disable auto-refresh and run a manual refresh or schedule a manual refresh using the Redshift Console UI.<br/>
    To update the data in a materialized view, you can use the `REFRESH MATERIALIZED VIEW` statement at any time.
    <pre>
@@ -275,7 +275,7 @@ These steps show you how to configure the materialized view to ingest data.
 2. Query the refreshed materialized view to get usage statistics.
    <pre>
    SELECT to_timestamp(connectionTime, 'YYYY-MM-DD HH24:MI:SS') as connectiontime
-      ,SUM(kWhDelivered) AS Energy_Consumed 
+      ,SUM(kWhDelivered) AS Energy_Consumed
       ,count(distinct userID) AS #Users
    FROM <i>ev_station_data_extract</i>
    GROUP BY to_timestamp(connectionTime, 'YYYY-MM-DD HH24:MI:SS')
