@@ -80,8 +80,7 @@ class KafkaClientEC2InstanceStack(Stack):
 
     kafka_client_iam_policy.attach_to_role(kafka_client_ec2_instance_role)
 
-    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux(
-      generation=aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux2(
       edition=aws_ec2.AmazonLinuxEdition.STANDARD,
       virtualization=aws_ec2.AmazonLinuxVirt.HVM,
       storage=aws_ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
@@ -112,7 +111,7 @@ class KafkaClientEC2InstanceStack(Stack):
     )
 
     commands = '''
-yum update -y 
+yum update -y
 yum install python3.7 -y
 yum install java-1.8.0-openjdk-devel -y
 yum install -y jq
@@ -141,13 +140,13 @@ cp {USER_DATA_LOCAL_PATH} /home/ec2-user/gen_fake_kafka_data.py & chown -R ec2-u
 
     msk_client_ec2_instance.user_data.add_commands(commands)
 
-    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstancePublicDNS',
+    cdk.CfnOutput(self, 'EC2InstancePublicDNS',
       value=msk_client_ec2_instance.instance_public_dns_name,
       export_name=f'{self.stack_name}-EC2InstancePublicDNS')
-    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstanceId',
+    cdk.CfnOutput(self, 'EC2InstanceId',
       value=msk_client_ec2_instance.instance_id,
       export_name=f'{self.stack_name}-EC2InstanceId')
-    cdk.CfnOutput(self, f'{self.stack_name}-EC2InstanceAZ',
+    cdk.CfnOutput(self, 'EC2InstanceAZ',
       value=msk_client_ec2_instance.instance_availability_zone,
       export_name=f'{self.stack_name}-EC2InstanceAZ')
 

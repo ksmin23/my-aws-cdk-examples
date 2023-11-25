@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -98,9 +100,11 @@ class RedshiftServerlessStack(Stack):
     )
     cfn_rss_workgroup.add_dependency(cfn_rss_namespace)
     cfn_rss_workgroup.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
- 
-    cdk.CfnOutput(self, f'{self.stack_name}-NamespaceName',
-      value=cfn_rss_workgroup.namespace_name, export_name=f'{self.stack_name}-NamespaceName')
-    cdk.CfnOutput(self, f'{self.stack_name}-WorkgroupName',
-      value=cfn_rss_workgroup.workgroup_name, export_name=f'{self.stack_name}-WorkgroupName')
+
+    cdk.CfnOutput(self, 'RedshiftNamespaceName',
+      value=cfn_rss_workgroup.namespace_name,
+      export_name=f'{self.stack_name}-NamespaceName')
+    cdk.CfnOutput(self, 'RedshiftWorkgroupName',
+      value=cfn_rss_workgroup.workgroup_name,
+      export_name=f'{self.stack_name}-WorkgroupName')
 

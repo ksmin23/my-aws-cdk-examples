@@ -38,7 +38,7 @@ class MskStack(Stack):
     KAFA_BROKER_EBS_VOLUME_SIZE = int(msk_config.get('broker_ebs_volume_size', 100))
     assert (1 <= KAFA_BROKER_EBS_VOLUME_SIZE and KAFA_BROKER_EBS_VOLUME_SIZE <= 16384)
 
-    MSK_CLIENT_SG_NAME = 'use-msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLIENT_SG_NAME = 'msk-client-sg-{MSK_CLUSTER_NAME}'
     sg_msk_client = aws_ec2.SecurityGroup(self, 'KafkaClientSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -47,7 +47,7 @@ class MskStack(Stack):
     )
     cdk.Tags.of(sg_msk_client).add('Name', MSK_CLIENT_SG_NAME)
 
-    MSK_CLUSTER_SG_NAME = 'msk-sg-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    MSK_CLUSTER_SG_NAME = 'msk-cluster-sg-{MSK_CLUSTER_NAME}'
     sg_msk_cluster = aws_ec2.SecurityGroup(self, 'MSKSecurityGroup',
       vpc=vpc,
       allow_all_outbound=True,
@@ -73,7 +73,7 @@ class MskStack(Stack):
     msk_broker_storage_info = aws_msk.CfnCluster.StorageInfoProperty(
       ebs_storage_info=msk_broker_ebs_storage_info
     )
-    
+
     msk_broker_node_group_info = aws_msk.CfnCluster.BrokerNodeGroupInfoProperty(
       client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       instance_type=KAFA_BROKER_INSTANCE_TYPE,
@@ -95,13 +95,13 @@ class MskStack(Stack):
       # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
       kafka_version=KAFA_VERSION,
       number_of_broker_nodes=KAFA_NUMBER_OF_BROKER_NODES,
-      encryption_info=msk_encryption_info, 
+      encryption_info=msk_encryption_info,
       enhanced_monitoring='PER_TOPIC_PER_BROKER'
     )
 
     self.sg_msk_client = sg_msk_client
     self.msk_cluster_name = msk_cluster.cluster_name
 
-    cdk.CfnOutput(self, f'{self.stack_name}-MSKClusterName', value=msk_cluster.cluster_name, export_name=f'{self.stack_name}-MSKClusterName')
-    cdk.CfnOutput(self, f'{self.stack_name}-MSKClusterArn', value=msk_cluster.attr_arn, export_name=f'{self.stack_name}-MSKClusterArn')
-    cdk.CfnOutput(self, f'{self.stack_name}-MSKVersion', value=msk_cluster.kafka_version, export_name=f'{self.stack_name}-MSKVersion')
+    cdk.CfnOutput(self, 'MSKClusterName', value=msk_cluster.cluster_name, export_name=f'{self.stack_name}-MSKClusterName')
+    cdk.CfnOutput(self, 'MSKClusterArn', value=msk_cluster.attr_arn, export_name=f'{self.stack_name}-MSKClusterArn')
+    cdk.CfnOutput(self, 'MSKVersion', value=msk_cluster.kafka_version, export_name=f'{self.stack_name}-MSKVersion')
