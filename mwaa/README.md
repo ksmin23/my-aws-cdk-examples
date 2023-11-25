@@ -40,8 +40,8 @@ Once the virtualenv is activated, you can install the required dependencies.
 ```
 
 ## Before you deploy
-Before you deploy this project, you should create an Amazon S3 bucket to store your 
-Apache Airflow Directed Acyclic Graphs (DAGs), custom plugins in a plugins.zip file, 
+Before you deploy this project, you should create an Amazon S3 bucket to store your
+Apache Airflow Directed Acyclic Graphs (DAGs), custom plugins in a plugins.zip file,
 and Python dependencies in a requirements.txt file.
 Check this [Create an Amazon S3 bucket for Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-s3-bucket.html)
 
@@ -61,7 +61,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 (.venv) $ cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' \
               -c airflow_env_name='<i>your-airflow-env-name</i>' \
-              synth
+              synth --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
@@ -69,12 +69,20 @@ Use `cdk deploy` command to create the stack shown above.
 <pre>
 (.venv) $ cdk -c s3_bucket_for_dag_code='<i>your-s3-bucket-for-airflow-dag-code</i>' \
               -c airflow_env_name='<i>your-airflow-env-name</i>' \
-              deploy
+              deploy --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+<pre>
+(.venv) $ cdk destroy --force --all
+</pre>
 
 ## Useful commands
 
@@ -84,8 +92,18 @@ command.
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
 
+## References
+
+ * [Amazon MWAA - Networking](https://docs.aws.amazon.com/mwaa/latest/userguide/networking.html)
+ * [Apache Airflow versions on Amazon Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/airflow-versions.html)
+ * [Amazon MWAA frequently asked questions](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-faqs.html)
+ * [Troubleshooting Amazon Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/troubleshooting.html)
+
 ## Learn more
 
+ * [Tutorials for Amazon Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/tutorials.html)
+ * [Best practices for Amazon Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/best-practices.html)
+ * [Code examples for Amazon Managed Workflows for Apache Airflow](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html)
  * [Orchestrate AWS Glue DataBrew jobs using Amazon Managed Workflows for Apache Airflow](https://aws.amazon.com/blogs/big-data/orchestrate-aws-glue-databrew-jobs-using-amazon-managed-workflows-for-apache-airflow/)
    * Code Repository: [aws-mwaa-glue-databrew-nytaxi](https://github.com/ksmin23/aws-mwaa-glue-databrew-nytaxi)
  * [Amazon MWAA for Analytics Workshop](https://amazon-mwaa-for-analytics.workshop.aws/en/)
