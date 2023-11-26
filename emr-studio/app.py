@@ -19,10 +19,10 @@ app = cdk.App()
 vpc_stack = VpcStack(app, 'EmrStudioVPCStack',
   env=APP_ENV)
 
-emr_stack = EmrStudioStack(app, 'EmrStudioStack',
+emr_studio_stack = EmrStudioStack(app, 'EmrStudioStack',
   vpc_stack.vpc,
   env=APP_ENV
 )
-emr_stack.add_dependency(vpc_stack)
+emr_studio_stack.add_dependency(vpc_stack)
 
 app.synth()
