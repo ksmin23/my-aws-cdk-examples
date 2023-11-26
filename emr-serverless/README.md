@@ -107,6 +107,14 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+## Clean up
+
+Before cleaning up the emr cluster, you need to delete the EMR Serverless application.
+
+<pre>
+(.venv) $ cdk destroy --force
+</pre>
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
