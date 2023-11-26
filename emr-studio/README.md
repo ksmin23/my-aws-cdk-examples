@@ -40,7 +40,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
               -c vpc_name="<i>your-vpc-name</i>" \
               -c emr_studio_name="<i>your-emr-studio-name</i>"
 </pre>
@@ -52,14 +52,14 @@ command.
 Use cdk `deploy command` to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy --require-approval never \
+(.venv) $ cdk deploy --require-approval never --all \
               -c vpc_name="<i>your-vpc-name</i>" \
               -c emr_studio_name="<i>your-emr-studio-name</i>"
 </pre>
 
-For example, 
+For example,
 <pre>
-(.venv) $ cdk deploy --require-approval never \
+(.venv) $ cdk deploy --require-approval never --all \
               -c vpc_name="<i>default</i>" \
               -c emr_studio_name="<i>datalake-demo</i>"
 
@@ -94,6 +94,14 @@ Do the following steps to run your notebook.
 - **(Step 2)** [Launch a Workspace.](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-studio-configure-workspace.html#emr-studio-use-workspace)
 - **(Step 3)** Attach Jupyter Notebook to an EMR Cluster up and running.
 ![emr-studio-notebook-attacth-cluster](./emr-studio-notebook-attacth-cluster.png)
+
+## Clean up
+
+Delete the CloudFormation stack by running the below command.
+
+<pre>
+(.venv) $ cdk destroy --force --all
+</pre>
 
 ## Useful commands
 
