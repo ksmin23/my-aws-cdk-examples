@@ -14,11 +14,7 @@ class BastionHostEC2InstanceStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, sg_opensearch_client, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    EC2_KEY_PAIR_NAME = cdk.CfnParameter(self, 'EC2KeyPairName',
-      type='String',
-      description='Amazon EC2 Instance KeyPair name',
-      default=None
-    )
+    EC2_KEY_PAIR_NAME = self.node.try_get_context("EC2KeyPairName")
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceSize.html#aws_cdk.aws_ec2.InstanceSize
@@ -28,7 +24,7 @@ class BastionHostEC2InstanceStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for an bastion host',
-      security_group_name='bastion-host-sg'
+      security_group_name=f'bastion-host-sg-{self.stack_name}'
     )
     cdk.Tags.of(sg_bastion_host).add('Name', 'bastion-host-sg')
 
@@ -41,7 +37,7 @@ class BastionHostEC2InstanceStack(Stack):
       machine_image=aws_ec2.MachineImage.latest_amazon_linux2(),
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
       security_group=sg_bastion_host,
-      key_name=EC2_KEY_PAIR_NAME.value_as_string
+      key_name=EC2_KEY_PAIR_NAME
     )
     bastion_host.add_security_group(sg_opensearch_client)
 

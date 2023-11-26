@@ -22,20 +22,16 @@ class OpensearchStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    OPENSEARCH_DOMAIN_NAME = cdk.CfnParameter(self, 'OpenSearchDomainName',
-      type='String',
-      description='Amazon OpenSearch Service domain name',
-      default='opensearch-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5))),
-      allowed_pattern='[a-z]+[a-z0-9\-]+'
-    )
+    OPENSEARCH_DEFAULT_DOMAIN_NAME = 'opensearch-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
+    OPENSEARCH_DOMAIN_NAME = self.node.try_get_context("OpenSearchDomainName") or OPENSEARCH_DEFAULT_DOMAIN_NAME
 
-    sg_use_opensearch = aws_ec2.SecurityGroup(self, "OpenSearchClientSG",
+    sg_opensearch_client = aws_ec2.SecurityGroup(self, "OpenSearchClientSG",
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for an opensearch client',
       security_group_name='use-opensearch-cluster-sg'
     )
-    cdk.Tags.of(sg_use_opensearch).add('Name', 'use-opensearch-cluster-sg')
+    cdk.Tags.of(sg_opensearch_client).add('Name', 'use-opensearch-cluster-sg')
 
     sg_opensearch_cluster = aws_ec2.SecurityGroup(self, "OpenSearchSG",
       vpc=vpc,
@@ -47,8 +43,8 @@ class OpensearchStack(Stack):
 
     sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_cluster, connection=aws_ec2.Port.all_tcp(), description='opensearch-cluster-sg')
 
-    sg_opensearch_cluster.add_ingress_rule(peer=sg_use_opensearch, connection=aws_ec2.Port.tcp(443), description='use-opensearch-cluster-sg')
-    sg_opensearch_cluster.add_ingress_rule(peer=sg_use_opensearch, connection=aws_ec2.Port.tcp_range(9200, 9300), description='use-opensearch-cluster-sg')
+    sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_client, connection=aws_ec2.Port.tcp(443), description='use-opensearch-cluster-sg')
+    sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_client, connection=aws_ec2.Port.tcp_range(9200, 9300), description='use-opensearch-cluster-sg')
 
     master_user_secret = aws_secretsmanager.Secret(self, "OpenSearchMasterUserSecret",
       generate_secret_string=aws_secretsmanager.SecretStringGenerator(
@@ -63,7 +59,7 @@ class OpensearchStack(Stack):
     #XXX: aws cdk elastsearch example - https://github.com/aws/aws-cdk/issues/2873
     # You should camelCase the property names instead of PascalCase
     opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
-      domain_name=OPENSEARCH_DOMAIN_NAME.value_as_string,
+      domain_name=OPENSEARCH_DOMAIN_NAME,
       #XXX: Supported versions of OpenSearch and Elasticsearch
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
       version=aws_opensearchservice.EngineVersion.OPENSEARCH_2_5,
@@ -109,9 +105,9 @@ class OpensearchStack(Stack):
       vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS)],
       removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
     )
-    cdk.Tags.of(opensearch_domain).add('Name', f'{OPENSEARCH_DOMAIN_NAME.value_as_string}')
+    cdk.Tags.of(opensearch_domain).add('Name', OPENSEARCH_DOMAIN_NAME)
 
-    self.sg_opensearch_client = sg_use_opensearch
+    self.sg_opensearch_client = sg_opensearch_client
 
 
     cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_domain.domain_endpoint,

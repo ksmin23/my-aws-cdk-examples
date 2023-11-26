@@ -43,16 +43,16 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
 (.venv) $ cdk synth --all \
-              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+              -c OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
+              -c EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
 (.venv) $ cdk deploy --all \
-              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+              -c OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
+              -c EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
