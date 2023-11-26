@@ -42,17 +42,17 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk synth \
-              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk synth --all \
+              -c OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
+              -c EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
-              --parameters OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk deploy --all \
+              -c OpenSearchDomainName="<i>your-opensearch-domain-name</i>" \
+              -c EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -72,6 +72,14 @@ To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/Use
 
 ```
 aws iam create-service-linked-role --aws-service-name es.amazonaws.com
+```
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
 ```
 
 ## Useful commands
