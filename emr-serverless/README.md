@@ -109,7 +109,7 @@ command.
 
 ## Clean up
 
-Before cleaning up the emr cluster, you need to delete the EMR Serverless application.
+Delete the CloudFormation stack by running the below command.
 
 <pre>
 (.venv) $ cdk destroy --force
