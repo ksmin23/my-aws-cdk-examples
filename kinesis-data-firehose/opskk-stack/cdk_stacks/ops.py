@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import os
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import json
 import random
 import string
@@ -9,6 +11,7 @@ import aws_cdk as cdk
 from aws_cdk import (
   Stack,
   aws_ec2,
+  aws_s3 as s3,
   aws_opensearchservice,
   aws_secretsmanager
 )
@@ -17,7 +20,7 @@ from constructs import Construct
 random.seed(47)
 
 
-class OpensearchStack(Stack):
+class OpenSearchDomainStack(Stack):
 
   def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
@@ -25,26 +28,28 @@ class OpensearchStack(Stack):
     OPENSEARCH_DEFAULT_DOMAIN_NAME = 'opensearch-{}'.format(''.join(random.sample((string.ascii_lowercase), k=5)))
     OPENSEARCH_DOMAIN_NAME = self.node.try_get_context("OpenSearchDomainName") or OPENSEARCH_DEFAULT_DOMAIN_NAME
 
+    OPENSEARCH_INDEX_NAME = self.node.try_get_context("SearchIndexName") or "log-analysis"
+
     sg_opensearch_client = aws_ec2.SecurityGroup(self, "OpenSearchClientSG",
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for an opensearch client',
-      security_group_name='use-opensearch-cluster-sg'
+      security_group_name=f'opensearch-client-sg-{OPENSEARCH_DOMAIN_NAME}'
     )
-    cdk.Tags.of(sg_opensearch_client).add('Name', 'use-opensearch-cluster-sg')
+    cdk.Tags.of(sg_opensearch_client).add('Name', 'opensearch-client-sg')
 
     sg_opensearch_cluster = aws_ec2.SecurityGroup(self, "OpenSearchSG",
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for an opensearch cluster',
-      security_group_name='opensearch-cluster-sg'
+      security_group_name=f'opensearch-cluster-sg-{OPENSEARCH_DOMAIN_NAME}'
     )
     cdk.Tags.of(sg_opensearch_cluster).add('Name', 'opensearch-cluster-sg')
 
     sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_cluster, connection=aws_ec2.Port.all_tcp(), description='opensearch-cluster-sg')
 
-    sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_client, connection=aws_ec2.Port.tcp(443), description='use-opensearch-cluster-sg')
-    sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_client, connection=aws_ec2.Port.tcp_range(9200, 9300), description='use-opensearch-cluster-sg')
+    sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_client, connection=aws_ec2.Port.tcp(443), description='opensearch-client-sg')
+    sg_opensearch_cluster.add_ingress_rule(peer=sg_opensearch_client, connection=aws_ec2.Port.tcp_range(9200, 9300), description='opensearch-client-sg')
 
     master_user_secret = aws_secretsmanager.Secret(self, "OpenSearchMasterUserSecret",
       generate_secret_string=aws_secretsmanager.SecretStringGenerator(
@@ -60,11 +65,9 @@ class OpensearchStack(Stack):
     # You should camelCase the property names instead of PascalCase
     opensearch_domain = aws_opensearchservice.Domain(self, "OpenSearch",
       domain_name=OPENSEARCH_DOMAIN_NAME,
-      #XXX: Supported versions of OpenSearch and Elasticsearch
-      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
       version=aws_opensearchservice.EngineVersion.OPENSEARCH_2_5,
-      #XXX: Amazon OpenSearch Service - Current generation instance types
-      # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen
+      #XXX: You cannot use graviton instances with non-graviton instances.
+      # Use graviton instances as data nodes or use non-graviton instances as master nodes.
       capacity={
         "master_nodes": 3,
         "master_node_instance_type": "r6g.large.search",
@@ -102,19 +105,26 @@ class OpensearchStack(Stack):
       # Only applies for Elasticsearch versions below 5.3
       # automated_snapshot_start_hour=17, # 2 AM (GTM+9)
       vpc=vpc,
+      #XXX: az_count must be equal to vpc subnets count.
       vpc_subnets=[aws_ec2.SubnetSelection(one_per_az=True, subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS)],
       removal_policy=cdk.RemovalPolicy.DESTROY # default: cdk.RemovalPolicy.RETAIN
     )
     cdk.Tags.of(opensearch_domain).add('Name', OPENSEARCH_DOMAIN_NAME)
 
+    self.opensearch_domain = opensearch_domain
     self.sg_opensearch_client = sg_opensearch_client
+    self.opensearch_index_name = OPENSEARCH_INDEX_NAME
 
 
-    cdk.CfnOutput(self, 'OpenSearchDomainEndpoint', value=opensearch_domain.domain_endpoint,
-      export_name=f'{self.stack_name}-OpenSearchDomainEndpoint')
-    cdk.CfnOutput(self, 'OpenSearchDashboardsURL', value=f"{opensearch_domain.domain_endpoint}/_dashboards/",
-      export_name=f'{self.stack_name}-OpenSearchDashboardsURL')
-    cdk.CfnOutput(self, 'MasterUserSecretId', value=master_user_secret.secret_name,
+    cdk.CfnOutput(self, 'OpenSearchDomainEndpoint',
+      value=self.opensearch_domain.domain_endpoint,
+      export_name=f'{self.stack_name}-Endpoint')
+    cdk.CfnOutput(self, 'OpenSearchDashboardsURL',
+      value=f"{self.opensearch_domain.domain_endpoint}/_dashboards/",
+      export_name=f'{self.stack_name}-DashboardsURL')
+    cdk.CfnOutput(self, 'OpenSearchIndexName',
+      value=self.opensearch_index_name,
+      export_name=f'{self.stack_name}-IndexName')
+    cdk.CfnOutput(self, 'MasterUserSecretId',
+      value=master_user_secret.secret_name,
       export_name=f'{self.stack_name}-MasterUserSecretId')
-    cdk.CfnOutput(self, 'OpenSearchClientSecurityGroupId', value=self.sg_opensearch_client.security_group_id,
-      export_name=f'{self.stack_name}-CleintSecurityGroupId')
