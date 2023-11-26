@@ -44,7 +44,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
   --parameters KinesisStreamName=<i>'your-kinesis-data-stream-name'</i> \
   --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
   --parameters FirehosePrefix=<i>'your-s3-bucket-prefix'</i>
@@ -53,7 +53,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy --all \
   --parameters KinesisStreamName=<i>'your-kinesis-data-stream-name'</i> \
   --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
   --parameters FirehosePrefix=<i>'your-s3-bucket-prefix'</i>
@@ -81,6 +81,14 @@ If you would like to know more about the usage of this command, you can type
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
