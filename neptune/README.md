@@ -41,12 +41,26 @@ $ pip install -r requirements.txt
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synth
+$ cdk synth --all
+```
+
+Use `cdk deploy` command to create the stack shown above.
+
+```
+(.venv) $ cdk deploy --all
 ```
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `requirements.txt` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
