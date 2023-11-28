@@ -44,19 +44,26 @@ At this point you can now synthesize the CloudFormation template for this code.
 ```
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' synth
+$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' synth --all
 ```
 
 Use `cdk deploy` command to create the stack shown above,
 
 ```
-$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' deploy
+$ cdk -c vpc_name='<your-existing-vpc-name>' -c db_cluster_name='<db-cluster-name>' deploy --all
 ```
 
  then load and run the [Jupyter notebook](https://github.com/ksmin23/my-aws-cdk-examples/blob/main/rds/sagemaker-aurora_mysql/ipython-sql.ipynb) in your Sagemaker instance.
 
 ![ipython-sql-example](./ipython-sql-example.png)
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+<pre>
+(.venv) $ cdk destroy --force --all
+</pre>
 
 ## Useful commands
 
