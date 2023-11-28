@@ -89,6 +89,8 @@ Enjoy!
 
 2. Connect to Aurora PostgreSQL
 
+    :information_source: The `username` and `password` is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
+
     <pre>
     $ psql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -Upostgres -W
     psql (13.3, server 13.4)
