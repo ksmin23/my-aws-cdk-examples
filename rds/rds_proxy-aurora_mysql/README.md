@@ -45,38 +45,25 @@ At this point you can now synthesize the CloudFormation template for this code.
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 $ cdk -c vpc_name='<i>your-existing-vpc-name</i>' \
-  -c db_cluster_name='<i>db-cluster-name</i>>' \
-  -c db_secret_name='<i>db-secret-name</i>' \
-  synth
-</pre>
-
-:information_source: Before you deploy this project, you should create an AWS Secret for your RDS Admin user. You can create an AWS Secret like this:
-
-<pre>
-$ aws secretsmanager create-secret \
-    --name <i>"your_db_secret_name"</i> \
-    --description "<i>(Optional) description of the secret</i>" \
-    --secret-string '{"username": "admin", "password": <i>"password_of_at_last_8_characters"</i>}'
-</pre>
-
-For example,
-
-<pre>
-$ aws secretsmanager create-secret \
-    --name "dev/rds/admin" \
-    --description "admin user for rds" \
-    --secret-string '{"username": "admin", "password": <i>"your admin password"</i>}'
+  -c db_cluster_name='<i>db-cluster-name</i>>'
+  synth --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
 $ cdk -c vpc_name='<i>your-existing-vpc-name</i>' \
-      -c db_cluster_name='<i>db-cluster-name</i>' \
-      -c db_secret_name='<i>db-secret-name</i>' \
-      deploy
+      -c db_cluster_name='<i>db-cluster-name</i>'
+      deploy --all
 </pre>
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+<pre>
+(.venv) $ cdk destroy --force --all
+</pre>
 
 ## Useful commands
 
@@ -91,6 +78,8 @@ Enjoy!
 # Example
 
 1. Connecting to Aurora MySQL using RDS Proxy
+
+    :information_source: The `username` and `password` is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
 
     <pre>
     $ mysql -h <i>rds-proxy-name</i>.proxy-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
@@ -110,7 +99,7 @@ Enjoy!
     </pre>
 
 2. Creating MySQL User
-   
+
     ```
     mysql> SHOW DATABASES;
     +--------------------+
@@ -159,7 +148,7 @@ Enjoy!
     mysql>
     ```
 
-3. Creating AWS Secret for a new MySQL User 
+3. Creating AWS Secret for a new MySQL User
 
     <pre>
     aws secretsmanager create-secret \
@@ -220,7 +209,7 @@ Enjoy!
     </pre>
 
 6. Connecting to Aurora MySQL using an RDS Proxy read-only endpoint
-   
+
     <pre>
     $ mysql -h <i>readonly-rds-proxy-name</i>.proxy-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
     Welcome to the MySQL monitor.  Commands end with ; or \g.
