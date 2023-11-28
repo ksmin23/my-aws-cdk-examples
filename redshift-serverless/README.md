@@ -45,7 +45,7 @@ $ pip install -r requirements.txt
 $ aws secretsmanager create-secret \
     --name "<i>your_redshift_secret_name</i>" \
     --description "<i>(Optional) description of the secret</i>" \
-    --secret-string '{"admin_username": "admin", "admin_user_password": "<i>password_of_at_last_8_characters</i>"}'
+    --secret-string '{"admin_username": "admin", "admin_user_password": "<i>password_of_at_least_8_characters</i>"}'
 </pre>
 
 At this point you can now synthesize the CloudFormation template for this code.

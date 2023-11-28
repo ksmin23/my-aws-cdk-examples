@@ -71,7 +71,7 @@ NginxRDSProxyStack
    (.venv) $ aws secretsmanager create-secret \
       --name "<i>your_db_secret_name</i>" \
       --description "<i>(Optional) description of the secret</i>" \
-      --secret-string '{"username": "admin", "password": <i>"password_of_at_last_8_characters"</i>}'
+      --secret-string '{"username": "admin", "password": <i>"password_of_at_least_8_characters"</i>}'
    </pre>
    For example,
    <pre>
@@ -119,7 +119,7 @@ Provision NGINX on an EC2 Instance
    stream {
        server {
          listen 4306; # Reverse Proxy port to access the primary of Aurora MySQL cluster
-        
+
          # Primary of Aurora MySQL cluster
          proxy_pass mysqldb.cluster-cnrh6fettief.us-east-1.rds.amazonaws.com:3306;
        }
