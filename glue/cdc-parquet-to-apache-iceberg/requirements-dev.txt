@@ -3,4 +3,4 @@ mimesis==6.0.0
 fastparquet==2023.2.0
 numpy==1.24.2
 pandas==1.5.3
-pyarrow==11.0.0
+pyarrow>=14.0.1
