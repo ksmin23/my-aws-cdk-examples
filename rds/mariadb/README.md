@@ -44,40 +44,26 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
-              -c vpc_name='<i>your-existing-vpc-name</i>' \
-              -c db_secret_name='<i>db-secret-name</i>'
-</pre>
-
-:information_source: Before you deploy this project, you should create an AWS Secret for your RDS Admin user. You can create an AWS Secret like this:
-
-<pre>
-$ aws secretsmanager create-secret \
-    --name <i>"your_db_secret_name"</i> \
-    --description "<i>(Optional) description of the secret</i>" \
-    --secret-string '{"username": "admin", "password": <i>"password_of_at_last_8_characters"</i>}'
-</pre>
-
-For example,
-
-<pre>
-$ aws secretsmanager create-secret \
-    --name "dev/rds/admin" \
-    --description "admin user for rds" \
-    --secret-string '{"username": "admin", "password": <i>"your admin password"</i>}'
+(.venv) $ cdk synth --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
-              -c vpc_name='<i>your-existing-vpc-name</i>' \
-              -c db_secret_name='<i>db-secret-name</i>'
+(.venv) $ cdk deploy --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+<pre>
+(.venv) $ cdk destroy --force --all
+</pre>
 
 ## Useful commands
 
@@ -92,6 +78,8 @@ Enjoy!
 # Example
 ### Connect to MariaDB
 1. Connecting to MariaDB
+
+    :information_source: The `username` and `password` is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
 
     <pre>
     $ mysql -h <i>db-instance-name</i>-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
