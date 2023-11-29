@@ -48,13 +48,13 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth -c db_cluster_name='<i>db-cluster-name</i>'
+(.venv) $ cdk synth -c db_cluster_name='<i>db-cluster-name</i>' --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy -c db_cluster_name='<i>db-cluster-name</i>'
+(.venv) $ cdk deploy -c db_cluster_name='<i>db-cluster-name</i>' --all
 </pre>
 
 ## Clean Up
@@ -89,7 +89,7 @@ Enjoy!
 
 2. Connect to PostgreSQL
 
-    The user name and password of the master user are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `rds!cluster-xxxxxxxxxxxx`. (For more information, see [here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html).)
+    :information_source: The `username` and `password` of the master user are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `rds!cluster-xxxxxxxxxxxx`. (For more information, see [here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html).)
 
     <pre>
     $ psql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -Upostgres -W
