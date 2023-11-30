@@ -55,19 +55,19 @@ At this point you can now synthesize the CloudFormation template for this code.
 For example, let's define partitioning keys for it with inline parsing for the following sample data
 
 ```
-{  
-   "type": {  
-    "device": "mobile",  
-    "event": "view" 
-  },  
-  "customer_id": "123456789012",  
-  "event_timestamp": 1565382027, #epoch timestamp  
-  "region": "us-east-1"  
+{
+   "type": {
+    "device": "mobile",
+    "event": "view"
+  },
+  "customer_id": "123456789012",
+  "event_timestamp": 1565382027, #epoch timestamp
+  "region": "us-east-1"
 }
 ```
 
 For example, you are going to choose to partition your data based on `region`, `device`, and `event_timestamp`.
-After selecting data parameters for your partitioning keys, you then map each parameter to a valid jq expression. 
+After selecting data parameters for your partitioning keys, you then map each parameter to a valid jq expression.
 The following table shows such a mapping of parameters to jq expressions:
 
 | Parameter	| jq expression |
@@ -200,6 +200,14 @@ If you would like to know more about the usage of this command, you can type
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy
+```
 
 ## Useful commands
 

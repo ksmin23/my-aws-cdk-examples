@@ -1,0 +1,1 @@
+from .firehose import FirehoseToS3Stack
