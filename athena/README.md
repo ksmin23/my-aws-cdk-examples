@@ -75,6 +75,14 @@ command.
     $ aws athena get-prepared-statement --statement-name <i>value</i> --work-group <i>value</i>
     </pre>
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+<pre>
+(.venv) $ cdk destroy
+</pre>
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
