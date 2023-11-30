@@ -44,7 +44,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
   --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
   --parameters FirehosePrefix=<i>'your-s3-bucket-prefix-for-dynamic-partitioning'</i>
 </pre>
@@ -54,14 +54,14 @@ At this point you can now synthesize the CloudFormation template for this code.
 For example, let's define partitioning keys for it with an AWS Lambda function for the following sample data.
 
 ```
-{  
-   "type": {  
-    "device": "mobile",  
-    "event": "view" 
-  },  
-  "customer_id": "123456789012",  
-  "event_timestamp": 1565382027, #epoch timestamp  
-  "region": "us-east-1"  
+{
+   "type": {
+    "device": "mobile",
+    "event": "view"
+  },
+  "customer_id": "123456789012",
+  "event_timestamp": 1565382027, #epoch timestamp
+  "region": "us-east-1"
 }
 ```
 
@@ -103,22 +103,31 @@ Now you can create kinesis data firehose like this:
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
   --parameters FirehoseStreamName='PUT-S3-lambda' \
   --parameters FirehosePrefix='region=!{partitionKeyFromLambda:region}/device=!{partitionKeyFromLambda:device}/year=!{partitionKeyFromLambda:year}/month=!{partitionKeyFromLambda:month}/day=!{partitionKeyFromLambda:day}/hour=!{partitionKeyFromLambda:hour}/'
 </pre>
 
-Use `cdk deploy` command to create the stack shown above.
+List all CDK stacks with `cdk list` command before provisioning them.
+<pre>
+(.venv) $ cdk list
+FirehoseDataProcLambdaStack
+FirehoseToS3Stack
+</pre>
+
+Then, use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy -e FirehoseDataProcLambdaStack
+(.venv) $ cdk deploy -e FirehoseToS3Stack \
   --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
   --parameters FirehosePrefix=<i>'your-s3-bucket-prefix-for-dynamic-partitioning'</i>
 </pre>
 
 For example,
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy -e FirehoseDataProcLambdaStack
+(.venv) $ cdk deploy -e FirehoseToS3Stack \
   --parameters FirehoseStreamName='PUT-S3-lambda' \
   --parameters FirehosePrefix='region=!{partitionKeyFromLambda:region}/device=!{partitionKeyFromLambda:device}/year=!{partitionKeyFromLambda:year}/month=!{partitionKeyFromLambda:month}/day=!{partitionKeyFromLambda:day}/hour=!{partitionKeyFromLambda:hour}/'
 </pre>
@@ -229,6 +238,14 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -238,6 +255,7 @@ command.
  * `cdk docs`        open CDK documentation
 
 ## Learn more
+
  * [Dynamic Partitioning in Kinesis Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html)
  * [Kinesis Data Firehose now supports dynamic partitioning to Amazon S3](https://aws.amazon.com/blogs/big-data/kinesis-data-firehose-now-supports-dynamic-partitioning-to-amazon-s3/)
  * [How to create a Lambda layer using a simulated Lambda environment with Docker](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
