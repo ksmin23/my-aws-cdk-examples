@@ -55,41 +55,51 @@ For example,
 
 ### Deploy
 
-At this point you can now synthesize the CloudFormation template for this code.
+Before to synthesize the CloudFormation template for this code, you should update `cdk.context.json` file.
+In particular, you need to fill the s3 location of the previously created lambda lay codes.
+
+For example,
 
 <pre>
-(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
-  --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
-  --parameters FirehosePrefix=<i>'your-s3-bucket-prefix'</i> \
-  --parameters LambdaLayerCodeS3BucketName=<i>'your-s3-bucket-name-for-lambda-layer-code'</i> \
-  --parameters LambdaLayerCodeS3ObjectKey=<i>'your-s3-object-key-for-lambda-layer-code'</i>
+{
+  "firehose_data_tranform_lambda": {
+    "s3_bucket_name": "<i>lambda-layer-resources</i>",
+    "s3_object_key": "<i>var/fastavro-lib.zip</i>"
+  }
+}
 </pre>
 
-Now you can create kinesis data firehose like this:
+Now you are ready to synthesize the CloudFormation template for this code.
 
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
+  --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
+  --parameters FirehosePrefix=<i>'your-s3-bucket-prefix'</i>
+</pre>
+
+For example,
+
+<pre>
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk synth --all \
   --parameters FirehoseStreamName='PUT-S3-DataTransform' \
-  --parameters FirehosePrefix='json-data/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/' \
-  --parameters LambdaLayerCodeS3BucketName='lambda-layer-resources' \
-  --parameters LambdaLayerCodeS3ObjectKey='fastavro-lib.zip'
+  --parameters FirehosePrefix='json-data/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/'
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy --all \
   --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
   --parameters FirehosePrefix=<i>'your-s3-bucket-prefix'</i>
 </pre>
 
 For example,
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy --all \
   --parameters FirehoseStreamName='PUT-S3-DataTransform' \
   --parameters FirehosePrefix='json-data/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/'
 </pre>
@@ -118,14 +128,14 @@ If you would like to know more about the usage of this command, you can type
 For example, let's validate schema of the record with an AWS Lambda function for the following sample data.
 
 ```
-{  
-   "type": {  
-    "device": "mobile",  
-    "event": "view" 
-  },  
-  "customer_id": "123456789012",  
-  "event_timestamp": 1565382027, #epoch timestamp  
-  "region": "us-east-1"  
+{
+   "type": {
+    "device": "mobile",
+    "event": "view"
+  },
+  "customer_id": "123456789012",
+  "event_timestamp": 1565382027, #epoch timestamp
+  "region": "us-east-1"
 }
 ```
 
@@ -217,6 +227,14 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -227,6 +245,7 @@ command.
 
 ## References
 
+ * [Web Log Analytics with Amazon Kinesis Data Streams Proxy using Amazon API Gateway](https://github.com/aws-samples/web-analytics-on-aws)
  * [fastavro](https://fastavro.readthedocs.io/) - Fast read/write of `AVRO` files
  * [Apache Avro Specification](https://avro.apache.org/docs/current/spec.html)
  * [How to create a Lambda layer using a simulated Lambda environment with Docker](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-layer-simulated-docker/)
