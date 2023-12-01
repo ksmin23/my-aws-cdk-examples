@@ -81,8 +81,7 @@ class KafkaClientEC2InstanceStack(Stack):
 
     kafka_client_iam_policy.attach_to_role(kafka_client_ec2_instance_role)
 
-    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux(
-      generation=aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    amzn_linux = aws_ec2.MachineImage.latest_amazon_linux2(
       edition=aws_ec2.AmazonLinuxEdition.STANDARD,
       virtualization=aws_ec2.AmazonLinuxVirt.HVM,
       storage=aws_ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
@@ -113,7 +112,7 @@ class KafkaClientEC2InstanceStack(Stack):
     )
 
     commands = '''
-yum update -y 
+yum update -y
 yum install python3.7 -y
 yum install java-11 -y
 yum install -y jq
