@@ -17,6 +17,7 @@ from constructs import Construct
 
 random.seed(43)
 
+
 class MskStack(Stack):
 
   def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
@@ -72,7 +73,7 @@ class MskStack(Stack):
     msk_broker_storage_info = aws_msk.CfnCluster.StorageInfoProperty(
       ebs_storage_info=msk_broker_ebs_storage_info
     )
-    
+
     msk_broker_node_group_info = aws_msk.CfnCluster.BrokerNodeGroupInfoProperty(
       client_subnets=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       instance_type=KAFA_BROKER_INSTANCE_TYPE,
@@ -94,7 +95,7 @@ class MskStack(Stack):
       # https://docs.aws.amazon.com/msk/latest/developerguide/supported-kafka-versions.html
       kafka_version=KAFA_VERSION,
       number_of_broker_nodes=KAFA_NUMBER_OF_BROKER_NODES,
-      encryption_info=msk_encryption_info, 
+      encryption_info=msk_encryption_info,
       enhanced_monitoring='PER_TOPIC_PER_BROKER'
     )
 
