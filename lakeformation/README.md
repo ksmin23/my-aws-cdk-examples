@@ -67,7 +67,7 @@ aws lakeformation list-permissions | jq -r '.PrincipalResourcePermissions[] | se
 Delete the CloudFormation stack by running the below command.
 
 <pre>
-(.venv) $ cdk destroy --all
+(.venv) $ cdk destroy -c database_name=<i>lf_testdb</i> --force --all
 </pre>
 
 
