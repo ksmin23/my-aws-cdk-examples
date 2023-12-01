@@ -18,7 +18,7 @@ APP_ENV = cdk.Environment(
 
 app = cdk.App()
 
-lambda_container_stack = ScheduledLambdaStack(app, "ScheduledLambdaStack",
+scheduled_lambda_stack = ScheduledLambdaStack(app, "ScheduledLambdaStack",
   env=APP_ENV
 )
 
