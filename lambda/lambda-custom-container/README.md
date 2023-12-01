@@ -41,9 +41,55 @@ Once the virtualenv is activated, you can install the required dependencies.
 (.venv) $ pip install -r requirements.txt
 ```
 
+## Deploy
+
+At this point you can now synthesize the CloudFormation template for this code.
+
+<pre>
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk synth
+</pre>
+
+Use `cdk deploy` command to create the stack shown above.
+
+<pre>
+(.venv) $ cdk deploy
+</pre>
+
+To add additional dependencies, for example other CDK libraries, just add
+them to your `setup.py` file and rerun the `pip install -r requirements.txt`
+command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy
+```
+
+## Useful commands
+
+ * `cdk ls`          list all stacks in the app
+ * `cdk synth`       emits the synthesized CloudFormation template
+ * `cdk deploy`      deploy this stack to your default AWS account/region
+ * `cdk diff`        compare deployed stack with current state
+ * `cdk docs`        open CDK documentation
+
+Enjoy!
+
+## Run Test
+
+When you run `Test` in the lambda function, you can see the result like this:
+
+![aws-lambda-custom-container-test-run-result](./aws-lambda-custom-container-test-run-result.png)
+
+
+## How to create and upload Docker image to the Amazon ECR repository
 ### Create an image from an AWS base image for Lambda
 
-Before you deploy a lambda function with a custom container image, you need to build the container image for the new Lambda function. You can start to create the container image with an AWS base image for Lambda.
+You can create the container image with an AWS base image for Lambda by following the instructions.
 
 1. On your local machine, create a project directory for your new function.
 
@@ -62,17 +108,17 @@ In this project, you can find the examplary application in the `custom_container
    0 directories, 3 files
    ```
 
-4. Build your Docker image with the docker build command. Enter a name for the image. The following example names the image `hello-world`.
+1. Build your Docker image with the docker build command. Enter a name for the image. The following example names the image `hello-world`.
    <pre>
    docker build -t <i>hello-world</i> .
    </pre>
 
-5. Start the Docker image with the `docker run` command. For this example, enter `hello-world` as the image name.
+2. Start the Docker image with the `docker run` command. For this example, enter `hello-world` as the image name.
    <pre>
    docker run -p 9000:8080 <i>hello-world</i>
    </pre>
 
-6. (Optional) Test your application locally using the [runtime interface emulator](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html). From a new terminal window, post an event to the following endpoint using a curl command:
+3. (Optional) Test your application locally using the [runtime interface emulator](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html). From a new terminal window, post an event to the following endpoint using a curl command:
    <pre>
    curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
    </pre>
@@ -92,44 +138,9 @@ In the following commands, replace `123456789012` with your **AWS account ID** a
 3. Tag your image to match your repository name, and deploy the image to Amazon ECR using the docker push command.
    <pre>
    docker tag <i>hello-world</i>:latest <i>123456789012</i>.dkr.ecr.<i>us-east-1</i>.amazonaws.com/<i>hello-world</i>:latest
-   docker push <i>123456789012</i>.dkr.ecr.<i>us-east-1</i>.amazonaws.com/<i>hello-world</i>:latest        
+   docker push <i>123456789012</i>.dkr.ecr.<i>us-east-1</i>.amazonaws.com/<i>hello-world</i>:latest
    </pre>
 
-### Deploy
-
-At this point you can now synthesize the CloudFormation template for this code.
-
-<pre>
-(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth -c ecr_repo_name=<i>your-ecr-repoistory-name</i>
-</pre>
-
-Use `cdk deploy` command to create the stack shown above.
-
-<pre>
-(.venv) $ cdk deploy -c ecr_repo_name=<i>your-ecr-repoistory-name</i>
-</pre>
-
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
-
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
-
-## Run Test
-
-When you run `Test` in the lambda function, you can see the result like this:
-
-![aws-lambda-custom-container-test-run-result](./aws-lambda-custom-container-test-run-result.png)
 
 ## References
 

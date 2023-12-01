@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.9.2022.12.02.20
+FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.9.2022.12.02.20
 
 # Install java-sdk
 RUN yum install -y java-17-amazon-corretto-devel.x86_64
