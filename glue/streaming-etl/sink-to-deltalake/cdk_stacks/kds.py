@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import random
 import string
@@ -13,6 +15,7 @@ from aws_cdk import (
 from constructs import Construct
 
 random.seed(23)
+
 
 class KdsStack(Stack):
 
