@@ -42,7 +42,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
               -c vpc_name=default \
               --parameters SourceKinesisStreams='<i>your-kinesis-stream-name</i>'
 </pre>
@@ -50,7 +50,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy --require-aproval never \
+(.venv) $ cdk deploy --require-aproval never --all \
               -c vpc_name=default \
               --parameters SourceKinesisStreams='<i>your-kinesis-stream-name</i>'
 </pre>
@@ -172,6 +172,14 @@ command.
     ]
   }
   </pre>
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
