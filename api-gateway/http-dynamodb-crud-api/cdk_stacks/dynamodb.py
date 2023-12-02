@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import aws_cdk as cdk
 
 from aws_cdk import (
@@ -18,7 +21,7 @@ class DynamoDBStack(Stack):
     PARTITION_KEY = dynamodb_config['partition_key']
     TIME_TO_LIVE_ATTRIBUTE = dynamodb_config['time_to_live_attribute']
 
-    ddb_table = aws_dynamodb.Table(self, f"{self.stack_name}_DynamoDbTable",
+    ddb_table = aws_dynamodb.Table(self, "DynamoDBTable",
       table_name=DDB_TABLE_NAME,
       removal_policy=cdk.RemovalPolicy.DESTROY,
       partition_key=aws_dynamodb.Attribute(name=PARTITION_KEY,
@@ -31,6 +34,6 @@ class DynamoDBStack(Stack):
 
     self.dynamodb_table = ddb_table
 
-    cdk.CfnOutput(self, f'{self.stack_name}_TableName',
+    cdk.CfnOutput(self, 'DynamoDBTableName',
       value=self.dynamodb_table.table_name,
-      export_name='DynamoDBTableName')
+      export_name=f'{self.stack_name}-DynamoDBTableName')
