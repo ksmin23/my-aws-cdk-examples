@@ -57,18 +57,26 @@ To import an existing VPC, you should specify the following environment variable
 If you pass context variable such as `vcp_name=<your vpc name>` (e.g. `vpc_name='[X]default'`), you can use the existing VPC.
 
 <pre>
-(.venv) $ cdk synth --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk synth -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk deploy -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
