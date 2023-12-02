@@ -3,7 +3,7 @@
 
 ![apigw-cognito-dynamodb-arch](./apigw-cognito-dynamodb-arch.svg)
 
-This is a Amazon API Gateway to DynamoDB integration with Amazon Cognito as authorizer project for Python development with CDK.
+This is an Amazon API Gateway to DynamoDB integration with Amazon Cognito as authorizer project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
