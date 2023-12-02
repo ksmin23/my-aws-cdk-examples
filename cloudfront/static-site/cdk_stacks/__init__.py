@@ -1,0 +1,1 @@
+from .cloudfront import MyStaticSiteStack

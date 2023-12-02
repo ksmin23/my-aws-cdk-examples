@@ -36,7 +36,7 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 ## Before you deploy
@@ -46,7 +46,7 @@ The site contents (located in the 'site-contents' sub-directory) are deployed to
 For example,
 
 <pre>
-$ aws s3 sync ./static-contents/ s3://<i>your-s3-bucket-for-static-content</i>/
+(.venv) $ aws s3 sync ./static-contents/ s3://<i>your-s3-bucket-for-static-content</i>/
 </pre>
 
 ## Deploy
@@ -54,9 +54,10 @@ $ aws s3 sync ./static-contents/ s3://<i>your-s3-bucket-for-static-content</i>/
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-$ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-$ cdk synth --parameters S3BucketForStaticContents='<i>your-s3-bucket-for-static-contents</i>'
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ cdk synth \
+              --parameters S3BucketForStaticContents='<i>your-s3-bucket-for-static-contents</i>'
 </pre>
 
 If you generate a CloudFormation template based on our current CDK app, you would see the plain CloudFormation Parameters section:
@@ -71,12 +72,21 @@ Parameters:
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-cdk deploy --parameters S3BucketForStaticContents='<i>your-s3-bucket-for-static-contents</i>'
+(.venv) cdk deploy \
+            --parameters S3BucketForStaticContents='<i>your-s3-bucket-for-static-contents</i>'
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy
+```
 
 ## Useful commands
 
