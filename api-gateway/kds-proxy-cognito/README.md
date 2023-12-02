@@ -222,6 +222,14 @@ Hit our Api to test the Authorizer; use the token to invoke our API endpoint whi
   }
   </pre>
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
