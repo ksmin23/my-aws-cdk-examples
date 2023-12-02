@@ -1,7 +1,7 @@
 
 # Amazon Lambda for Jenkins Trigger
 
-This CDK project creates Amazon Lambda function to trigger Jenkins job 
+This CDK project creates Amazon Lambda function to trigger Jenkins job
 when Amazon SageMaker Model package status changes.
 (see the blue box in the following diagram)
 
@@ -67,6 +67,14 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy
+```
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -78,5 +86,5 @@ command.
 Enjoy!
 
 ## References
- 
+
  * [Create Amazon SageMaker projects using third-party source control and Jenkins (2021-08-17)](https://aws.amazon.com/ko/blogs/machine-learning/create-amazon-sagemaker-projects-using-third-party-source-control-and-jenkins/)
