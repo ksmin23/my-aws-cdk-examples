@@ -3,7 +3,7 @@
 
 ![apigw-dynamodb-arch](./apigw-dynamodb-arch.svg)
 
-This is a Amazon API Gateway to DynamoDB integration project for Python development with CDK.
+This is an Amazon API Gateway to DynamoDB integration project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -44,13 +44,13 @@ At this point you can now synthesize the CloudFormation template for this code.
 ```
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth
+(.venv) $ cdk synth --all
 ```
 
 Use `cdk deploy` command to create the stack shown above,
 
 ```
-(.venv) $ cdk deploy
+(.venv) $ cdk deploy --all
 ```
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -116,6 +116,13 @@ command.
     HTTP Method: GET
     </pre>
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
@@ -134,4 +141,3 @@ Enjoy!
  * [Amazon API Gateway mapping template and access logging variable reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html)
  * [Building fine-grained authorization using Amazon Cognito, API Gateway, and IAM](https://aws.amazon.com/ko/blogs/security/building-fine-grained-authorization-using-amazon-cognito-api-gateway-and-iam/)
  * [Curl Cookbook](https://catonmat.net/cookbooks/curl)
-
