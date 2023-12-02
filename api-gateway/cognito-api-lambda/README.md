@@ -44,13 +44,13 @@ At this point you can now synthesize the CloudFormation template for this code.
 ```
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
-(.venv) $ cdk synth
+(.venv) $ cdk synth --all
 ```
 
 Use `cdk deploy` command to create the stack shown above,
 
 ```
-(.venv) $ cdk deploy --require-approval never
+(.venv) $ cdk deploy --require-approval never --all
 ```
 
 To add additional dependencies, for example other CDK libraries, just add
@@ -120,6 +120,14 @@ In order to test the flow we have to:
     <pre>
     aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.ExportName == "ApiGatewayRestApiEndpoint")) | .[0].OutputValue'
     </pre>
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
