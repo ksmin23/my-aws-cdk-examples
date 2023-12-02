@@ -52,7 +52,6 @@ First, open `cdk.context.json` and update it properly
 
 ```json
 {
-  "vpc_name": "Your-VPC-Name",
   "s3_bucket_name": "Your-S3-KDA-App-Code-Location",
   "s3_path_to_flink_app_code": "Your-KDA-App-Code-Path",
   "kda_flink_property_groups": [
@@ -94,6 +93,14 @@ After successfully delpoyment, go to [Kinesis Data Analytics applications Dashbo
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy
+```
 
 ## Useful commands
 
