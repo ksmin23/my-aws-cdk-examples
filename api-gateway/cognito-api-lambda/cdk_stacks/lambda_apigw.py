@@ -28,3 +28,8 @@ class HelloWorldLambdaFnStack(Stack):
     )
 
     self.lambda_fn = helloworld_lambda_fn
+
+
+    cdk.CfnOutput(self, 'LambdaFuncName',
+      value=self.lambda_fn.function_name,
+      export_name=f'{self.stack_name}-LambdaFuncName')
