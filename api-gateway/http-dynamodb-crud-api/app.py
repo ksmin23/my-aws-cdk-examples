@@ -16,7 +16,7 @@ AWS_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
   region=os.getenv('CDK_DEFAULT_REGION'))
 
 app = cdk.App()
-vpc_stack = VpcStack(app, 'DynamoDBCrudHttpApiVpc',
+vpc_stack = VpcStack(app, 'DynamoDBCrudHttpApiVpcStack',
   env=AWS_ENV)
 
 dynamodb_stack = DynamoDBStack(app, 'DynamoDBTableForHttpApiStack')

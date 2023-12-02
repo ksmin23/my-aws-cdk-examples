@@ -69,6 +69,7 @@ class DynamoDBCrudHttpApiStack(Stack):
       integration=dynamodb_apigw_integration
     )
 
+
     cdk.CfnOutput(self, f'{self.stack_name}_LambdaFn',
       value=ddb_crud_api_lambda_fn.function_name,
       export_name='HttpLambdaFunctionName')

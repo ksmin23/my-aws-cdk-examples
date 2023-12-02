@@ -20,7 +20,7 @@ class CognitoProtectedApiStack(Stack):
       cognito_user_pools=[user_pool]
     )
 
-    helloworld_lambda_rest_api = aws_apigateway.LambdaRestApi(self, 'HelloWorldLambdaRestApi',
+    lambda_rest_api = aws_apigateway.LambdaRestApi(self, 'HelloWorldLambdaRestApi',
       rest_api_name="helloworld-api",
       handler=lambda_fn,
       proxy=False,
@@ -29,7 +29,7 @@ class CognitoProtectedApiStack(Stack):
       endpoint_export_name='ApiGatewayRestApiEndpoint'
     )
 
-    hello = helloworld_lambda_rest_api.root.add_resource("hello")
+    hello = lambda_rest_api.root.add_resource("hello")
     hello.add_method('GET',
       aws_apigateway.LambdaIntegration(
         handler=lambda_fn
@@ -38,5 +38,7 @@ class CognitoProtectedApiStack(Stack):
       authorizer=auth
     )
 
-    # cdk.CfnOutput(self, 'UserPoolId', value=user_pool.user_pool_id)
-    # cdk.CfnOutput(self, 'UserPoolClientId', value=user_pool_client.user_pool_client_id)
+
+    cdk.CfnOutput(self, 'RestApiEndpointUrl',
+      value=lambda_rest_api.url,
+      export_name=f'{self.stack_name}-RestApiEndpointUrl')
