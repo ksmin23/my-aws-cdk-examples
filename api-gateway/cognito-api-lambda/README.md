@@ -3,7 +3,7 @@
 
 ![amazon-cognito-api-lambda](./amazon-cognito-api-lambda.svg)
 
-This is a Amazon API Gateway with Amazon Cognito User Pools project for Python development with CDK.
+This is an Amazon API Gateway with Amazon Cognito User Pools project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
