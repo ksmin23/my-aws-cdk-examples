@@ -15,6 +15,7 @@ AWS_ENV = cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'),
   region=os.getenv('CDK_DEFAULT_REGION'))
 
 app = cdk.App()
+
 kds_stack = KinesisDataStreamsStack(app, 'KinesisDataStreamsStack',
   env=AWS_ENV)
 
