@@ -17,14 +17,13 @@ class Ec2WithUserDataStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    EC2_SG_NAME = 'ec2-sg-{self.stack_name}'
     sg_ec2_instance = aws_ec2.SecurityGroup(self, 'EC2InstanceSG',
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for EC2 Instance',
-      security_group_name=EC2_SG_NAME
+      security_group_name=f'ec2-sg-{self.stack_name}'
     )
-    cdk.Tags.of(sg_ec2_instance).add('Name', EC2_SG_NAME)
+    cdk.Tags.of(sg_ec2_instance).add('Name', 'ec2-sg')
     sg_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
       connection=aws_ec2.Port.tcp(22))
 
@@ -38,13 +37,6 @@ class Ec2WithUserDataStack(Stack):
       ]
     )
 
-    # amzn_linux = aws_ec2.MachineImage.latest_amazon_linux(
-    #   generation=aws_ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-    #   edition=aws_ec2.AmazonLinuxEdition.STANDARD,
-    #   virtualization=aws_ec2.AmazonLinuxVirt.HVM,
-    #   storage=aws_ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
-    #   cpu_type=aws_ec2.AmazonLinuxCpuType.X86_64
-    # )
     amzn_linux = aws_ec2.MachineImage.latest_amazon_linux2(
       edition=aws_ec2.AmazonLinuxEdition.STANDARD,
       virtualization=aws_ec2.AmazonLinuxVirt.HVM,
