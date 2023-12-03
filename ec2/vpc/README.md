@@ -48,22 +48,30 @@ us-east-2
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 ```
 
-After setting enviroment variables such as `CDK_DEFAULT_ACCOUNT`, `CDK_DEFAULT_REGION`, 
+After setting enviroment variables such as `CDK_DEFAULT_ACCOUNT`, `CDK_DEFAULT_REGION`,
 you can now synthesize the CloudFormation template for this code.
 
 ```
-(.venv) $ cdk synth
+(.venv) $ cdk synth --all
 ```
 
 Use `cdk deploy` command to create the stack shown above.
 
 ```
-(.venv) $ cdk deploy
+(.venv) $ cdk deploy --all
 ```
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
 
 ## Useful commands
 
