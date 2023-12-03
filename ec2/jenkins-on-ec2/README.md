@@ -42,7 +42,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-(.venv) $ cdk synth 
+(.venv) $ cdk synth --all
 ```
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
@@ -56,23 +56,38 @@ To import an existing VPC, you should specify the following environment variable
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 ```
 
-If you pass context variable such as `vcp_name=<your vpc name>` (e.g. `vpc_name='[X]default'`), you can use the existing VPC.
+If you pass context variable such as `vcp_name=<your vpc name>` (e.g. `vpc_name='default'`), you can use the existing VPC.
 
 <pre>
-(.venv) $ cdk synth -c vpc_name='[X]default' \
-                    --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk synth -c vpc_name='default' --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
-              --parameters EC2KeyPairName="<i>your-ec2-key-pair-name(exclude .pem extension)</i>"
+(.venv) $ cdk deploy --all
 </pre>
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
+
+## Set up to access Jenkins Server on Local MacOS PC
+
+The deployment might take about `10` minutes.<br/>
+After then, you can access to the Jenkins server through the browser by the following instructions.
+
+#### Configure a Linux or macOS Client
+
+1. Open a terminal on your local PC.
+2. Connect the EC2 instance.<br/>
+   You can connect to an EC2 instance using the EC2 Instance Connect CLI.<br/>
+   Install `ec2instanceconnectcli` python package and Use the **mssh** command with the instance ID as follows.
+
+   <pre>
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh -r {<i>region (i.e., us-east-1)</i>} ec2-user@<i>i-001234a4bf70dec41EXAMPLE</i> # <i>ec-user</i>: Amazon Linux's user name
+   </pre>
 
 ## Configure Jenkins
 
@@ -108,6 +123,14 @@ Jenkins is now installed and running on your EC2 instance. To configure Jenkins:
 | pipeline-aws | 1.43 |
 | CloudBees AWS Credentials for the Jenkins plugin | 1.33 |
 
+## Clean Up
+
+Delete the CloudFormation stacks by running the below command.
+
+```
+(.venv) $ cdk destroy --all
+```
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -126,4 +149,9 @@ Enjoy!
  * [Amazon Corretto 8 Installation Instructions for Amazon Linux 2](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/amazon-linux-install.html)
  * [Amazon Corretto 11 Installation Instructions for Amazon Linux 2](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/amazon-linux-install.html)
  * [Amazon Corretto Documentation](https://docs.aws.amazon.com/corretto/index.html)
+ * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
+   <pre>
+   $ sudo pip install ec2instanceconnectcli
+   $ mssh --region us-east-1 ec2-user@i-001234a4bf70dec41EXAMPLE # <i>ec2-user</i>: Amazon Linux's user name
+   </pre>
 
