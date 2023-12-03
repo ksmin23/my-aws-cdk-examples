@@ -38,17 +38,25 @@ Once the virtualenv is activated, you can install the required dependencies.
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
-(.venv) $ cdk synth \
+(.venv) $ cdk synth --all \
               -c vpc_name="<i>your-existing-vpc-name</i>" \
               -c dlami_name="<i>DLAMI-name</i>" \
               -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" \
               -c jupyter_notebook_instance_type="<i>your-ec2-instance-type</i>"
 </pre>
 
+> :information_source: You can find out the latest Deep learning AMI by runing the following command:
+   <pre>
+     aws ec2 describe-images --region <i>us-east-1</i> \
+         --owners amazon \
+         --filters 'Name=name,Values=Deep Learning AMI (Amazon Linux 2) Version ??.?' 'Name=state,Values=available' \
+         --query 'reverse(sort_by(Images, &CreationDate))[:1].Name'
+   </pre>
+
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy \
+(.venv) $ cdk deploy --all \
               -c vpc_name="<i>your-existing-vpc-name</i>" \
               -c dlami_name="<i>DLAMI-name</i>" \
               -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" \
@@ -75,7 +83,7 @@ After then, you can access to the jupyter server through the browser by the foll
 
 1. Click **Applications > Utilities > Keychain Access**
 2. In the **Keychains** menu on the left, select **Login** then **File > Import Items...**
-   
+
    ![macos_keychain_access_import_items01](./resources/macos_keychain_access_import_items01.png)
 
 3. Navigate to the location of your saved certificate file and click **Open**.
@@ -126,6 +134,14 @@ After then, you can access to the jupyter server through the browser by the foll
 
    For more information, see [AWS Deep Learning AMI - Test by Logging in to the Jupyter notebook server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter-login.html)
 
+## Clean Up
+
+Delete the CloudFormation stacks by running the below command.
+
+```
+(.venv) $ cdk destroy --all
+```
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
@@ -141,7 +157,10 @@ Enjoy!
  * [Release Notes for Amazon DLAMI](https://docs.aws.amazon.com/dlami/latest/devguide/appendix-ami-release-notes.html)
    * Query AMI-ID with AWSCLI (example region is `us-east-1`):
      <pre>
-     $ aws ec2 describe-images --region us-east-1 --owners amazon --filters 'Name=name,Values=Deep Learning AMI (Amazon Linux 2) Version ??.?' 'Name=state,Values=available' --query 'reverse(sort_by(Images, &CreationDate))[:1].Name'
+     aws ec2 describe-images --region us-east-1 \
+         --owners amazon \
+         --filters 'Name=name,Values=Deep Learning AMI (Amazon Linux 2) Version ??.?' 'Name=state,Values=available' \
+         --query 'reverse(sort_by(Images, &CreationDate))[:1].Name'
      </pre>
  * [Deep Learning AMI - Set up a Jupyter Notebook Server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter.html)
  * [Running a jupyter notebook server](https://jupyter-notebook.readthedocs.io/en/stable/public_server.html)
