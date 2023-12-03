@@ -24,13 +24,13 @@ class VpcStack(Stack):
     # cdk -c vpc_name=your-existing-vpc syth
     #
     # vpc_name = self.node.try_get_context("vpc_name") or "default"
-    # self.vpc = aws_ec2.Vpc.from_lookup(self, 'Ec2WithPemKeyStackVPC',
+    # self.vpc = aws_ec2.Vpc.from_lookup(self, 'JenkinsOnEC2StackVPC',
     #   is_default=True,
     #   vpc_name=vpc_name)
 
     #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    self.vpc = aws_ec2.Vpc(self, 'Ec2WithPemKeyStackVPC',
+    self.vpc = aws_ec2.Vpc(self, 'JenkinsOnEC2StackVPC',
       ip_addresses=aws_ec2.IpAddresses.cidr("10.0.0.0/16"),
       max_azs=3,
 
