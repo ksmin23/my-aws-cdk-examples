@@ -30,7 +30,7 @@ class JupyterOnDLAMIStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for an DL Notebook instance',
-      security_group_name='dl-notebook-host-sg-{self.stack_name}'
+      security_group_name=f'dl-notebook-host-sg-{self.stack_name}'
     )
     cdk.Tags.of(sg_dl_notebook_host).add('Name', 'dl-notebook-host-sg')
 

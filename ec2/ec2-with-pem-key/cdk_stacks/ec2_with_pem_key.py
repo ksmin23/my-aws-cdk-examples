@@ -18,11 +18,6 @@ class Ec2WithPemKeyStack(Stack):
   def __init__(self, scope: Construct, construct_id: str, vpc, **kwargs) -> None:
     super().__init__(scope, construct_id, **kwargs)
 
-    # EC2_KEY_PAIR_NAME = cdk.CfnParameter(self, 'EC2KeyPairName',
-    #   type='String',
-    #   description='Amazon EC2 Instance KeyPair name'
-    # )
-
     EC2_KEY_PAIR_NAME = self.node.try_get_context("ec2_key_pair_name")
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
@@ -33,7 +28,7 @@ class Ec2WithPemKeyStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for an bastion host',
-      security_group_name='bastion-host-sg'
+      security_group_name=f'bastion-host-sg-{self.stack_name}'
     )
     cdk.Tags.of(sg_bastion_host).add('Name', 'bastion-host-sg')
 

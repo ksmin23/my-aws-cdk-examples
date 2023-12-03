@@ -24,7 +24,7 @@ class DLAMIEC2InstanceStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for an Deep Learning instance',
-      security_group_name='dl-instance-sg'
+      security_group_name=f'dl-instance-sg-{self.stack_name}'
     )
     cdk.Tags.of(sg_dlami_instance).add('Name', 'dl-instance-sg')
 
