@@ -70,7 +70,7 @@ Enjoy!
  (1) You should assign `secret_name` variable to your AWS Secrets to access DocumentDB
   ```python
   # Get DocumentDB credentials stored in Secrets Manager
-  def get_secret(stack_name):
+  def get_secret(secret_name):
 
       # Create a Secrets Manager client
       session = boto3.session.Session()
@@ -79,7 +79,6 @@ Enjoy!
           region_name=session.region_name
       )
 
-      secret_name = f'{stack_name}-DocDBSecret' #FIXME
       get_secret_value_response = client.get_secret_value(SecretId=secret_name)
       secret = get_secret_value_response['SecretString']
 
@@ -93,14 +92,14 @@ Enjoy!
   [Clang 12.0.0 (clang-1200.0.32.27)] on darwin
   Type "help", "copyright", "credits" or "license" for more information.
   >>> import boto3
-  >>> cf_client = boto3.client('cloudformation')
-  >>> cf_stackname = 'docdb'
+  >>> cf_client = boto3.client('cloudformation', region_name='us-east-1')
+  >>> cf_stackname = 'AmazonDocDBStack'
   >>> response = cf_client.describe_stacks(StackName=cf_stackname)
   >>> outputs = response["Stacks"][0]["Outputs"]
-  >>> secrets = [e for e in outputs if e['ExportName'] == 'DocDBSecret'][0]
+  >>> secrets = [e for e in outputs if e['OutputKey'] == 'DocDBSecret'][0]
   >>> secrets
-  {'OutputKey': 'DocDBSecret', 'OutputValue': 'DocDBSecret3B817195-ZPE9J6tmnLtd-dtaGCG', 'ExportName': 'DocDBSecret'}
-  >>> secret_name = secrets['OutputValue'][:-7]
+  {'OutputKey': 'DocDBSecret', 'OutputValue': 'DocDBSecret3B817195-ZPE9J6tmnLtd', 'ExportName': 'DocDBSecret'}
+  >>> secret_name = secrets['OutputValue']
   >>> secret_name
   'DocDBSecret3B817195-ZPE9J6tmnLtd'
   >>>
@@ -109,7 +108,7 @@ Enjoy!
   + **As-Is**
     ```python
     # Sets up a connection to the Amazon DocumentDB database
-    secret = get_secret(stack_name)
+    secret = get_secret(secret_name)
 
     db_username = secret['username']
     db_password = secret['password']
@@ -120,7 +119,7 @@ Enjoy!
   + **To-Be**
     ```python
     # Sets up a connection to the Amazon DocumentDB database
-    secret = get_secret(stack_name)
+    secret = get_secret(secret_name)
 
     import urllib
     db_username = secret['username']
@@ -130,5 +129,8 @@ Enjoy!
     ```
 
 ## References
+
  - [Analyzing data stored in Amazon DocumentDB (with MongoDB compatibility) using Amazon Sagemaker](https://aws.amazon.com/blogs/machine-learning/analyzing-data-stored-in-amazon-documentdb-with-mongodb-compatibility-using-amazon-sagemaker/)
  - [github.com/aws-samples/documentdb-sagemaker-example](https://github.com/aws-samples/documentdb-sagemaker-example)
+ - [Amazon DocumentDB (with MongoDB compatibility) samples](https://github.com/aws-samples/amazon-documentdb-samples/)
+ - [Vector search for Amazon DocumentDB](https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html)
