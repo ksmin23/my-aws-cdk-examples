@@ -119,3 +119,12 @@ If you would like to upload and search data, check out **Module 1 - Time series 
  * [Identity and Access Management for Amazon OpenSearch Serverless](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html)
  * [Configure SAML federation for Amazon OpenSearch Serverless with AWS IAM Identity Center (2023-04-18)](https://aws.amazon.com/blogs/big-data/configure-saml-federation-for-amazon-opensearch-serverless-with-aws-iam-identity-center/)
  * [OpenSearch Popular APIs](https://opensearch.org/docs/latest/opensearch/popular-api/)
+
+## Troubleshooting
+ * [Getting a 401 when trying to access OpenSearch serverless dashboard](https://repost.aws/questions/QUrOZGnwlHRMSLQoSePGuShg/getting-a-401-when-trying-to-access-opensearch-serverless-dashboard)
+   <pre>
+   If you are on public access, and your IAM has the right permission but you still cannot access dashboard, check if you have enabled "Access to Opensearch Dashboards", which is disabled by default. Here is how:
+
+    1. Go to **OpenSearch** -> **Collections**, click into your serverless collection.
+    2. Scroll down to Network part, click **Manage network access** -> click into network policy name, choose edit, scroll to the very bottom and click **"Enable access to OpenSearch Dashboards"**, put your filters in.
+   </pre>
