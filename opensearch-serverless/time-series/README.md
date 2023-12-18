@@ -125,6 +125,6 @@ If you would like to upload and search data, check out **Module 1 - Time series 
    <pre>
    If you are on public access, and your IAM has the right permission but you still cannot access dashboard, check if you have enabled "Access to Opensearch Dashboards", which is disabled by default. Here is how:
 
-    1. Go to **OpenSearch** -> **Collections**, click into your serverless collection.
-    2. Scroll down to Network part, click **Manage network access** -> click into network policy name, choose edit, scroll to the very bottom and click **"Enable access to OpenSearch Dashboards"**, put your filters in.
+    1. Go to <b>OpenSearch</b> -> <b>Collections</b>, click into your serverless collection.
+    2. Scroll down to Network part, click <b>Manage network access</b> -> click into network policy name, choose edit, scroll to the very bottom and click <b>"Enable access to OpenSearch Dashboards"</b>, put your filters in.
    </pre>
