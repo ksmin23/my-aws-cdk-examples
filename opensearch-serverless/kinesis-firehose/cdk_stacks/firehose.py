@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import random
 import string
@@ -7,7 +9,6 @@ import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
-  aws_s3 as s3,
   aws_kinesisfirehose
 )
 from constructs import Construct
@@ -49,7 +50,7 @@ class KinesisFirehoseStack(Stack):
         "cloudWatchLoggingOptions": {
           "enabled": True,
           "logGroupName": firehose_log_group_name,
-          "logStreamName": "{OPENSEARCH_INDEX_NAME}-s3backup"
+          "logStreamName": f"{OPENSEARCH_INDEX_NAME}-s3backup"
         },
         "compressionFormat": "UNCOMPRESSED", # [GZIP | HADOOP_SNAPPY | Snappy | UNCOMPRESSED | ZIP]
         # Kinesis Data Firehose automatically appends the “YYYY/MM/dd/HH/” UTC prefix to delivered S3 files. You can also specify
@@ -64,7 +65,7 @@ class KinesisFirehoseStack(Stack):
       cloud_watch_logging_options={
         "enabled": True,
         "logGroupName": firehose_log_group_name,
-        "logStreamName": "firehose-to-{OPENSEARCH_INDEX_NAME}"
+        "logStreamName": f"firehose-to-{OPENSEARCH_INDEX_NAME}"
       },
       collection_endpoint=opensearch_endpoint,
       retry_options={
@@ -80,6 +81,10 @@ class KinesisFirehoseStack(Stack):
       tags=[{"key": "Name", "value": OPENSEARCH_INDEX_NAME}]
     )
 
-    cdk.CfnOutput(self, f'{self.stack_name}-S3DestBucketArn'.format(self.stack_name), value=s3_bucket_arn)
-    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseRoleArn', value=firehose_role_arn)
+    cdk.CfnOutput(self, 'S3DestBucketArn',
+      value=s3_bucket_arn,
+      export_name=f'{self.stack_name}-S3DestBucketArn')
+    cdk.CfnOutput(self, 'FirehoseRoleArn',
+      value=firehose_role_arn,
+      export_name=f'{self.stack_name}-FirehoseRoleArn')
 

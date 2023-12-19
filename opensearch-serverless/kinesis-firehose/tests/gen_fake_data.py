@@ -80,7 +80,7 @@ def main():
     time.sleep(0.5)
 
   if not options.dry_run:
-    print(f"{sent} sent", file=sys.stderr)
+    print(f"[Done] {sent} sent", file=sys.stderr)
 
 
 if __name__ == '__main__':

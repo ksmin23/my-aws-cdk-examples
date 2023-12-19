@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import json
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -120,5 +121,9 @@ class OpsAdminIAMUserStack(Stack):
     self.user_arn = user.user_arn
     self.user_name = user.user_name
 
-    cdk.CfnOutput(self, f'{self.stack_name}-UserName', value=self.user_name)
-    cdk.CfnOutput(self, f'{self.stack_name}-UserSecretName', value=secret.secret_name)
+    cdk.CfnOutput(self, 'UserName',
+      value=self.user_name,
+      export_name=f'{self.stack_name}-UserName')
+    cdk.CfnOutput(self, 'UserSecretName',
+      value=secret.secret_name,
+      export_name=f'{self.stack_name}-UserSecretName')

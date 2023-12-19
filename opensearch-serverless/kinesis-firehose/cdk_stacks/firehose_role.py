@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -52,6 +54,18 @@ class KinesisFirehoseRoleStack(Stack):
       actions=["logs:PutLogEvents"]
     ))
 
+    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
+      "resources": [self.format_arn(service="aoss",
+                      region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID,
+                      resource="collection", arn_format=cdk.ArnFormat.SLASH_RESOURCE_NAME,
+                      resource_name="*")],
+      "actions": [
+        "aoss:APIAccessAll"
+      ]
+    }))
+
     firehose_role = aws_iam.Role(self, "KinesisFirehoseServiceRole",
       role_name=f"KinesisFirehoseServiceRole-{self.stack_name}",
       assumed_by=aws_iam.ServicePrincipal("firehose.amazonaws.com"),
@@ -64,5 +78,9 @@ class KinesisFirehoseRoleStack(Stack):
     self.firehose_role_arn = firehose_role.role_arn
     self.firehose_role_name = firehose_role.role_name
 
-    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseRoleArn', value=self.firehose_role_arn)
-    cdk.CfnOutput(self, f'{self.stack_name}-FirehoseRoleName', value=self.firehose_role_name)
+    cdk.CfnOutput(self, 'FirehoseRoleArn',
+      value=self.firehose_role_arn,
+      export_name=f'{self.stack_name}-FirehoseRoleArn')
+    cdk.CfnOutput(self, 'FirehoseRoleName',
+      value=self.firehose_role_name,
+      export_name=f'{self.stack_name}-FirehoseRoleName')

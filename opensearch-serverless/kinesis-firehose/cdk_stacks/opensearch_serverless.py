@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import json
 
 import aws_cdk as cdk
@@ -118,7 +121,12 @@ class OpsServerlessTimeSeriesStack(Stack):
 
     self.opensearch_endpoint = cfn_collection.attr_collection_endpoint
 
-    # cdk.CfnOutput(self, f'{self.stack_name}-Endpoint', value=cfn_collection.attr_collection_endpoint)
-    cdk.CfnOutput(self, f'{self.stack_name}-Endpoint', value=self.opensearch_endpoint)
-    cdk.CfnOutput(self, f'{self.stack_name}-DashboardsURL', value=cfn_collection.attr_dashboard_endpoint)
-
+    cdk.CfnOutput(self, 'OpenSearchEndpoint',
+      value=self.opensearch_endpoint,
+      export_name=f'{self.stack_name}-OpenSearchEndpoint')
+    cdk.CfnOutput(self, 'DashboardsURL',
+      value=cfn_collection.attr_dashboard_endpoint,
+      export_name=f'{self.stack_name}-DashboardsURL')
+    cdk.CfnOutput(self, 'CollectionId',
+      value=cfn_collection.attr_id,
+      export_name=f'{self.stack_name}-CollectionId')
