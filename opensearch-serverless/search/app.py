@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import os
 
 from cdk_stacks import (
@@ -16,9 +19,9 @@ app = cdk.App()
 
 ops_admin_user = OpsAdminIAMUserStack(app, "OpsAdminIAMUser")
 
-ops_serverless_ts_stack = OpsServerlessSearchStack(app, "OpsServerlessSearchStack",
+ops_serverless_search_stack = OpsServerlessSearchStack(app, "OpsServerlessSearchStack",
   ops_admin_user.user_arn,
   env=AWS_ENV)
-ops_serverless_ts_stack.add_dependency(ops_admin_user)
+ops_serverless_search_stack.add_dependency(ops_admin_user)
 
 app.synth()

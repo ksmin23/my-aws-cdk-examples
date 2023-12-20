@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -24,4 +26,6 @@ class OpssVpcEndpointStack(Stack):
     cfn_vpc_endpoint.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
     self.vpc_endpoint_id = cfn_vpc_endpoint.ref
 
-    cdk.CfnOutput(self, f'{self.stack_name}-VpcEndpointId', value=self.vpc_endpoint_id)
+    cdk.CfnOutput(self, 'VpcEndpointId',
+      value=self.vpc_endpoint_id,
+      export_name=f'{self.stack_name}-VpcEndpointId')

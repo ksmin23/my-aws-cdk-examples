@@ -38,9 +38,13 @@ class OpsServerlessTimeSeriesStack(Stack):
       "AllowFromPublic": True
     }], indent=2)
 
+    #XXX: max length of policy name is 32
+    network_security_policy_name = f"{collection_name}-security-policy"
+    assert len(network_security_policy_name) <= 32, f"Network Security Policy: {network_security_policy_name}"
+
     cfn_network_security_policy = aws_opss.CfnSecurityPolicy(self, "NetworkSecurityPolicy",
       policy=network_security_policy,
-      name=f"{collection_name}-security-policy",
+      name=network_security_policy_name,
       type="network"
     )
 
@@ -56,9 +60,13 @@ class OpsServerlessTimeSeriesStack(Stack):
       "AWSOwnedKey": True
     }, indent=2)
 
+    #XXX: max length of policy name is 32
+    encryption_security_policy_name = f"{collection_name}-security-policy"
+    assert len(encryption_security_policy_name) <= 32, f"Encryption Security Policy: {encryption_security_policy_name}"
+
     cfn_encryption_security_policy = aws_opss.CfnSecurityPolicy(self, "EncryptionSecurityPolicy",
       policy=encryption_security_policy,
-      name=f"{collection_name}-security-policy",
+      name=encryption_security_policy_name,
       type="encryption"
     )
 
@@ -110,7 +118,7 @@ class OpsServerlessTimeSeriesStack(Stack):
 
     #XXX: max length of policy name is 32
     data_access_policy_name = f"{collection_name}-policy"
-    assert len(data_access_policy_name) <= 32
+    assert len(data_access_policy_name) <= 32, f"Data Access Policy Name: {data_access_policy_name}"
 
     cfn_access_policy = aws_opss.CfnAccessPolicy(self, "OpssDataAccessPolicy",
       name=data_access_policy_name,

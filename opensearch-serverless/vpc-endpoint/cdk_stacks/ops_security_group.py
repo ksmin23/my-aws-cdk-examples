@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -39,5 +41,9 @@ class OpenSearchSecurityGroupStack(Stack):
     self.opensearch_client_sg = sg_use_opensearch
     self.opensearch_cluster_sg = sg_opensearch_cluster
 
-    cdk.CfnOutput(self, f'{self.stack_name}-ClusterSecurityGroupId', value=self.opensearch_cluster_sg.security_group_id)
-    cdk.CfnOutput(self, f'{self.stack_name}-ClientSecurityGroupId', value=self.opensearch_client_sg.security_group_id)
+    cdk.CfnOutput(self, 'ClusterSecurityGroupId',
+      value=self.opensearch_cluster_sg.security_group_id,
+      export_name=f'{self.stack_name}-ClusterSecurityGroupId')
+    cdk.CfnOutput(self, 'ClientSecurityGroupId',
+      value=self.opensearch_client_sg.security_group_id,
+      export_name=f'{self.stack_name}-ClientSecurityGroupId')
