@@ -72,7 +72,7 @@ class OpsServerlessVectorSearchStack(Stack):
 
     cfn_collection = aws_opss.CfnCollection(self, "OpssSearchCollection",
       name=collection_name,
-      description="Collection to be used for search using OpenSearch Serverless",
+      description="Collection to be used for vector search using OpenSearch Serverless",
       type="VECTORSEARCH" # [SEARCH, TIMESERIES, VECTORSEARCH]
     )
     cfn_collection.add_dependency(cfn_network_security_policy)
