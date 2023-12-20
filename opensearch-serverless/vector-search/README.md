@@ -1,5 +1,5 @@
 
-# Amazon OpenSearch Serverless CDK Python project for Search usecase!
+# Amazon OpenSearch Serverless CDK Python project for Vector Search usecase!
 
 ![opensearch-serverless-vector-search-type](./opensearch-serverless-vector-search-type.svg)
 
