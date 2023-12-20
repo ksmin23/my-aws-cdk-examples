@@ -8,7 +8,6 @@ import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
-  aws_ec2,
   aws_opensearchserverless as aws_opss
 )
 from constructs import Construct
