@@ -138,10 +138,11 @@ EOF
       lifecycle_config_name=sagemaker_lifecycle_config.notebook_instance_lifecycle_config_name,
       notebook_instance_name='MySageMakerWorkbook',
       platform_identifier="notebook-al2-v2", # JupyterLab3
-      root_access='Disabled',
+      root_access='Enabled', # To use local mode, set root access enabled
       security_group_ids=[sg_sagemaker_notebook_instance.security_group_id],
       # subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids[0]
-      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PUBLIC).subnet_ids[0]
+      subnet_id=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PUBLIC).subnet_ids[0],
+      volume_size_in_gb=100 # 100GB, default: 5GB
     )
 
     cdk.CfnOutput(self, 'SageMakerNotebookInstanceName', value=sagemaker_notebook_instance.notebook_instance_name,
