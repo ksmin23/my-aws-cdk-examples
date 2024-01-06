@@ -1,221 +1,30 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import os
-import random
-import string
 
 import aws_cdk as cdk
 
-from aws_cdk import (
-  Stack,
-  aws_ec2,
-  aws_iam,
-  aws_s3 as s3,
-  aws_sagemaker
+from cdk_stacks import (
+  VpcStack,
+  SageMakerStudioStack,
 )
-from constructs import Construct
 
-random.seed(23)
-
-class SageMakerStudioStack(Stack):
-
-  def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
-    super().__init__(scope, construct_id, **kwargs)
-
-    #XXX: For creating this CDK Stack in the existing VPC,
-    # remove comments from the below codes and
-    # comments out vpc = aws_ec2.Vpc(..) codes,
-    # then pass -c vpc_name=your-existing-vpc to cdk command
-    # for example,
-    # cdk -c vpc_name=your-existing-vpc syth
-    #
-    # vpc_name = self.node.try_get_context('vpc_name') or 'default'
-    # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-    #   is_default=True,
-    #   vpc_name=vpc_name
-    # )
-
-    #XXX: To use more than 2 AZs, be sure to specify the account and region on your stack.
-    #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/Vpc.html
-    vpc = aws_ec2.Vpc(self, 'SageMakerStudioVPC',
-      max_azs=3,
-      gateway_endpoints={
-        "S3": aws_ec2.GatewayVpcEndpointOptions(
-          service=aws_ec2.GatewayVpcEndpointAwsService.S3
-        )
-      }
-    )
-
-    sagemaker_execution_policy_doc = aws_iam.PolicyDocument()
-    sagemaker_execution_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:s3:::*"],
-      "actions": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket"
-      ]
-    }))
-
-    sagemaker_docker_build_policy_doc = aws_iam.PolicyDocument()
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["*"],
-      "actions": ["ecr:GetAuthorizationToken"]
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["*"],
-      "actions": [
-        "ecr:BatchGetImage",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:CompleteLayerUpload",
-        "ecr:DescribeImages",
-        "ecr:DescribeRepositories",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:InitiateLayerUpload",
-        "ecr:ListImages",
-        "ecr:PutImage",
-        "ecr:UploadLayerPart",
-        "ecr:CreateRepository",
-        "ecr:GetAuthorizationToken",
-        "ec2:DescribeAvailabilityZones"
-      ]
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:codebuild:*:*:project/sagemaker-studio*"],
-      "actions": [
-        "codebuild:DeleteProject",
-        "codebuild:CreateProject",
-        "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild"
-      ]
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*"],
-      "actions": ["logs:CreateLogStream"],
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:logs:*:*:log-group:/aws/codebuild/sagemaker-studio*:log-stream:*"], 
-      "actions": [
-        "logs:GetLogEvents",
-        "logs:PutLogEvents"
-      ]
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["*"],
-      "actions": ["logs:CreateLogGroup"]
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:s3:::sagemaker-*/*"],
-      "actions": [
-        "s3:GetObject",
-        "s3:DeleteObject",
-        "s3:PutObject"
-      ]
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:s3:::sagemaker*"],
-      "actions": ["s3:CreateBucket"],
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["*"],
-      "actions": [
-        "iam:GetRole",
-        "iam:ListRoles"
-      ]
-    }))
-
-    sagemaker_docker_build_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": ["arn:aws:iam::*:role/*"],
-      "conditions": {
-        "StringLikeIfExists": {
-          "iam:PassedToService": [
-            "codebuild.amazonaws.com"
-          ]
-        }
-      },
-      "actions": ["iam:PassRole"]
-    }))
-
-    sagemaker_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
-      role_name='AmazonSageMakerStudioExecutionRole-{suffix}'.format(suffix=''.join(random.choices((string.digits), k=5))),
-      assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
-      path='/',
-      inline_policies={
-        'sagemaker-execution-policy': sagemaker_execution_policy_doc,
-        'sagemaker-docker-build-policy': sagemaker_docker_build_policy_doc,
-      },
-      managed_policies=[
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerCanvasFullAccess'),
-        aws_iam.ManagedPolicy.from_aws_managed_policy_name('AWSCloudFormationReadOnlyAccess'),
-      ]
-    )
-
-    #XXX: To use the sm-docker CLI, the Amazon SageMaker execution role used by the Studio notebook
-    # environment should have a trust policy with CodeBuild
-    sagemaker_execution_role.assume_role_policy.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "principals": [aws_iam.ServicePrincipal('codebuild.amazonaws.com')],
-      "actions": ["sts:AssumeRole"]
-    }))
-
-    sm_studio_user_settings = aws_sagemaker.CfnDomain.UserSettingsProperty(
-      execution_role=sagemaker_execution_role.role_arn
-    )
-
-    sagemaker_studio_domain = aws_sagemaker.CfnDomain(self, 'SageMakerStudioDomain',
-      auth_mode='IAM', # [SSO | IAM]
-      default_user_settings=sm_studio_user_settings,
-      domain_name='studio-public',
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PUBLIC).subnet_ids,
-      vpc_id=vpc.vpc_id,
-      app_network_access_type='PublicInternetOnly' # [PublicInternetOnly | VpcOnly]
-    )
-
-    #XXX: https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jl.html#studio-jl-set
-    sagmaker_jupyerlab_arn = self.node.try_get_context('sagmaker_jupyterlab_arn')
-
-    default_user_settings = aws_sagemaker.CfnUserProfile.UserSettingsProperty(
-      jupyter_server_app_settings=aws_sagemaker.CfnUserProfile.JupyterServerAppSettingsProperty(
-        default_resource_spec=aws_sagemaker.CfnUserProfile.ResourceSpecProperty(
-          #XXX: JupyterServer apps only support the system value.
-          instance_type="system",
-          sage_maker_image_arn=sagmaker_jupyerlab_arn
-        )
-      )
-    )
-
-    sagemaker_user_profile = aws_sagemaker.CfnUserProfile(self, 'SageMakerStudioUserProfile',
-      domain_id=sagemaker_studio_domain.attr_domain_id,
-      user_profile_name='default-user',
-      user_settings=default_user_settings
-    )
-
-    cdk.CfnOutput(self, f'{self.stack_name}-DomainId', value=sagemaker_user_profile.domain_id)
-    cdk.CfnOutput(self, f'{self.stack_name}-UserProfileName', value=sagemaker_user_profile.user_profile_name)
-
+APP_ENV = cdk.Environment(
+  account=os.environ["CDK_DEFAULT_ACCOUNT"],
+  region=os.environ["CDK_DEFAULT_REGION"]
+)
 
 app = cdk.App()
-SageMakerStudioStack(app, "SageMakerStudioPublicStack", env=cdk.Environment(
-  account=os.getenv('CDK_DEFAULT_ACCOUNT'),
-  region=os.getenv('CDK_DEFAULT_REGION')))
+
+vpc_stack = VpcStack(app, 'SageMakerStudioVpcStack',
+  env=APP_ENV)
+
+sm_studio_stack = SageMakerStudioStack(app, 'SageMakerStudioPublicStack',
+  vpc_stack.vpc,
+  env=APP_ENV
+)
+sm_studio_stack.add_dependency(vpc_stack)
 
 app.synth()
