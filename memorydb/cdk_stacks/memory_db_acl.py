@@ -41,6 +41,7 @@ class MemoryDBAclStack(Stack):
       acl_name='my-memorydb-acl',
       user_names=[memorydb_user.user_name]
     )
+    self.memorydb_acl.add_dependency(memorydb_user)
 
     cdk.CfnOutput(self, 'MemoryDBACL',
       value=self.memorydb_acl.acl_name,
