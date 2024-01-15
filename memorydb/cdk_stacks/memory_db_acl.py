@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import os
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -42,6 +43,7 @@ class MemoryDBAclStack(Stack):
       user_names=[memorydb_user.user_name]
     )
     self.memorydb_acl.add_dependency(memorydb_user)
+
 
     cdk.CfnOutput(self, 'MemoryDBACL',
       value=self.memorydb_acl.acl_name,

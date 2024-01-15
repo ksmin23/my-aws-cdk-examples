@@ -132,8 +132,10 @@ Connected to Redis
  * [Introducing Amazon MemoryDB for Redis – A Redis-Compatible, Durable, In-Memory Database Service](https://aws.amazon.com/blogs/aws/introducing-amazon-memorydb-for-redis-a-redis-compatible-durable-in-memory-database-service/)
  * [Build with Redis data structures for microservices using Amazon MemoryDB for Redis and Amazon ECS](https://aws.amazon.com/blogs/database/build-with-redis-data-structures-for-microservices-using-amazon-memorydb-for-redis-and-amazon-ecs/)
  * [Amazon MemoryDB for Redis - Authenticating users with Access Control Lists (ACLs)](https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html)
+ * [Vector search - Amazon MemoryDB for Redis](https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search.html)
  * [Amazon MemoryDB for Redis engine versions](https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html)
  * [Redis ACL](https://redis.io/topics/acl)
  * [Redis Documentation](https://redis.io/documentation)
+ * [Redis as a vector database quick start guide](https://redis.io/docs/get-started/vector-database/)
 
 Enjoy!

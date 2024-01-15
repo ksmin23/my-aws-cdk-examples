@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import os
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import aws_cdk as cdk
 
@@ -48,7 +49,7 @@ class MemoryDBStack(Stack):
       # Only active or modifying ACL can be associated to a cluster.
       acl_name=memorydb_acl.acl_name,
       auto_minor_version_upgrade=False,
-      engine_version='6.2',
+      engine_version='7.1',
       maintenance_window='mon:21:00-mon:22:30',
       node_type='db.r6g.large',
       #XXX: total number of nodes = num_shards * (num_replicas_per_shard + 1)
@@ -57,13 +58,16 @@ class MemoryDBStack(Stack):
       security_group_ids=[sg_memorydb.security_group_id],
       snapshot_retention_limit=3,
       snapshot_window='16:00-20:00',
+      subnet_group_name=memorydb_subnet_group.subnet_group_name,
       tags=[cdk.CfnTag(key='Name', value='memorydb-cluster'),
         cdk.CfnTag(key='desc', value='memorydb cluster')],
       tls_enabled=True
     )
+    memorydb_cluster.add_dependency(memorydb_subnet_group)
 
     memorydb_cluster.apply_removal_policy(policy=cdk.RemovalPolicy.DESTROY,
       apply_to_update_replace_policy=False)
+
 
     cdk.CfnOutput(self, 'MemoryDBClusterName', value=memorydb_cluster.cluster_name,
       export_name=f'{self.stack_name}-MemoryDBClusterName')
