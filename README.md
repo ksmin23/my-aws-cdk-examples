@@ -36,6 +36,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [elasticache/redis](./elasticache/redis/) | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) | redis |
 | [elasticache/redis-primary-replica](./elasticache/redis-primary-replica/) | ![elasticache-redis-primary-replica-arch](./elasticache/redis-primary-replica/elasticache-for-redis-primary-replica-arch.svg) | redis primary-replica cluster |
 | [elasticache/redis-cluster](./elasticache/redis-cluster/) | ![elasticache-redis-cluster-arch](./elasticache/redis-cluster/elasticache-for-redis-cluster-arch.svg) | redis-cluster |
+| [elasticache-serverless/serverless-redis-cluster](./elasticache-serverless/serverless-redis-cluster/) | ![elasticache-serverless-for-redis-cluster-arch](./elasticache-serverless/serverless-redis-cluster/elasticache-serverless-for-redis-cluster-arch.svg) | ElastiCache Serverless for Redis |
 | [elasticsearch](./elasticsearch/) | ![amazon-es-arch](./elasticsearch/amazon-es-arch.svg) | elasticsearch |
 | [opensearch/cfn-domain](./opensearch-service/cfn-domain) | ![amazon-opensearch-arch](./opensearch-service/cfn-domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.CfnDomain construct |
 | [opensearch/domain](./opensearch-service/domain) | ![amazon-opensearch-arch](./opensearch-service/domain/amazon-opensearch-arch.svg) | opensearch created with cdk.aws_opensearch.Domain construct |
