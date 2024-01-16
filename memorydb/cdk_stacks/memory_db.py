@@ -43,6 +43,8 @@ class MemoryDBStack(Stack):
       subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       subnet_group_name='default-memorydb'
     )
+    memorydb_subnet_group.apply_removal_policy(policy=cdk.RemovalPolicy.DESTROY,
+      apply_to_update_replace_policy=False)
 
     memorydb_cluster = aws_memorydb.CfnCluster(self, 'MemoryDBCluster',
       cluster_name='my-memorydb-cluster',
@@ -54,7 +56,8 @@ class MemoryDBStack(Stack):
       node_type='db.r6g.large',
       #XXX: total number of nodes = num_shards * (num_replicas_per_shard + 1)
       num_replicas_per_shard=1,
-      num_shards=3,
+      num_shards=1,
+      parameter_group_name='default.memorydb-redis7.search.preview', #XXX: Vector search for MemoryDB
       security_group_ids=[sg_memorydb.security_group_id],
       snapshot_retention_limit=3,
       snapshot_window='16:00-20:00',
