@@ -1,5 +1,5 @@
 
-# Amazon MemoryDB for Redis
+# Amazon MemoryDB for Redis for Vector Search
 
 ![amazon-memorydb-for-redis](./amazon-memorydb.svg)
 
