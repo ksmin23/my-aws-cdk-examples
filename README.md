@@ -107,12 +107,14 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 
 Enjoy!
 
+
 ## Useful commands
 
  * `npm install -g aws-cdk`          Install the AWS CDK Toolkit (the `cdk` command).
  * `npm install -g aws-cdk@latest`   Install the latest AWS CDK Toolkit (the `cdk`command).
  * `cdk init app --language python`  Create a new, empty CDK Python project.
  * `cdk bootstrap --profile <AWS Profile>` Deploys the CDK Toolkit staging stack; see [Bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
+
 
 ## References
 
