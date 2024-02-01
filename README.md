@@ -73,7 +73,8 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [lambda/alb-path-routing-lambda](./lambda/alb-path-routing-lambda/) | ![alb-path-routing-lambda](./lambda/alb-path-routing-lambda/aws-alb-path-routing-lambda-arch.svg) | lambda, application load balancer |
 | [lambda/async-invoke](./lambda/async-invoke/) | ![aws-lambda-async-invocation](./lambda/async-invoke/aws-lambda-async-invocation.svg) | lambda, sns, event-bridge |
 | [lambda/lambda-custom-container](./lambda/lambda-custom-container/) | ![aws-lambda-custom-container](./lambda/lambda-custom-container/aws-lambda-custom-container.svg) | lambda, ecr, custom container |
-| [memorydb-for-redis](./memorydb/) | ![memorydb-for-redis](./memorydb/amazon-memorydb.svg) | memorydb |
+| [memorydb-for-redis](./memorydb/redis-cluster) | ![memorydb-for-redis](./memorydb/redis-cluster/amazon-memorydb.svg) | memorydb |
+| [memorydb-for-redis for vector search](./memorydb/vector-search) | ![memorydb-for-redis-for-vectorsearch](./memorydb/vector-search/amazon-memorydb.svg) | memorydb for vector search |
 | [msk](./msk/) | ![msk-arch](./msk/msk-arch.svg) | msk(kafka) |
 | [msk_aplha](./msk_alpha/) | ![msk-arch](./msk_alpha/msk-arch.svg) | msk(kafka) |
 | [msk-serverless](./msk-serverless/) | ![msk-serverless-arch](./msk-serverless/msk-serverless-arch.svg) | msk serverless(kafka) |
