@@ -1,5 +1,5 @@
 
-# Amazon MSK Serverless Managed Data Delivery from Apache Kafka to Amazon S3 CDK Python project!
+# Amazon MSK Serverless - Managed Data Delivery from Apache Kafka to Amazon S3 CDK Python project!
 
 ![msk-serverless-firehose-s3-arch](./msk-serverless-firehose-s3-arch.svg)
 
@@ -42,25 +42,24 @@ Once the virtualenv is activated, you can install the required dependencies.
 
 ### Deploy
 
-Before synthesizing the CloudFormation, you should set approperly the cdk context configuration file, cdk.`context.json`.
+Before synthesizing the CloudFormation, you should set approperly the cdk context configuration file, `cdk.context.json`.
 
 For example:
 
-```
+<pre>
 {
-  "vpc_name": "default",
-  "msk_cluster_name": "demo-msk",
+  "msk_cluster_name": "<i>demo-msk-serverless</i>",
   "firehose": {
     "buffering_hints": {
       "intervalInSeconds": 300,
       "sizeInMBs": 100
     },
-    "topic_name": "ev_stream_data"
+    "topic_name": "<i>ev_stream_data</i>"
   }
 }
-```
+</pre>
 
-Now this point you can now synthesize the CloudFormation template for this code.
+At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
@@ -72,6 +71,7 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+We can provision each CDK stack one at a time like this:
 
 #### Step 1: List all CDK Stacks
 
@@ -95,14 +95,14 @@ FirehosefromMSKServerlesstoS3Stack
 
 Once MSK Serverless cluster has been successfully created, you should see a msk cluster policy similar to the following example on the terminal.
 <pre>
-$ aws kafka get-cluster-policy --cluster-arn arn:aws:kafka:<i>us-east-1</i>:<i>123456789012</i>:cluster/<i>demo-msk</i>/a4c4ef8f-1cd4-4ca2-aa5b-7d215b523b18-s1
+$ aws kafka get-cluster-policy --cluster-arn arn:aws:kafka:<i>us-east-1</i>:<i>123456789012</i>:cluster/<i>demo-msk-serverless</i>/a4c4ef8f-1cd4-4ca2-aa5b-7d215b523b18-s1
 {
   "CurrentVersion": "KTVPDKIKX0DER",
-  "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"firehose.amazonaws.com\"},\"Action\":\"kafka:CreateVpcConnection\",\"Resource\":\"arn:aws:kafka:<i>us-east-1</i>:<i>123456789012</i>:cluster/<i>demo-msk</i>/a4c4ef8f-1cd4-4ca2-aa5b-7d215b523b18-s1\"}]}"
+  "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"firehose.amazonaws.com\"},\"Action\":\"kafka:CreateVpcConnection\",\"Resource\":\"arn:aws:kafka:<i>us-east-1</i>:<i>123456789012</i>:cluster/<i>demo-msk-serverless</i>/a4c4ef8f-1cd4-4ca2-aa5b-7d215b523b18-s1\"}]}"
 }
 </pre>
 
-#### Step 3: Set up a EC2 Instance to access MSK Cluster
+#### Step 3: Set up an EC2 Instance to access MSK Cluster
 
 ```
 (.venv) $ cdk deploy --require-approval never MSKClientEC2InstanceStack
@@ -176,11 +176,11 @@ The above command creates the Kinesis Data Firehose with the following configura
 
 (2) Source settings
   - Amazon MSK cluster connectivity: `Private bootstrap brokers`
-  - Amazon MSK Cluster: <pre>{<i>msk-cluster-name</i> (e.g., <i>demo-msk</i>)}</pre>
+  - Amazon MSK Cluster: <pre>{<i>msk-cluster-name</i> (e.g., <i>demo-msk-serverless</i>)}</pre>
   - Topic: <pre>{<i>kafka-topic-name</i> (e.g., <i>ev_stream_data</i>)}</pre>
 
 (3) Delivery stream name
-  - Delivery stream name: `demo-msk-to-s3`
+  - Delivery stream name: `demo-msk-serverless-to-s3`
 
 (4) Destination settings
   - S3 bucket: <pre>s3://msk-serverless-firehose-s3-us-east-1-{<i>random-identifier</i>}</pre>

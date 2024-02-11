@@ -1,5 +1,5 @@
 
-# Amazon MSK Managed Data Delivery from Apache Kafka to Amazon S3 CDK Python project!
+# Amazon MSK - Managed Data Delivery from Apache Kafka to Amazon S3 CDK Python project!
 
 ![msk-firehose-s3-arch](./msk-firehose-s3-arch.svg)
 
@@ -48,7 +48,7 @@ For example:
 
 <pre>
 {
-  "msk_cluster_name": "demo-msk",
+  "msk_cluster_name": "<i>demo-msk</i>",
   "firehose": {
     "buffering_hints": {
       "intervalInSeconds": 300,
@@ -62,6 +62,8 @@ For example:
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
+(.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+(.venv) $ export CDK_DEFAULT_REGION=us-east-1 # your-aws-account-region
 (.venv) $ cdk synth --all
 ```
 
