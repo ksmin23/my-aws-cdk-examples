@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/104-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/105-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -84,6 +84,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [rds/aurora_postgresql](./rds/aurora_postgresql/) | ![aurora_postgresql](./rds/aurora_postgresql/aurora_postgresql-arch.svg) | aurora postgresql, secrets manager |
 | [aurora_serverless_v2/aurora_mysql-serverless_v2-cluster](./rds/aurora_serverless_v2/aurora_mysql-serverless_v2-cluster) | ![aurora_serverless_v2_cluster](./rds/aurora_serverless_v2/aurora_mysql-serverless_v2-cluster/aurora_mysql-serverless_v2-cluster-arch.svg) | aurora mysql serverless v2 cluster, secrets manager |
 | [aurora_serverless_v2/aurora_mysql-serverless_v2-replica](./rds/aurora_serverless_v2/aurora_mysql-serverless_v2-replica) | ![aurora_serverless_v2_replica](./rds/aurora_serverless_v2/aurora_mysql-serverless_v2-replica/aurora_mysql-with-serverless_v2-replica-arch.svg) | aurora mysql serverless v2, aurora mysql, secrets manager |
+| [aurora_serverless_v2/aurora_postgresql-serverless_v2](./rds/aurora_serverless_v2/aurora_postgresql-serverless_v2) | ![aurora_postgresql_serverless_v2](./rds/aurora_serverless_v2/aurora_postgresql-serverless_v2/aurora_postgresql-serverless_v2-cluster-arch.svg) | aurora postgresql serverless v2 cluster, secrets manager |
 | [rds/mariadb](./rds/mariadb/) | ![mariadb-arch](./rds/mariadb/mariadb-arch.svg) | mariadb, secrets manager |
 | [rds/rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/) | ![rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/rds_proxy-aurora_mysql-arch.svg) | rds-proxy, aurora mysql, secrets manager |
 | [rds/nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/) | ![nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/nginx-rds-proxy-aurora_mysql-arch.svg) | NGINX, aurora mysql, secrets manager |
