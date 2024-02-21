@@ -8,7 +8,7 @@ import aws_cdk as cdk
 
 from cdk_stacks import (
   VpcStack,
-  AuroraMysqlServerlessV2ClusterStack
+  AuroraMysqlServerlessV1ClusterStack
 )
 
 
@@ -19,10 +19,10 @@ AWS_ENV = cdk.Environment(
 
 app = cdk.App()
 
-vpc_stack = VpcStack(app, "AuroraMySQLServerlessV2ClusterVpcStack",
+vpc_stack = VpcStack(app, "AuroraMySQLServerlessV1ClusterVpcStack",
   env=AWS_ENV)
 
-rds_stack = AuroraMysqlServerlessV2ClusterStack(app, "AuroraMysqlServerlessV2ClusterStack",
+rds_stack = AuroraMysqlServerlessV1ClusterStack(app, "AuroraMysqlServerlessV1ClusterStack",
   vpc_stack.vpc,
   env=AWS_ENV
 )

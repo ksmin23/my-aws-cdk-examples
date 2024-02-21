@@ -1,3 +1,4 @@
+.DS_Store
 *.swp
 package-lock.json
 __pycache__

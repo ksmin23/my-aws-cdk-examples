@@ -1,2 +1,2 @@
 from .vpc import VpcStack
-from .aurora_mysql_serverless_v2_cluster import AuroraMysqlServerlessV2ClusterStack
+from .aurora_mysql_serverless_v1_cluster import AuroraMysqlServerlessV1ClusterStack

@@ -1,10 +1,10 @@
 
-# Aurora MySQL Serverless v2 Cluster
+# Aurora MySQL Serverless v1 Cluster
 
-![aurora_mysql-serverless_v2-cluster-arch](./aurora_mysql-serverless_v2-cluster-arch.svg)
+![aurora_mysql-serverless_v1-cluster-arch](./aurora_mysql-serverless_v1-cluster-arch.svg)
 
 This is a sample project for CDK development with Python.<br/>
-This project shows how to create Aurora MySQL Serverless v2 cluster.
+This project shows how to create Aurora MySQL Serverless v1 cluster.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -76,6 +76,8 @@ Enjoy!
 
 ## References
 
+ * [Using Amazon Aurora Serverless v1](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
+ * [Comparison of Aurora Serverless v2 and Aurora Serverless v1](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.upgrade.html#aurora-serverless.comparison)
  * [Using Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html)
  * [Aurora Serverless v2 - Region and version availability](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html#aurora-serverless-v2-Availability)
    <pre>
