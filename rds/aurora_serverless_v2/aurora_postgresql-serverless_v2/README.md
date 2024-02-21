@@ -74,6 +74,114 @@ Delete the CloudFormation stack by running the below command.
 
 Enjoy!
 
+# Example
+
+1. Install PostgreSQL
+
+   (1) Install PostgreSQL 13 on Amazon Linux 2
+   <pre>
+   $ sudo amazon-linux-extras install epel
+   $ sudo amazon-linux-extras | grep postgres
+   $ sudo amazon-linux-extras enable postgresql13
+   $ sudo yum clean metadata
+   $ sudo yum install -y postgresql
+   </pre>
+
+   (2) Install PostgreSQL 15 on Amazon Linux 2
+   <pre>
+   $ sudo apt update
+   $ sudo apt install -y postgresql postgresql-contrib
+   </pre>
+
+2. Connect to Aurora PostgreSQL
+
+   :information_source: The `username` and `password` is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
+
+   <pre>
+
+   $ psql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -Upostgres -W
+    psql (14.10 (Ubuntu 14.10-0ubuntu0.22.04.1), server 15.5)
+    WARNING: psql major version 14, server major version 15.
+            Some psql features might not work.
+    SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+    Type "help" for help.
+
+    postgres=>
+    postgres=> \l
+                                      List of databases
+      Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+    -----------+----------+----------+-------------+-------------+-----------------------
+    postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+    rdsadmin  | rdsadmin | UTF8     | en_US.UTF-8 | en_US.UTF-8 | rdsadmin=CTc/rdsadmin
+    template0 | rdsadmin | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/rdsadmin          +
+              |          |          |             |             | rdsadmin=CTc/rdsadmin
+    template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+              |          |          |             |             | postgres=CTc/postgres
+    (4 rows)
+
+    postgres=> SELECT version();
+                                                     version
+    -------------------------------------------------------------------------------------------------------------
+    PostgreSQL 15.5 on aarch64-unknown-linux-gnu, compiled by aarch64-unknown-linux-gnu-gcc (GCC) 9.5.0, 64-bit
+    (1 row)
+
+    postgres=>
+    </pre>
+
+3. Create VectorDB on Aurora PostgreSQL for Amazon Knowledge Base for Amazon Bedrock
+
+   You can create a vector database on Aurora PostgreSQL using the pgvector extension by running following code
+
+    ```
+    CREATE EXTENSION IF NOT EXISTS vector;
+    CREATE SCHEMA bedrock_integration;
+    CREATE TABLE bedrock_integration.bedrock_kb (
+      id uuid PRIMARY KEY,
+      embedding vector(1536),
+      chunks text,
+      metadata json
+    );
+    CREATE INDEX ON bedrock_integration.bedrock_kb
+      USING hnsw (embedding vector_cosine_ops);
+    ```
+
+    * Database name: `postgres`
+    * Table name: `bedrock_integration.bedrock_kb`
+    * Vector field: `embedding`
+    * Text field: `chunks`
+    * Bedrock-managed metadata field: `metadata`
+    * Primary key: `id`
+
+   Also, you can check to see if the pgvector extension has been created successfully by running the following code:
+    ```
+    SELECT typname
+    FROM pg_type
+    WHERE typname = 'vector';
+    ```
+
+:information_source: For more examples of PostgreSQL queries, see [rds/sagemaker-aurora_postgresql/ipython-sql-postgresql.ipynb](../../sagemaker-aurora_postgresql/ipython-sql-postgresql.ipynb)
+
+# PostgreSQL cheat sheet for MySQL users
+
+### General hints on PostgreSQL
+- `\?` opens the command overview
+- `\d` lists things: `\du` lists users, `\dt` lists tables etc
+
+### Command comparison
+
+| MySQL command | PostgreSQL equivalent |
+|---------------|-----------------------|
+| mysql -u $USERNAME -p | psql -u postgres |
+| SHOW DATABASES | \l[ist1] |
+| USE some_database | \c some_database |
+| SHOW TABLES | \dt |
+| DESCRIBE some_table | \d+ some_table |
+| SHOW INDEX FROM some_table | \di |
+| CREATE USER username IDENTIFIED BY 'password' | CREATE ROLE username WITH createdb LOGIN [PASSWORD 'password']; |
+| GRANT ALL PRIVILEGES ON database.\* TO username@localhost | GRANT ALL PRIVILEGES ON DATABASE database TO username; |
+| SELECT * FROM table LIMIT 10\G; | \x on |
+
+
 ## References
 
  * [(GitHub Issues) aws_rds: Add support for the Data API to DatabaseCluster construct (created at 2024-01-04)](https://github.com/aws/aws-cdk/issues/28574)
@@ -127,4 +235,5 @@ Enjoy!
    then the minimum ACUs may be set at 6.5 ACUs (10% of 128 GB) and maximum may be set at 64 ACUs (64x2GB=128GB).
    </pre>
  * [Build generative AI applications with Amazon Aurora and Knowledge Bases for Amazon Bedrock (2024-02-02)](https://aws.amazon.com/blogs/database/build-generative-ai-applications-with-amazon-aurora-and-knowledge-bases-for-amazon-bedrock/)
+ * [PostgreSQL Cheat Sheet](https://postgrescheatsheet.com/#/connections)
 
