@@ -43,13 +43,13 @@ $ pip install -r requirements.txt
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synth --all
+$ cdk synth -c db_cluster_name=mysql --all
 ```
 
 Use `cdk deploy` command to create the stack shown above.
 
 ```
-$ cdk deploy --require-approval never --all
+$ cdk deploy -c db_cluster_name=mysql --require-approval never --all
 ```
 
 To add additional dependencies, for example other CDK libraries, just add
