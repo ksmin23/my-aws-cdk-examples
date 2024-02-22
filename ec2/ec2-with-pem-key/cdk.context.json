@@ -1,3 +1,4 @@
 {
-  "vpc_name": "default"
+  "vpc_name": "default",
+  "ec2_key_pair_name": "your-ec2-key-pair-name(exclude .pem extension)"
 }
