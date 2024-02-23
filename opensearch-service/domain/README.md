@@ -148,7 +148,7 @@ Enjoy!
          $ mssh --region us-east-1 ec2-user@i-0203f0d6f37ccbe5b -N -L 9200:vpc-retail-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
          ```
 2. Connect to `https://localhost:9200/_dashboards/app/login?` in a web browser.
-3. Enter the master user and password that you set up when you created the Amazon OpenSearch Service endpoint. The user and password is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `OpenSearchMasterUserSecret1-xxxxxxxxxxxx`.
+3. Enter the master user and password that you set up when you created the Amazon OpenSearch Service endpoint. The user and password are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `OpenSearchMasterUserSecret1-xxxxxxxxxxxx`.
 4. In the Welcome screen, click the toolbar icon to the left side of **Home** button. Choose **Stack Managerment**
    ![ops-dashboards-sidebar-menu](./resources/ops-dashboards-sidebar-menu.png)
 5. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.

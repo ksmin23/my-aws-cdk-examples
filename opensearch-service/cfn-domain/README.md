@@ -148,13 +148,13 @@ Enjoy!
          $ mssh --region us-east-1 ec2-user@i-0203f0d6f37ccbe5b -N -L 9200:vpc-retail-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
          ```
 2. Connect to `https://localhost:9200/_dashboards/app/login?` in a web browser.
-4. Enter the master user and password that you set up when you created the Amazon OpenSearch Service endpoint. The user and password is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `OpenSearchMasterUserSecret1-xxxxxxxxxxxx`.
-5. In the Welcome screen, click the toolbar icon to the left side of **Home** button. Choose **Stack Managerment**
+3. Enter the master user and password that you set up when you created the Amazon OpenSearch Service endpoint. The user and password are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `OpenSearchMasterUserSecret1-xxxxxxxxxxxx`.
+4. In the Welcome screen, click the toolbar icon to the left side of **Home** button. Choose **Stack Managerment**
    ![ops-dashboards-sidebar-menu](./resources/ops-dashboards-sidebar-menu.png)
-6. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.
+5. After selecting **Advanced Settings** from the left sidebar menu, set **Timezone** for date formatting to `Etc/UTC`.
    Since the log creation time of the test data is based on UTC, OpenSearch Dashboard’s Timezone is also set to UTC.
    ![ops-dashboards-stack-management-advanced-setting.png](./resources/ops-dashboards-stack-management-advanced-setting.png)
-7. If you would like to access the OpenSearch Cluster in a termial, open another terminal window, and then run the following commands: (in here, <i>`your-cloudformation-stack-name`</i> is `OpensearchStack`)
+6. If you would like to access the OpenSearch Cluster in a termial, open another terminal window, and then run the following commands: (in here, <i>`your-cloudformation-stack-name`</i> is `OpensearchStack`)
 
     <pre>
     $ MASTER_USER_SECRET_ID=$(aws cloudformation describe-stacks --stack-name <i>your-cloudformation-stack-name</i> | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "MasterUserSecretId")) | .[0].OutputValue')

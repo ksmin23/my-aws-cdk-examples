@@ -79,7 +79,7 @@ Enjoy!
 ### Connect to MariaDB
 1. Connecting to MariaDB
 
-    :information_source: The `username` and `password` is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
+    :information_source: The MariaDB `username` and `password` are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
 
     <pre>
     $ mysql -h <i>db-instance-name</i>-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p

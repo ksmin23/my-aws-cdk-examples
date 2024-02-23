@@ -74,7 +74,7 @@ After a few minutes, the cluster is running and you can connect using the [Redis
 
 All MemoryDB clusters run in a virtual private cloud (VPC). You need to EC2 instance or Cloud9 in your VPC to access MemoryDB clusters. Also either EC2 instance or Cloud9 must be given a proper security group such as `memorydb-client-sg` created in the stack above.
 
-:information_source: The `username` and `password` is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `MemoryDBSecret-xxxxxxxxxxxx`.
+:information_source: The `username` and `password` are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `MemoryDBSecret-xxxxxxxxxxxx`.
 
 
 ### Connect to Amazon MemoryDB using Redis command line interface

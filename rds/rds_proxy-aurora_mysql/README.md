@@ -79,7 +79,7 @@ Enjoy!
 
 1. Connecting to Aurora MySQL using RDS Proxy
 
-    :information_source: The `username` and `password` is stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
+    :information_source: The Aurora MySQL `username` and `password` are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `DatabaseSecret-xxxxxxxxxxxx`.
 
     <pre>
     $ mysql -h <i>rds-proxy-name</i>.proxy-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
