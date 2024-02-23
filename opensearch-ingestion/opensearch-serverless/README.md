@@ -51,6 +51,33 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ cdk synth -c iam_user_name=<i>your-iam-user-name</i> --all
 </pre>
 
+## A note about Service-Linked Role
+Some cluster configurations (e.g VPC access) require the existence of the `AWSServiceRoleForAmazonOpenSearchServerless` Service-Linked Role.
+
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR(Service-Linked Role) is needed, but doesn’t exist, you will encounter a failure message simlar to:
+
+<pre>
+Before you can proceed, you must enable a service-linked role to give Amazon OpenSearch Service...
+</pre>
+
+To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role) the SLR. We recommend using the AWS CLI:
+
+```
+aws iam create-service-linked-role --aws-service-name observability.aoss.amazonaws.com
+```
+
+OpenSearch Ingestion uses the service-linked role named `AWSServiceRoleForAmazonOpenSearchIngestion`. The attached policy provides the permissions necessary for the role to create a virtual private cloud (VPC) between your account and OpenSearch Ingestion, and to publish CloudWatch metrics to your account.
+
+So you need to [create](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role) the SLR. We recommend using the AWS CLI:
+
+```
+aws iam create-service-linked-role --aws-service-name osis.amazon.com
+```
+
+:information_source: For more information, see [here](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/slr.html).
+
+## Required IAM permission for access to Amazon OpenSearch Serverelss
+
 :warning: Amazon OpenSearch Serverless requires mandatory IAM permission for access to resources.
 You are required to add these two IAM permissions for your OpenSearch Serverless **"aoss:APIAccessAll"** for Data Plane API access, and **"aoss:DashboardsAccessAll"** for Dashboards access. Failure to add the two new IAM permissions will result in 403 errors starting on May 10th, 2023
 
@@ -61,6 +88,8 @@ For a sample data-plane policy [here](https://docs.aws.amazon.com/opensearch-ser
   - [Administering OpenSearch Serverless collections](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-collection-admin)
   - [Viewing OpenSearch Serverless collections](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-view-collections)
   - [Using data-plane policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/security-iam-serverless.html#security_iam_id-based-policy-examples-data-plane)
+
+## Deploy
 
 Use `cdk deploy` command to create the stack shown above.
 

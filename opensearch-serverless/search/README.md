@@ -71,6 +71,23 @@ To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
+### A note about Service-Linked Role
+Some cluster configurations (e.g VPC access) require the existence of the `AWSServiceRoleForAmazonOpenSearchServerless` Service-Linked Role.
+
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR(Service-Linked Role) is needed, but doesn’t exist, you will encounter a failure message simlar to:
+
+<pre>
+Before you can proceed, you must enable a service-linked role to give Amazon OpenSearch Service...
+</pre>
+
+To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role) the SLR. We recommend using the AWS CLI:
+
+```
+aws iam create-service-linked-role --aws-service-name observability.aoss.amazonaws.com
+```
+
+:information_source: For more information, see [here](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/slr.html).
+
 ## Clean Up
 
 Delete the CloudFormation stack by running the below command.
