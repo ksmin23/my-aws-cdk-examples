@@ -21,6 +21,9 @@ class JupyterOnDLAMIStack(Stack):
     super().__init__(scope, construct_id, **kwargs)
 
     EC2_KEY_PAIR_NAME = self.node.try_get_context('ec2_key_pair_name')
+    ec2_key_pair = aws_ec2.KeyPair.from_key_pair_attributes(self, 'EC2KeyPair',
+      key_pair_name=EC2_KEY_PAIR_NAME
+    )
 
     JUPYTER_NOTEBOOK_INSTANCE_TYPE = self.node.try_get_context('jupyter_notebook_instance_type') or 'g4dn.xlarge'
 
@@ -36,7 +39,7 @@ class JupyterOnDLAMIStack(Stack):
 
     #TODO: SHOULD restrict IP range allowed to ssh acces
     sg_dl_notebook_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(22), description='SSH access')
-    sg_dl_notebook_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(8888), description='Jupyter Notebook access')
+    # sg_dl_notebook_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(8888), description='Jupyter Notebook access')
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceSize.html#aws_cdk.aws_ec2.InstanceSize
@@ -67,7 +70,7 @@ class JupyterOnDLAMIStack(Stack):
       machine_image=ec2_machine_image,
       vpc_subnets=aws_ec2.SubnetSelection(subnet_type=aws_ec2.SubnetType.PUBLIC),
       security_group=sg_dl_notebook_host,
-      key_name=EC2_KEY_PAIR_NAME
+      key_pair=ec2_key_pair,
     )
 
     work_dirname = os.path.dirname(__file__)
