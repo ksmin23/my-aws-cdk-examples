@@ -38,8 +38,10 @@ class JupyterOnDLAMIStack(Stack):
     cdk.Tags.of(sg_dl_notebook_host).add('Name', 'dl-notebook-host-sg')
 
     #TODO: SHOULD restrict IP range allowed to ssh acces
-    sg_dl_notebook_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(22), description='SSH access')
-    # sg_dl_notebook_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"), connection=aws_ec2.Port.tcp(8888), description='Jupyter Notebook access')
+    sg_dl_notebook_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
+      connection=aws_ec2.Port.tcp(22), description='SSH access')
+    sg_dl_notebook_host.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
+      connection=aws_ec2.Port.tcp(8080), description='Jupyter Notebook access')
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceSize.html#aws_cdk.aws_ec2.InstanceSize
@@ -84,14 +86,16 @@ class JupyterOnDLAMIStack(Stack):
 
     cdk_asset.grant_read(dl_nb_instance.role)
 
+    JUPYTER_PASSWORD = self.node.try_get_context('jupyter_password')
+
     commands = '''
 set -x
 
 exec > >(tee /var/log/bootstrap.log|logger -t user-data ) 2>&1
 chmod +x {file_path}
-sudo su - ec2-user bash -c '{file_path} $@' {AWS_Region}
+sudo su - ec2-user bash -c '{file_path} $@' {AWS_Region} '{jupyter_password}'
 /opt/aws/bin/cfn-signal -e $? --stack {cfn_stack} --resource {cfn_resource} --region {AWS_Region}
-'''.format(AWS_Region=cdk.Aws.REGION, file_path=local_path,
+'''.format(AWS_Region=cdk.Aws.REGION, file_path=local_path, jupyter_password=JUPYTER_PASSWORD,
   cfn_stack=self.stack_name, cfn_resource=self.get_logical_id(dl_nb_instance.instance))
 
     dl_nb_instance.user_data.add_commands(commands)
@@ -113,5 +117,5 @@ sudo su - ec2-user bash -c '{file_path} $@' {AWS_Region}
       value=dl_nb_instance.instance_public_ip,
       export_name=f'{self.stack_name}-DLNBInstancePublicIP')
     cdk.CfnOutput(self, 'JupyterURL',
-      value=f'https://{dl_nb_instance.instance_public_dns_name}:8888/lab',
+      value=f'https://{dl_nb_instance.instance_public_dns_name}:8080/lab',
       export_name=f'{self.stack_name}-JupyterURL')

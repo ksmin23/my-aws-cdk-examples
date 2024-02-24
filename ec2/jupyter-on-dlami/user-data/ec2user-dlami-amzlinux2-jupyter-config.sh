@@ -7,6 +7,8 @@ echo 'export PATH=$HOME/anaconda3/bin:$PATH' >> /home/ec2-user/.bash_profile
 my_region=$1
 echo "Region is ${my_region}"
 
+jupyter_password=$2
+
 sudo yum update -y -q
 pip install --upgrade --quiet jupyter
 pip install --quiet "jupyterlab>=2.2.9"
@@ -36,7 +38,7 @@ cat <<EOF >> "$JUPYTER_CONFIG_DIR/jupyter_notebook_config.py"
 c.NotebookApp.certfile = u'$CERTIFICATE_DIR/mycert.pem'
 c.NotebookApp.keyfile = u'$CERTIFICATE_DIR/mykey.key'
 from notebook.auth import passwd
-password = passwd("amazon_dlami")
+password = passwd("$jupyter_password")
 c.NotebookApp.password = password
 
 # Set ip to '*' to bind on all interfaces (ips) for the public server
@@ -44,7 +46,7 @@ c.NotebookApp.ip = '*'
 c.NotebookApp.open_browser = False
 
 # It is a good idea to set a known, fixed port for server access
-c.NotebookApp.port = 8888
+c.NotebookApp.port = 8080
 EOF
 
 chown -R ec2-user $JUPYTER_CONFIG_DIR

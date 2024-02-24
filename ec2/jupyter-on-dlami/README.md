@@ -35,14 +35,24 @@ Once the virtualenv is activated, you can install the required dependencies.
 (.venv) $ pip install -r requirements.txt
 ```
 
-At this point you can now synthesize the CloudFormation template for this code.
+Before to synthesize the CloudFormation template for this code, you should update `cdk.context.json` file.
+
+For example,
 
 <pre>
-(.venv) $ cdk synth --all \
-              -c vpc_name="<i>your-existing-vpc-name</i>" \
-              -c dlami_name="<i>DLAMI-name</i>" \
-              -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" \
-              -c jupyter_notebook_instance_type="<i>your-ec2-instance-type</i>"
+{
+  "jupyter_notebook_instance_type": "g4dn.2xlarge",
+  "dlami_name": "Deep Learning Proprietary Nvidia Driver AMI GPU PyTorch 2.0.1 (Amazon Linux 2) 20240206",
+  "vpc_name": "default",
+  "ec2_key_pair_name": "<i>your-ec2-key-pair-name(exclude .pem extension)</i>",
+  "jupyter_password": "<i>your-password</i>"
+}
+</pre>
+
+Now you are ready to synthesize the CloudFormation template for this code.
+
+<pre>
+(.venv) $ cdk synth --all
 </pre>
 
 > :information_source: You can find out the latest Deep learning AMI by runing the following command:
@@ -56,84 +66,42 @@ At this point you can now synthesize the CloudFormation template for this code.
 Use `cdk deploy` command to create the stack shown above.
 
 <pre>
-(.venv) $ cdk deploy --all \
-              -c vpc_name="<i>your-existing-vpc-name</i>" \
-              -c dlami_name="<i>DLAMI-name</i>" \
-              -c ec2_key_pair_name="<i>your-ec2-key-pair-name(exclude .pem extension)</i>" \
-              -c jupyter_notebook_instance_type="<i>your-ec2-instance-type</i>"
+(.venv) $ cdk deploy --all
 </pre>
+
+Or, we can provision each CDK stack one at a time like this:
+
+```
+(.venv) $ cdk list
+JupyterOnDLAMIVpcStack
+JupyterOnDLAMIStack
+
+(.venv) $ cdk deploy JupyterOnDLAMIVpcStack
+
+(.venv) $ cdk deploy JupyterOnDLAMIStack
+```
 
 To add additional dependencies, for example other CDK libraries, just add
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
-## Set up to access Jupyter Notebook Server on Local MacOS PC
+## Logging in to the Jupyter notebook server
 
-The deployment might take about `10` minutes.
-After then, you can access to the jupyter server through the browser by the following instructions.
-
-#### Copy Jupter Notebook CA from EC2 instance
-
-- Copy certificate file for Jupyter notebook into your local computer (e.g. MacOS)
-  <pre>
-  $ scp -i ~/.ssh/<i>your-ec2-key-pair-name(include .pem extension)</i> ec2-user@<i>jupyter-instance-public-ip</i>:/home/ec2-user/certificate/mycert.pem ./mycert.pem
-  </pre>
-
-#### Import Jupyter Certificate into a Mac OS using Keychain Access
-
-1. Click **Applications > Utilities > Keychain Access**
-2. In the **Keychains** menu on the left, select **Login** then **File > Import Items...**
-
-   ![macos_keychain_access_import_items01](./resources/macos_keychain_access_import_items01.png)
-
-3. Navigate to the location of your saved certificate file and click **Open**.
-4. Enter the key pair's password and click **OK**.<br/>
-   **Note**: If prompted to trust certificates issued by your CA automatically, select the **Always Trust** option to trust and install your certificate.
-   The certificate will be installed and can be viewed by clicking **Category > My Certificates** in the Keychain Access utility.
-
-   ![macos_keychain_access_import_items04](./resources/macos_keychain_access_import_items04.png)
-
-#### Configure a Linux or macOS Client
-1. Open a terminal.
-2. Add a ssh tunnel configuration to the ssh config file of the personal local PC as follows:
-   <pre>
-   # Jupyter Notebook Server Tunnel
-   Host nbtunnel
-      HostName <i>EC2-Public-IP</i>
-      User ec2-user
-      IdentitiesOnly yes
-      IdentityFile <i>Path-to-SSH-Public-Key</i>
-      LocalForward 8888 <i>ec2-###-###-###-###.compute-1.amazonaws.com</i>:8888
-   </pre>
-
-   ex)
-
-   <pre>
-   ~$ ls -1 .ssh/
-   config
-   my-ec2-key-pair.pem
-
-   ~$ tail .ssh/config
-   \# Jupyter Notebook Server Tunnel
-   Host nbtunnel
-      HostName 214.132.71.219
-      User ec2-user
-      IdentitiesOnly yes
-      IdentityFile ~/.ssh/my-ec2-key-pair.pem
-      LocalForward 8888 <i>ec2-214-132-71-219.compute-1.amazonaws.com</i>:8888
-
-   ~$
-   </pre>
-
-3. Run `ssh -N nbtunnel` in Terminal.
-4. In the address bar of your browser, type the following URL, or click on this link: [https://localhost:8888](https://localhost:8888)<br/>
+1. Find out the Jupyter notebook server endpoint by running the following command:
+   ```
+   $ aws cloudformation describe-stacks \
+        --stack-name JupyterOnDLAMIStack | \
+        jq -r '.Stacks[0].Outputs | .[] | select(.OutputKey | endswith("JupyterURL")) | .OutputValue'
+   ```
+2. In the address bar of your browser, type the URL above, or click on the link<br/>
    Because the Jupyter server is configured with a self-signed SSL certificate, your browser warns you and prompts you to avoid continuing to this website. But because you set this up yourself, it’s safe to continue.
 
-   (1) Choose **Advanced**.<br/>
-   (2) Choose **Proceed**.<br/>
-   (3) Use the password `amazon_dlami` to log in.<br/>
+   - (Step 1) Choose **Advanced**.
+   - (Step 2) Choose **Proceed**.
+   - (Step 3) Use the password `your-password` to log in.
 
    For more information, see [AWS Deep Learning AMI - Test by Logging in to the Jupyter notebook server](https://docs.aws.amazon.com/dlami/latest/devguide/setup-jupyter-login.html)
+
 
 ## Clean Up
 

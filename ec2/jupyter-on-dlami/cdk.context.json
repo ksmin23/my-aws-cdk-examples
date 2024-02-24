@@ -1,5 +1,5 @@
 {
-  "jupyter_notebook_instance_type": "g4dn.xlarge",
-  "dlami_name": "Deep Learning AMI (Amazon Linux 2) Version 69.0",
+  "jupyter_notebook_instance_type": "g4dn.2xlarge",
+  "dlami_name": "Deep Learning Proprietary Nvidia Driver AMI GPU PyTorch 2.0.1 (Amazon Linux 2) 20240206",
   "vpc_name": "default"
 }
