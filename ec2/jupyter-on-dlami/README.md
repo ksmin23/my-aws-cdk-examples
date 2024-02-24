@@ -59,7 +59,7 @@ Now you are ready to synthesize the CloudFormation template for this code.
    <pre>
      aws ec2 describe-images --region <i>us-east-1</i> \
          --owners amazon \
-         --filters 'Name=name,Values=Deep Learning AMI (Amazon Linux 2) Version ??.?' 'Name=state,Values=available' \
+         --filters 'Name=name,Values=Deep Learning Proprietary Nvidia Driver AMI GPU PyTorch 2.0.1 (Amazon Linux 2) ????????' 'Name=state,Values=available' \
          --query 'reverse(sort_by(Images, &CreationDate))[:1].Name'
    </pre>
 
