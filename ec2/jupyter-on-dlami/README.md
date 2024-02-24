@@ -125,7 +125,8 @@ After then, you can access to the jupyter server through the browser by the foll
    ~$
    </pre>
 
-3. In the address bar of your browser, type the following URL, or click on this link: [https://localhost:8888](https://localhost:8888)<br/>
+3. Run `ssh -N nbtunnel` in Terminal.
+4. In the address bar of your browser, type the following URL, or click on this link: [https://localhost:8888](https://localhost:8888)<br/>
    Because the Jupyter server is configured with a self-signed SSL certificate, your browser warns you and prompts you to avoid continuing to this website. But because you set this up yourself, it’s safe to continue.
 
    (1) Choose **Advanced**.<br/>
