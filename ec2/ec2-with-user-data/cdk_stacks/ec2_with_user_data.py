@@ -21,7 +21,7 @@ class Ec2WithUserDataStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for EC2 Instance',
-      security_group_name=f'ec2-sg-{self.stack_name}'
+      security_group_name=f'ec2-sg-{self.stack_name.lower()}'
     )
     cdk.Tags.of(sg_ec2_instance).add('Name', 'ec2-sg')
     sg_ec2_instance.add_ingress_rule(peer=aws_ec2.Peer.ipv4("0.0.0.0/0"),
@@ -59,15 +59,23 @@ class Ec2WithUserDataStack(Stack):
 
     commands = '''
 yum -q update -y
-yum -q install python3.7 -y
-yum -q install java-11 -y
 yum -q install -y jq
+yum -q install java-11 -y
 
+yum groupinstall "Development Tools" -y
+yum install -y epel
+yum erase -y openssl-devel
+yum install -y openssl11-devel
 cd /home/ec2-user
-wget -q https://bootstrap.pypa.io/get-pip.py
-su -c "python3.7 get-pip.py --user" -s /bin/sh ec2-user
-su -c "/home/ec2-user/.local/bin/pip3 install boto3 --user" -s /bin/sh ec2-user
+wget https://www.python.org/ftp/python/3.11.8/Python-3.11.8.tgz
+tar xvf Python-3.11.8.tgz
+cd Python-3.11.8/
+sed -i 's/PKG_CONFIG openssl /PKG_CONFIG openssl11 /g' configure
+./configure --enable-optimizations --with-ensurepip=install
+make install
+cd /home/ec2-user
 
+su -c "/usr/local/bin/python3.11 -m pip install boto3 --user" -s /bin/sh ec2-user
 curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
