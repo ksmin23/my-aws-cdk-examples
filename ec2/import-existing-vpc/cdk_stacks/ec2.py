@@ -20,7 +20,7 @@ class EC2InstanceStack(Stack):
       vpc=vpc,
       allow_all_outbound=True,
       description='security group for bastion host',
-      security_group_name=f'bastion-host-sg-{self.stack_name}'
+      security_group_name=f'bastion-host-sg-{self.stack_name.lower()}'
     )
     cdk.Tags.of(sg_ssh_access).add('Name', 'bastion-host')
     sg_ssh_access.add_ingress_rule(peer=aws_ec2.Peer.any_ipv4(), connection=aws_ec2.Port.tcp(22), description='ssh access')
