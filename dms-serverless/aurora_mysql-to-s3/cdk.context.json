@@ -1,0 +1,8 @@
+{
+  "source_database_secret_name": "secret-full-name",
+  "mysql_client_security_group_name": "mysql-client-security-group-name",
+  "source_database_name": "database-name",
+  "source_table_name": "table-name",
+  "target_s3_bucket_name": "target-s3-bucket",
+  "target_s3_bucket_folder_name": "target-s3-prefix"
+}

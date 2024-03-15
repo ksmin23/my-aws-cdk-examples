@@ -23,6 +23,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [custom-resources/sagemaker-jumstart-model-deploy](./custom-resources/sagemaker-jumstart-model-deploy/) | Deploy SageMaker JumpStart Model with CDK Custom Resources | sagemaker jumpstart, cdk custom-resources |
 | [dms/aurora_mysql-to-kinesis](./dms/aurora_mysql-to-kinesis/) | ![dms-mysql-to-kinesis-arch](./dms/aurora_mysql-to-kinesis/dms-mysql-to-kinesis-arch.svg) | dms, mysql, kinesis |
 | [dms/aurora_mysql-to-s3](./dms/aurora_mysql-to-s3/) | ![dms-mysql-to-s3-arch](./dms/aurora_mysql-to-s3/dms-mysql-to-s3-arch.svg) | dms, mysql, s3 |
+| [dms-serverless/aurora_mysql-to-s3](./dms-serverless/aurora_mysql-to-s3/) | ![dms_serverless-mysql-to-s3-arch](./dms-serverless/aurora_mysql-to-s3/dms_serverless-mysql-to-s3-arch.svg) | dms serverless, mysql, s3 |
 | [documentdb](./documentdb/) | ![documentdb-sagemaker-arch](./documentdb/documentdb-sagemaker-arch.svg) | documentdb(docdb), secerts manager, sagemaker|
 | [documentdb-elastic-clusters](./documentdb-elastic-clusters/) | ![docdb-elastic-arch](./documentdb-elastic-clusters/docdb-elastic-arch.svg) | documentdb elastic clusters(docdb-elastic), secerts manager|
 | [dynamodb](./dynamodb/) | ![dynamodb-arch](./dynamodb/dynamodb-arch.svg) | dynamodb |
