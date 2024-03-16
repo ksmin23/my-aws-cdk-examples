@@ -1,0 +1,7 @@
+{
+  "source_database_secret_name": "secret-full-name",
+  "mysql_client_security_group_name": "mysql-client-security-group-name",
+  "source_database_name": "database-name",
+  "source_table_name": "table-name",
+  "target_kinesis_stream_name": "dms-demo"
+}
