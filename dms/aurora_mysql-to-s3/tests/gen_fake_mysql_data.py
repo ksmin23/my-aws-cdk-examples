@@ -60,7 +60,7 @@ def main():
   db_url = DB_URL_FMT.format(user=options.user, password=options.password, host=options.host)
   if not options.dry_run:
     db = dataset.connect(db_url)
-    
+
   if options.create_table:
     sql_stmt = CREATE_TABLE_SQL_FMT.format(database=options.database, table=options.table)
     print(sql_stmt)
@@ -100,6 +100,8 @@ def main():
         print(sql_stmt)
         print('[INFO] {} records are processed'.format(cnt+1), file=sys.stderr)
     time.sleep(3)
+
+  print('[INFO] Total {} records are processed'.format(cnt+1), file=sys.stderr)
 
 
 if __name__ == '__main__':
