@@ -1,0 +1,1 @@
+from .kb_for_bedrock import BedrockKnowledgeBaseStack
