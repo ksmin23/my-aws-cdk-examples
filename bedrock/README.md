@@ -89,6 +89,7 @@ Enjoy!
 ## References
 
  * [AWS Generative AI CDK Constructs](https://awslabs.github.io/generative-ai-cdk-constructs/)
+ * [Announcing Generative AI CDK Constructs (2024-01-31)](https://aws.amazon.com/blogs/devops/announcing-generative-ai-cdk-constructs/)
  * [(Video) AWS re:Invent 2023 - Use RAG to improve responses in generative AI applications (AIM336)](https://youtu.be/N0tlOXZwrSs?t=1659)
  * [Knowledge Bases now delivers fully managed RAG experience in Amazon Bedrock (2023-11-28)](https://aws.amazon.com/blogs/aws/knowledge-bases-now-delivers-fully-managed-rag-experience-in-amazon-bedrock/)
  * [Knowledge base for Amazon Bedrock Developer Guide](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html)
