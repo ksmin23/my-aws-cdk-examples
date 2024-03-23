@@ -45,7 +45,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
 (.venv) $ cdk synth --all \
-              -c aws_secret_name='<i>secret-full-name</i>' \
+              -c source_database_secret_name='<i>secret-full-name</i>' \
               -c mysql_client_security_group_name='<i>mysql-client-security-group-name</i>' \
               -c source_database_name='<i>database-name</i>' \
               -c source_table_name='<i>table-name</i>' \
@@ -56,7 +56,7 @@ Use `cdk deploy` command to create the stack shown above.
 
 <pre>
 (.venv) $ cdk deploy --all \
-              -c aws_secret_name='<i>secret-full-name</i>' \
+              -c source_database_secret_name='<i>secret-full-name</i>' \
               -c mysql_client_security_group_name='<i>mysql-client-security-group-name</i>' \
               -c source_database_name='<i>database-name</i>' \
               -c source_table_name='<i>table-name</i>' \
@@ -79,12 +79,8 @@ Enjoy!
 
 ## Example
 
-1. Start the DMS Replication task by replacing the ARN in below command.
-   <pre>
-   (.venv) $ aws dms start-replication-task --replication-task-arn <i>dms-task-arn</i> --start-replication-task-type start-replication
-   </pre>
-2. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format` parameter to `ROW` in the parameter group.
-3. Connect to the Aurora cluster writer node.
+1. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format` parameter to `ROW` in the parameter group
+2. Connect to the Aurora cluster writer node.
    <pre>
    $ mysql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
     Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -101,7 +97,7 @@ Enjoy!
 
     mysql>
    </pre>
-4. At SQL prompt run the below command to confirm that binary logging is enabled:
+3. At SQL prompt run the below command to confirm that binary logging is enabled:
    <pre>
    mysql> SHOW GLOBAL VARIABLES LIKE "log_bin";
    +---------------+-------+
@@ -110,15 +106,21 @@ Enjoy!
    | log_bin       | ON    |
    +---------------+-------+
    </pre>
-5. Also run this to AWS DMS has bin log access that is required for replication
+4. Also run this to AWS DMS has bin log access that is required for replication
    <pre>
    mysql> CALL mysql.rds_set_configuration('binlog retention hours', 24);
    </pre>
-6. Run the below command to create the sample database named `testdb`.
+5. Run the below command to create the sample database named `testdb`.
    <pre>
    mysql> CREATE DATABASE testdb;
    </pre>
-7. Exit from the SQL prompt and open the command-line terminal.
+6. Exit from the SQL prompt and open the command-line terminal.
+7. Start the DMS Replication task by replacing the ARN in below command.
+   <pre>
+   (.venv) $ DMS_TASK_ARN=$(aws cloudformation describe-stacks --stack-name <i>DMSAuroraMysqlToKDSStack</i> \
+   | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "DMSReplicationTaskArn")) | .[0].OutputValue')
+   (.venv) $ aws dms start-replication-task --replication-task-arn <i>${DMS_TASK_ARN}</i> --start-replication-task-type start-replication
+   </pre>
 8. At the command-line prompt run the below command to create the sample table named `retail_trans` in `testdb` database.
    <pre>
    (.venv) $ python tests/gen_fake_mysql_data.py \
@@ -225,7 +227,9 @@ Enjoy!
 #### Clean Up
 1. Stop the DMS Replication task by replacing the ARN in below command.
    <pre>
-   (.venv) $ aws dms stop-replication-task --replication-task-arn <i>dms-task-arn</i>
+   (.venv) $ DMS_TASK_ARN=$(aws cloudformation describe-stacks --stack-name <i>DMSAuroraMysqlToKDSStack</i> \
+   | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "DMSReplicationTaskArn")) | .[0].OutputValue')
+   (.venv) $ aws dms stop-replication-task --replication-task-arn <i>${DMS_TASK_ARN}</i>
    </pre>
 2. Delete the CloudFormation stack by running the below command.
    <pre>

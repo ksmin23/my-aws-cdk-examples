@@ -3,7 +3,6 @@
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
 import json
-import boto3
 
 import aws_cdk as cdk
 
@@ -12,6 +11,7 @@ from aws_cdk import (
   aws_ec2,
   aws_dms,
   aws_iam,
+  aws_secretsmanager
 )
 from constructs import Construct
 
@@ -35,7 +35,6 @@ class DMSAuroraMysqlToKinesisStack(Stack):
 
     dms_replication_instance = aws_dms.CfnReplicationInstance(self, 'DMSReplicationInstance',
       replication_instance_class='dms.t3.medium',
-      # the properties below are optional
       allocated_storage=50,
       allow_major_version_upgrade=False,
       auto_minor_version_upgrade=False,
@@ -50,21 +49,20 @@ class DMSAuroraMysqlToKinesisStack(Stack):
     #XXX: If you use `aws_cdk.SecretValue.unsafe_unwrap()` to get any secret value,
     # you may probably encounter ValueError; for example, invalid literal for int() with base 10: '${Token[TOKEN.228]}'
     # So you should need to make the API call in order to access a secret inside it.
-    sm_client = boto3.client('secretsmanager', region_name=vpc.env.region)
-    secret_name = self.node.try_get_context('aws_secret_name')
-    secret_value = sm_client.get_secret_value(SecretId=secret_name)
-    secret = json.loads(secret_value['SecretString'])
+    secret_name = self.node.try_get_context('source_database_secret_name')
+    secret = aws_secretsmanager.Secret.from_secret_name_v2(self, 'MySQLAdminUserSecret',
+      secret_name)
 
-    source_endpoint_id = secret.get('dbClusterIdentifier', '').lower()
+    source_endpoint_id = secret.secret_value_from_json("dbClusterIdentifier").unsafe_unwrap()
     dms_source_endpoint = aws_dms.CfnEndpoint(self, 'DMSSourceEndpoint',
       endpoint_identifier=source_endpoint_id,
       endpoint_type='source',
-      engine_name=secret.get('engine', 'mysql'),
-      server_name=secret.get('host'),
-      port=int(secret.get('port', 3306)),
+      engine_name=secret.secret_value_from_json("engine").unsafe_unwrap(),
+      server_name=secret.secret_value_from_json("host").unsafe_unwrap(),
+      port=3306,
       database_name=database_name,
-      username=secret.get('username'),
-      password=secret.get('password')
+      username=secret.secret_value_from_json("username").unsafe_unwrap(),
+      password=secret.secret_value_from_json("password").unsafe_unwrap()
     )
 
     dms_kinesis_access_role_policy_doc = aws_iam.PolicyDocument()
@@ -158,6 +156,9 @@ class DMSAuroraMysqlToKinesisStack(Stack):
     )
 
 
+    cdk.CfnOutput(self, 'DMSReplicationTaskArn',
+      value=dms_replication_task.ref,
+      export_name=f'{self.stack_name}-DMSReplicationTaskArn')
     cdk.CfnOutput(self, 'DMSReplicationTaskId',
       value=dms_replication_task.replication_task_identifier,
       export_name=f'{self.stack_name}-DMSReplicationTaskId')
