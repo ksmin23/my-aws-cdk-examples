@@ -79,14 +79,8 @@ Enjoy!
 
 ## Example
 
-1. Start the DMS Replication task by replacing the ARN in below command.
-   <pre>
-   (.venv) $ aws dms start-replication \
-                     --replication-config-arn <i>dms-replication-config-arn</i> \
-                     --start-replication-type start-replication
-   </pre>
-2. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format` parameter to `ROW` in the parameter group.
-3. Connect to the Aurora cluster writer node.
+1. Create an Aurora MySQL cluster with enabling binary logs; Set the `binlog_format` parameter to `ROW` in the parameter group.
+2. Connect to the Aurora cluster writer node.
    <pre>
    $ mysql -h <i>db-cluster-name</i>.cluster-<i>xxxxxxxxxxxx</i>.<i>region-name</i>.rds.amazonaws.com -uadmin -p
     Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -103,7 +97,7 @@ Enjoy!
 
     mysql>
    </pre>
-4. At SQL prompt run the below command to confirm that binary logging is enabled:
+3. At SQL prompt run the below command to confirm that binary logging is enabled:
    <pre>
    mysql> SHOW GLOBAL VARIABLES LIKE "log_bin";
    +---------------+-------+
@@ -112,15 +106,23 @@ Enjoy!
    | log_bin       | ON    |
    +---------------+-------+
    </pre>
-5. Also run this to AWS DMS has bin log access that is required for replication
+4. Also run this to AWS DMS has bin log access that is required for replication
    <pre>
    mysql> CALL mysql.rds_set_configuration('binlog retention hours', 24);
    </pre>
-6. Run the below command to create the sample database named `testdb`.
+5. Run the below command to create the sample database named `testdb`.
    <pre>
    mysql> CREATE DATABASE testdb;
    </pre>
-7. Exit from the SQL prompt and open the command-line terminal.
+6. Exit from the SQL prompt and open the command-line terminal.
+7. Start the DMS Replication task by replacing the ARN in below command.
+   <pre>
+   (.venv) $ DMS_REPLICATION_CONFIG_ARN=$(aws cloudformation describe-stacks --stack-name <i>DMSServerlessAuroraMysqlToKDSStack</i> \
+   | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "DMSReplicationConfigArn")) | .[0].OutputValue')
+   (.venv) $ aws dms start-replication \
+                     --replication-config-arn <i>${DMS_REPLICATION_CONFIG_ARN}</i> \
+                     --start-replication-type start-replication
+   </pre>
 8. At the command-line prompt run the below command to create the sample table named `retail_trans` in `testdb` database.
    <pre>
    (.venv) $ python tests/gen_fake_mysql_data.py \
@@ -228,8 +230,10 @@ Enjoy!
 
 1. Stop the DMS Replication task by replacing the ARN in below command.
    <pre>
+   (.venv) $ DMS_REPLICATION_CONFIG_ARN=$(aws cloudformation describe-stacks --stack-name <i>DMSServerlessAuroraMysqlToKDSStack</i> \
+   | jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "DMSReplicationConfigArn")) | .[0].OutputValue')
    (.venv) $ aws dms stop-replication \
-                     --replication-config-arn <i>dms-replication-config-arn</i>
+                     --replication-config-arn <i>${DMS_REPLICATION_CONFIG_ARN}</i>
    </pre>
 2. Delete the CloudFormation stack by running the below command.
    <pre>

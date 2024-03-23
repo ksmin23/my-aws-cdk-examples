@@ -133,6 +133,9 @@ class DMSServerlessAuroraMysqlToS3Stack(Stack):
     )
 
 
+    cdk.CfnOutput(self, 'DMSReplicationConfigArn',
+      value=dms_replication_config.attr_replication_config_arn,
+      export_name=f'{self.stack_name}-DMSReplicationConfigArn')
     cdk.CfnOutput(self, 'DMSReplicationConfigId',
       value=dms_replication_config.replication_config_identifier,
       export_name=f'{self.stack_name}-DMSReplicationConfigId')
