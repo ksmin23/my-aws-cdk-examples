@@ -115,6 +115,7 @@ Enjoy!
 
 ## References
 
+ * [Extension for Stable Diffusion on AWS](https://awslabs.github.io/stable-diffusion-aws-extension/en/) - Stable Diffusion Web UI on AWS
  * [Release Notes for Amazon DLAMI](https://docs.aws.amazon.com/dlami/latest/devguide/appendix-ami-release-notes.html)
    * Query AMI-ID with AWSCLI (example region is `us-east-1`):
      <pre>
@@ -123,7 +124,7 @@ Enjoy!
          --filters 'Name=name,Values=Deep Learning AMI (Amazon Linux 2) Version ??.?' 'Name=state,Values=available' \
          --query 'reverse(sort_by(Images, &CreationDate))[:1].Name'
      </pre>
- * [Stable Diffusion web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui.git)
+ * [Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui.git)
  * [Stable Diffusion Prompt: a Definitive guide](https://stable-diffusion-art.com/prompt-guide/)
  * [How can I send user-data output to the console logs on an EC2 instance running Amazon Linux or Amazon Linux 2?](https://aws.amazon.com/premiumsupport/knowledge-center/ec2-linux-log-user-data/)
    * The following is the line that redirects the user-data output:
