@@ -116,6 +116,7 @@ Enjoy!
 ## References
 
  * [Extension for Stable Diffusion on AWS](https://awslabs.github.io/stable-diffusion-aws-extension/en/) - The [Extension for Stable Diffusion on Amazon Web Services solution](https://aws.amazon.com/campaigns/aigc/solutions/stable-diffusion-aws-extension/) helps customers migrate their existing Stable Diffusion model training, inference, and finetuning workloads from on-premises servers to Amazon SageMaker using extension and CloudFormation template.
+   * [Generative AI - Stable Diffusion on Amazon SageMaker Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/d9ca179a-3a36-4822-9f80-0b3ffcc26f37/en-US)
  * [Release Notes for Amazon DLAMI](https://docs.aws.amazon.com/dlami/latest/devguide/appendix-ami-release-notes.html)
    * Query AMI-ID with AWSCLI (example region is `us-east-1`):
      <pre>
