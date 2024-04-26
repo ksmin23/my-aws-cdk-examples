@@ -219,6 +219,10 @@ Enjoy!
 
 
 ## References
+
+- [Operational best practices for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/bp.html)
+  - [Sizing Amazon OpenSearch Service domains](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/sizing-domains.html)
+  - [동작 방식과 함께 알아보는 최적의 Amazon OpenSearch Service 사이징 (2024-04-26)](https://aws.amazon.com/ko/blogs/tech/opensearch-sizing/)
 - [Windows SSH / Tunnel for Kibana Instructions - Amazon Elasticsearch Service](https://search-sa-log-solutions.s3-us-east-2.amazonaws.com/logstash/docs/Kibana_Proxy_SSH_Tunneling_Windows.pdf)
 - [Use an SSH Tunnel to access Kibana within an AWS VPC with PuTTy on Windows](https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/createesdashboard.html)
 - [OpenSearch Popular APIs](https://opensearch.org/docs/latest/opensearch/popular-api/)
