@@ -47,7 +47,7 @@ Before deployment, you need to make sure `docker daemon` is running.
 Otherwise you will encounter the following errors:
 
 ```
-ERROR: Cannot connect to the Docker daemon at unix:///Users/sungmk/.docker/run/docker.sock. Is the docker daemon running?
+ERROR: Cannot connect to the Docker daemon at unix://$HOME/.docker/run/docker.sock. Is the docker daemon running?
 jsii.errors.JavaScriptError:
   Error: docker exited with status 1
 ```
