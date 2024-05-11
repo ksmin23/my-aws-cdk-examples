@@ -1,0 +1,38 @@
+{
+  "knowledge_base_for_bedrock": {
+    "name": "kb-demo",
+    "description": "knowledge base description",
+    "knowledge_base_configuration": {
+      "vector_knowledge_base_configuration": {
+        "embedding_model_arn": "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v1"
+      }
+    },
+    "storage_configuration": {
+      "opensearch_serverless_configuration": {
+        "field_mapping": {
+          "metadata_field": "metadata",
+          "text_field": "text",
+          "vector_field": "vector_field"
+        },
+        "vector_index_name": "embedding_vectors"
+      }
+    }
+  },
+  "knowledge_base_data_source_configuration": {
+    "name": "kb-vector-db",
+    "data_deletion_policy": "RETAIN",
+    "description": "data source description",
+    "s3_configuration": {
+      "bucket_arn": "arn:aws:s3:::bedrock-kb-us-east-1-123456789012"
+    },
+    "chunking_configuration": {
+      "chunking_strategy": "FIXED_SIZE",
+      "fixed_size_chunking_configuration": {
+        "max_tokens": 512,
+        "overlap_percentage": 20
+      }
+    }
+  },
+  "opensearch_collection_name": "kb-vector-db",
+  "lambda_layer_lib_s3_path": "s3://lambda-layer-resources/pylambda-layer/opensearch-py-sdk-lib.zip"
+}
