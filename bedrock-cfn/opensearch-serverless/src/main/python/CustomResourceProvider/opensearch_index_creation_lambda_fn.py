@@ -40,9 +40,7 @@ INDEX_SETTING_BY_MODEL_ID = {
             "parameters": {"ef_construction": 512, "m": 16},
             "space_type": "l2"
           }
-        },
-        "metadata": {"type": "text"},
-        "text": {"type": "text"}
+        }
       }
     }
   },
@@ -59,9 +57,7 @@ INDEX_SETTING_BY_MODEL_ID = {
             "parameters": {"ef_construction": 512, "m": 16},
             "space_type": "l2"
           }
-        },
-        "metadata": {"type": "text"},
-        "text": {"type": "text"}
+        }
       }
     }
   },
@@ -78,9 +74,7 @@ INDEX_SETTING_BY_MODEL_ID = {
             "parameters": {"ef_construction": 512, "m": 16},
             "space_type": "l2"
           }
-        },
-        "metadata": {"type": "text"},
-        "text": {"type": "text"}
+        }
       }
     }
   },
@@ -97,9 +91,7 @@ INDEX_SETTING_BY_MODEL_ID = {
             "parameters": {"ef_construction": 512, "m": 16},
             "space_type": "l2"
           }
-        },
-        "metadata": {"type": "text"},
-        "text": {"type": "text"}
+        }
       }
     }
   }
@@ -140,16 +132,18 @@ def create_index_with_retries(opensearch_client, index_name, request_body):
 
 def delete_index_if_exists(opensearch_client, index_name):
   try:
-    response = opensearch_client.indices.delete(index=index_name)
-    logger.info(response) # {'acknowledged': True}
-    logger.info(f"Deleted index {index_name}, sleeping for 1 min")
-    time.sleep(60)
-    return response
+    if opensearch_client.indices.exists(index_name):
+      response = opensearch_client.indices.delete(index=index_name)
+      logger.info(response)
+      logger.info(f"Deleted index {index_name}, sleeping for 1 min")
+      time.sleep(60)
+      return response
   except NotFoundError:
     logger.info("Index {index_name} not found, skipping deletion")
   except Exception as ex:
     logger.info(f"Deletion of index {index_name} failed, reason: {ex}")
     traceback.print_exc()
+    raise RuntimeError('IndexDeletionFailure')
 
 
 def update_data_access_policy_with_caller_arn(policy_name, region_name='us-east-1'):
@@ -218,21 +212,51 @@ def on_update(event, context):
   props = event["ResourceProperties"]
   old_props = event["OldResourceProperties"]
   logger.info("Updating OpenSearch index with new props %s, old props: %s" % (props, old_props))
-  index_name = event["PhysicalResourceId"]
 
+  index_name = event["PhysicalResourceId"]
   if old_props == props:
     logger.info("Props are same, nothing to do")
     return {"PhysicalResourceId": index_name}
 
   logger.info("New props are different from old props. Index requires re-creation")
 
+  region_name = os.environ['AWS_REGION']
   policy_name = props["data_access_policy_name"]
+
+  logger.info(f"Updating data access policy: {policy_name}")
+  res = update_data_access_policy_with_caller_arn(policy_name, region_name=region_name)
+  if not res:
+    cfnresponse.send(event, context, cfnresponse.FAILED, {}, physicalResourceId=index_name)
+    return {"PhysicalResourceId": index_name}
+
   collection_endpoint = props["opensearch_endpoint"]
 
-  logger.info(f"Creating new index: {index_name}")
+  old_index_name = old_props["index_name"]
+  logger.info(f"Deleting old index: {old_index_name}")
 
-  cfnresponse.send(event, context, cfnresponse.SUCCESS, {}, physicalResourceId=index_name)
-  return {"PhysicalResourceId": index_name}
+  cfn_res_status = cfnresponse.SUCCESS
+  try:
+    opensearch_client = get_opensearch_serverless_client(collection_endpoint, region_name=region_name)
+    delete_index_if_exists(opensearch_client, old_index_name)
+  except Exception as _:
+    cfn_res_status = cfnresponse.FAILED
+    cfnresponse.send(event, context, cfn_res_status, {}, physicalResourceId=old_index_name)
+    return {"PhysicalResourceId": old_index_name}
+
+  new_index_name = props["index_name"]
+  embedding_model_id = props["embedding_model_id"]
+  index_request = json.dumps(INDEX_SETTING_BY_MODEL_ID[embedding_model_id])
+
+  cfn_res_status = cfnresponse.SUCCESS
+  try:
+    logger.info(f"Creating index: {new_index_name}")
+    opensearch_client = get_opensearch_serverless_client(collection_endpoint, region_name=region_name)
+    create_index_with_retries(opensearch_client, new_index_name, index_request)
+  except Exception as _:
+    cfn_res_status = cfnresponse.FAILED
+
+  cfnresponse.send(event, context, cfn_res_status, {}, physicalResourceId=new_index_name)
+  return {"PhysicalResourceId": new_index_name}
 
 
 def on_delete(event, context):

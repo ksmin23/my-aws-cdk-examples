@@ -10,7 +10,7 @@
     "storage_configuration": {
       "opensearch_serverless_configuration": {
         "field_mapping": {
-          "metadata_field": "metadata",
+          "metadata_field": "metadata_field",
           "text_field": "text",
           "vector_field": "vector_field"
         },
