@@ -141,6 +141,8 @@ Enjoy!
 
 ## References
 
+ * [Amazon Bedrock Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/a4bdb007-5600-4368-81c5-ff5b4154f518/en-US) - Hands-on labs using Amazon Bedrock APIs, SDKs, and open-source software, such as LangChain and FAISS, to implement the most common Generative AI usage patterns (e.g., summarizing text, answering questions, building chatbots, creating images, and generating code).
+ * [Building with Amazon Bedrock and LangChain](https://catalog.workshops.aws/building-with-amazon-bedrock/en-US) - Hands-on labs using [LangChain](https://github.com/langchain-ai/langchain) to build generative AI prototypes with Amazon Bedrock.
  * [Amazon Bedrock Samples](https://github.com/aws-samples/amazon-bedrock-samples) - Pre-built examples to help customers get started with the Amazon Bedrock service.
    * [Deploy e2e RAG solution (using Knowledgebases for Amazon Bedrock) via CloudFormation](https://github.com/aws-samples/amazon-bedrock-samples/tree/main/knowledge-bases/03-infra/e2e-rag-using-bedrock-kb-cfn)
  * [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-path)
