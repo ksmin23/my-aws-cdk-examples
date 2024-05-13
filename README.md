@@ -18,7 +18,8 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [api-gateway/logging-api-calls-to-cloudwatch-logs](./api-gateway/logging-api-calls-to-cloudwatch-logs/) | ![logging-api-calls-to-cloudwatch-logs](./api-gateway/logging-api-calls-to-cloudwatch-logs/logging-api-calls-to-cloudwatch-logs.svg) | api-gateway, cloudwatch logs subscription filters with kinesis data firehose |
 | [athena](./athena/) | ![athena-arch](./athena/aws-athena-arch.svg) | athena (named query, work group), s3 |
 | [batch/batch-with-ec2](./batch/batch-with-ec2/) | Launch AWS Batch | aws batch |
-| [bedrock](./bedrock/) | Launch Knowledge Bases for Amazon Bedrock | amazon bedrock, knowledge bases |
+| [bedrock/opensearch-serverless](./bedrock/cfn/opensearch-serverless/) | Launch Knowledge Bases for Amazon Bedrock using Amazon OpenSearch Serverless as a vector store| amazon bedrock, knowledge bases, opensearch serverless |
+| [bedrock/generative-ai-cdk-constructs](./bedrock/generative-ai-cdk-constructs) | Launch Knowledge Bases for Amazon Bedrock | amazon bedrock, knowledge bases |
 | [cloud9](./cloud9/) | ![cloud9](./cloud9/aws-cloud9.svg) | cloud9 |
 | [cloudfront/static-site](./cloudfront/static-site/) | ![cloudfront-s3-static-site-arch](./cloudfront/static-site/cloudfront-s3-static-site-arch.svg) | cloudfront |
 | [custom-resources/sagemaker-jumstart-model-deploy](./custom-resources/sagemaker-jumstart-model-deploy/) | Deploy SageMaker JumpStart Model with CDK Custom Resources | sagemaker jumpstart, cdk custom-resources |
