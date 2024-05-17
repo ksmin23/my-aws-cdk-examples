@@ -50,7 +50,8 @@ command.
 
 ### Amazon S3 Bucket for a data source for Knowledge Base
 
-- You already have s3 bucket where your documents are stored.
+- You already have s3 bucket where your documents are stored.<br/>
+  (e.g., `aws s3 mb s3://bedrock-kb-us-east-1-123456789012 --region us-east-1`)
 - The documents must be in one of the formats listed in [here](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-ds.html).
 
 ### Prepare Python Packages for AWS Lambda Layer
