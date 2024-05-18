@@ -51,4 +51,6 @@ class KnowledgeBaseDataSourceStack(Stack):
     cdk.CfnOutput(self, 'DataSourceId',
       value=cfn_data_source.attr_data_source_id,
       export_name=f'{self.stack_name}-DataSourceId')
-
+    cdk.CfnOutput(self, 'DataSourceS3BucketArn',
+      value=cfn_data_source.data_source_configuration.s3_configuration.bucket_arn,
+      export_name=f'{self.stack_name}-DataSourceS3BucketArn')

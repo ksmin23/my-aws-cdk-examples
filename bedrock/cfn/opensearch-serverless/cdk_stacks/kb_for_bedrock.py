@@ -56,3 +56,6 @@ class KnowledgeBaseforBedrockStack(Stack):
     cdk.CfnOutput(self, 'KnowledgeBaseName',
       value=cfn_knowledge_base.name,
       export_name=f'{self.stack_name}-KnowledgeBaseName')
+    cdk.CfnOutput(self, 'KnowledgeVectorIndexName',
+      value=cfn_knowledge_base.storage_configuration.opensearch_serverless_configuration.vector_index_name,
+      export_name=f'{self.stack_name}-KnowledgeVectorIndexName')
