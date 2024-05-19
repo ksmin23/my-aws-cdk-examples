@@ -52,6 +52,19 @@ jsii.errors.JavaScriptError:
   Error: docker exited with status 1
 ```
 
+### Set up `cdk.context.json`
+
+Then, you should set approperly the cdk context configuration file, `cdk.context.json`.
+
+For example,
+
+<pre>
+{
+  "knowledge_base_data_source_name": "kb-data-source"
+}
+</pre>
+:warning: It would be better **NOT TO USE** `metadata` for `metadata_field` in OpenSearch serverless field mapping. The popular LLM application frameworks like [LangChain](https://www.langchain.com/), [LlamaIndex](https://www.llamaindex.ai/) use `metadata` with data type other than `text` for OpenSearch field mapping. So to avoid conflicts when using the popular LLM frameworks, be careful to use `metadata` field name.
+
 ## Deploy
 
 At this point you can now synthesize the CloudFormation template for this code.

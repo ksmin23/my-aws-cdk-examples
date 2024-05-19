@@ -36,9 +36,10 @@ class BedrockKnowledgeBaseStack(Stack):
       embeddings_model=bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V1
     )
 
+    kb_data_source_name = self.node.try_get_context('knowledge_base_data_source_name')
     kb_data_source = bedrock.S3DataSource(self, 'KnowledgeBaseDataSource',
       bucket=s3_bucket,
-      data_source_name='kb-data-source',
+      data_source_name=kb_data_source_name,
       knowledge_base=kb_for_bedrock,
       chunking_strategy=bedrock.ChunkingStrategy.FIXED_SIZE,
       max_tokens=500,
