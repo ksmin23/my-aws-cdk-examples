@@ -48,6 +48,12 @@ class BedrockKnowledgeBaseStack(Stack):
     cdk.CfnOutput(self, 'KnowledgeBaseId',
       value=kb_for_bedrock.knowledge_base_id,
       export_name=f'{self.stack_name}-KnowledgeBaseId')
+    cdk.CfnOutput(self, 'KnowledgeBaseName',
+      value=kb_for_bedrock.knowledge_base_id,
+      export_name=f'{self.stack_name}-KnowledgeBaseName')
     cdk.CfnOutput(self, 'DataSourceId',
       value=kb_data_source.data_source_id,
       export_name=f'{self.stack_name}-DataSourceId')
+    cdk.CfnOutput(self, 'DataSourceName',
+      value=kb_data_source.data_source_id,
+      export_name=f'{self.stack_name}-DataSourceName')
