@@ -3,7 +3,7 @@
 
 ![mlflow-ecs-sagemaker-arch](./mlflow-ecs-sagemaker-arch.svg)
 
-This is a MLflow project on Amazon EC2 instance for CDK development with Python.
+This is a MLflow project on Amazon ECS for CDK development with Python.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
