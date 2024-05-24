@@ -24,7 +24,7 @@ class VpcStack(Stack):
     # cdk -c vpc_name=your-existing-vpc syth
     #
     # vpc_name = self.node.try_get_context('vpc_name') or "default"
-    # self.vpc = aws_ec2.Vpc.from_lookup(self, 'AuroraServerlessV2ClusterVPC',
+    # self.vpc = aws_ec2.Vpc.from_lookup(self, 'VPC',
     #   is_default=True,
     #   vpc_name=vpc_name
     # )
