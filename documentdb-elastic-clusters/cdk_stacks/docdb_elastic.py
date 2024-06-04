@@ -70,8 +70,11 @@ class DocumentDbElasticClustersStack(Stack):
       admin_user_password=admin_user_secret.secret_value_from_json("admin_user_password").unsafe_unwrap(),
       auth_type='PLAIN_TEXT',
       cluster_name=docdb_cluster_name,
-      shard_capacity=8, # Allowed values: [2, 4, 8, 16, 32, 64]
+      shard_capacity=8, # The number of vCPUs assigned to each elastic cluster shard. Maximum is 64. Allowed values are 2, 4, 8, 16, 32, 64.
       shard_count=4, # The maximum number of shards per cluster: 32
+      # The number of replica instances applying to all shards in the cluster. A `shard_instance_count` value of 1 means there is one writer instance.
+      # The maximum number of shard instances is 16.
+      shard_instance_count=2,
       preferred_maintenance_window='sun:18:00-sun:18:30',
       subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
       vpc_security_group_ids=[sg_docdb_server.security_group_id]
