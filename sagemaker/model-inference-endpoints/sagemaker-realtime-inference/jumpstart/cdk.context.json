@@ -1,0 +1,6 @@
+{
+  "jumpstart_model_info": {
+    "model_id": "huggingface-asr-whisper-medium",
+    "version": "3.0.0"
+  }
+}

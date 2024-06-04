@@ -1,0 +1,7 @@
+{
+  "model_id": "openai/whisper-medium",
+  "model_data_source": {
+    "s3_bucket_name": "<s3-bucket-name>",
+    "s3_object_key_name": "<model-artifacts-path (e.g., `torch-model/model.tar.gz`, or `torch-model/` >"
+  }
+}

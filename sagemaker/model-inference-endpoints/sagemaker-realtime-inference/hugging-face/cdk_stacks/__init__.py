@@ -1,0 +1,2 @@
+from .sm_asr_huggingface_realtime_endpoint import ASRHuggingFaceRealtimeEndpointStack
+from .sm_realtime_endpoint_autoscaling import SageMakerRealtimeEndpointAutoScalingStack
