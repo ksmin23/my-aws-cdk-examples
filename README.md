@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/110-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/116-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -109,7 +109,12 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [sagemaker/sagemaker-glue](./sagemaker/sagemaker-glue/) | ![studio-glue-arch](./sagemaker/sagemaker-glue/sagemaker-glue-arch.svg)  | sagemaker studio, aws glue |
 | [sagemaker/mlflow-ec2-sagemaker](./sagemaker/mlflow-ec2-sagemaker/) | ![mlflow-sagemaker-arch](./sagemaker/mlflow-ec2-sagemaker/mlflow-sagemaker-arch.svg) | MLflow, sagemaker studio |
 | [sagemaker/mlflow-ecs-sagemaker](./sagemaker/mlflow-ecs-sagemaker/) | ![mlflow-ecs-sagemaker-arch](./sagemaker/mlflow-ecs-sagemaker/mlflow-ecs-sagemaker-arch.svg) | MLflow, ecs, fargate, sagemaker studio |
-
+| [sagemaker-async-inference/jumpstart](./sagemaker-async-inference/jumpstart) | Asynchronous Inference using SageMaker JumpStart | sagemaker async endpoint, jumpstart |
+| [sagemaker-async-inference/hugging-face](./sagemaker-async-inference/hugging-face) | Asynchronous Inference using Hugging Face DLC | sagemaker async endpoint, hugging face |
+| [sagemaker-async-inference/pytorch](./sagemaker-async-inference/pytorch) | Asynchronous Inference using PyTorch DLC | sagemaker async endpoint, pytorch |
+| [sagemaker-realtime-inference/jumpstart](./sagemaker-realtime-inference/jumpstart) | Real-time Inference using SageMaker JumpStart | sagemaker real-time endpoint, jumpstart |
+| [sagemaker-realtime-inference/hugging-face](./sagemaker-realtime-inference/hugging-face) | Real-time Inference using Hugging Face DLC | sagemaker real-time endpoint, hugging face |
+| [sagemaker-realtime-inference/pytorch](./sagemaker-realtime-inference/pytorch) | Real-time Inference using PyTorch DLC | sagemaker real-time endpoint, pytorch |
 
 Enjoy!
 
