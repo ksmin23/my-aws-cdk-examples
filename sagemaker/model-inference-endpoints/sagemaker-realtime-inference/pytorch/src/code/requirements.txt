@@ -1,4 +1,4 @@
-openai-whisper==20230918
+openai-whisper>=20230918
 ffmpeg-python==0.2.0
 torchaudio==2.1.0
 nvgpu==0.10.0
