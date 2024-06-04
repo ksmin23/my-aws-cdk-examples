@@ -63,7 +63,7 @@ as well as metadata, such as version details, authorship, and any notes related 
    accelerate==0.30.1
    datasets==2.16.1
    librosa==0.10.2.post1
-   openai-whisper==20230918
+   openai-whisper>=20230918
    soundfile==0.12.1
    torch==2.1.0
    torchaudio==2.1.0
@@ -87,8 +87,12 @@ as well as metadata, such as version details, authorship, and any notes related 
        WhisperTokenizer,
    )
 
+   # Define a directory where you want to save the model
+   save_directory = "./model"
+
    model_id = "openai/whisper-medium"
    model = AutoModelForSpeechSeq2Seq.from_pretrained(model_id)
+   model.save_pretrained(save_directory)
 
    tokenizer = WhisperTokenizer.from_pretrained(model_id)
    tokenizer.save_pretrained(save_directory)
