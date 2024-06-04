@@ -74,6 +74,8 @@ as well as metadata, such as version details, authorship, and any notes related 
 
 2. Save model artifacts
 
+   The following instructions work well on either `Ubuntu` or `SageMaker Studio`.
+
    (1) Create a directory for model artifacts.
    ```
    (.venv) mkdir -p model
@@ -108,13 +110,15 @@ as well as metadata, such as version details, authorship, and any notes related 
    (.venv) gzip model.tar
    ```
 
+   :information_source: For more information about the directory structure of `model.tar.gz`, see [**Model Directory Structure for Deploying Pre-trained PyTorch Models**](https://sagemaker.readthedocs.io/en/stable/frameworks/pytorch/using_pytorch.html#model-directory-structure)
+
    (4) Upload `model.tar.gz` file into `s3`
    <pre>
    (.venv) export MODEL_URI="s3://{<i>bucket_name</i>}/{<i>key_prefix</i>}/model.tar.gz"
    (.venv) aws s3 cp model.tar.gz ${MODEL_URI}
    </pre>
 
-   :warning: Replace `bucket_name` and `key_prefi` with yours
+   :warning: Replace `bucket_name` and `key_prefi` with yours.
 
 3. Set up `cdk.context.json`
 
@@ -175,3 +179,4 @@ Enjoy!
  * [(AWS Blog) Announcing Generative AI CDK Constructs (2024-01-31)](https://aws.amazon.com/blogs/devops/announcing-generative-ai-cdk-constructs/)
  * [SageMaker Python SDK - Hugging Face](https://sagemaker.readthedocs.io/en/stable/frameworks/huggingface/index.html)
  * [Docker Registry Paths and Example Code for Pre-built SageMaker Docker images](https://docs.aws.amazon.com/sagemaker/latest/dg-ecr-paths/sagemaker-algo-docker-registry-paths.html)
+ * [Model Directory Structure for Deploying Pre-trained PyTorch Models](https://sagemaker.readthedocs.io/en/stable/frameworks/pytorch/using_pytorch.html#model-directory-structure)

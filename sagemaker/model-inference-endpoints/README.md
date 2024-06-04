@@ -21,3 +21,7 @@ to help you quickly get started with ML.
 | Real-time Inference | [PyTorch](./sagemaker-realtime-inference/pytorch) | Using PyTorch DLC | [here](./sagemaker-realtime-inference/pytorch/src/notebook/realtime-pytorch.ipynb) |
 
 Enjoy!
+
+## References
+
+ * [Amazon SageMaker Deploy models for inference](https://docs.aws.amazon.com/sagemaker/latest/dg/deploy-model.html)
