@@ -116,7 +116,7 @@ For example,
 }
 </pre>
 
-:information_source: The avialable Deep Learning Container (DLC) images can be found in [here](https://github.com/aws/deep-learning-containers/blob/master/available_images.md).
+:information_source: The avialable Deep Learning Container (DLC) images (`deep_learning_container_image_uri`) can be found in [here](https://github.com/aws/deep-learning-containers/blob/master/available_images.md).
 
 ## Deploy
 
@@ -160,5 +160,7 @@ Enjoy!
 
  * [(AWS Blog) Amazon SageMaker adds new inference capabilities to help reduce foundation model deployment costs and latency (2023-11-29)](https://aws.amazon.com/blogs/aws/amazon-sagemaker-adds-new-inference-capabilities-to-help-reduce-foundation-model-deployment-costs-and-latency/)
  * [(AWS Blog) Reduce model deployment costs by 50% on average using the latest features of Amazon SageMaker (2023-11-30)](https://aws.amazon.com/blogs/machine-learning/reduce-model-deployment-costs-by-50-on-average-using-sagemakers-latest-features/)
+ * [Amazon Sagemaker API Reference - CreateInferenceComponent](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateInferenceComponent.html)
+ * [Amazon SageMaker Deploy models for real-time inference](https://docs.aws.amazon.com/sagemaker/latest/dg/realtime-endpoints-deploy-models.html)
  * [Docker Registry Paths and Example Code for Pre-built SageMaker Docker images](https://docs.aws.amazon.com/sagemaker/latest/dg-ecr-paths/sagemaker-algo-docker-registry-paths.html)
  * [Available Amazon Deep Learning Containers Images page](https://github.com/aws/deep-learning-containers/blob/master/available_images.md)
