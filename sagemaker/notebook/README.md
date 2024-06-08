@@ -1,7 +1,7 @@
 
-# Amazon SageMaker Notebook Instances
+# Amazon SageMaker Notebook Instance
 
-This is a blank project for Python development with CDK.
+This is a CDK Python project to deploy an Amazon SageMaker Notebook Instance.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
