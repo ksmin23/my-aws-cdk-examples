@@ -1,0 +1,52 @@
+{
+  "sagemaker_endpoint_name": "ic-endpoint",
+  "sagemaker_endpoint_config": {
+    "instance_type": "ml.g5.12xlarge",
+    "managed_instance_scaling": {
+      "min_instance_count": 1,
+      "max_instance_count": 2,
+      "status": "ENABLED"
+    },
+    "routing_config": {
+      "routing_strategy": "LEAST_OUTSTANDING_REQUESTS"
+    }
+  },
+  "deep_learning_container_image_uri": {
+    "repository_name": "huggingface-pytorch-tgi-inference",
+    "tag": "2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04"
+  },
+  "models": {
+    "dolly-v2-7b": {
+      "HF_MODEL_ID": "databricks/dolly-v2-7b",
+      "HF_TASK": "text-generation"
+    },
+    "flan-t5-xxl": {
+      "HF_MODEL_ID": "google/flan-t5-xxl",
+      "HF_TASK": "text-generation"
+    }
+  },
+  "inference_components": {
+    "ic-dolly-v2-7b": {
+      "model_name": "dolly-v2-7b",
+      "compute_resource_requirements": {
+        "number_of_accelerator_devices_required": 2,
+        "number_of_cpu_cores_required": 2,
+        "min_memory_required_in_mb": 1024
+      },
+      "runtime_config": {
+        "copy_count": 1
+      }
+    },
+    "ic-flan-t5-xxl": {
+      "model_name": "flan-t5-xxl",
+      "compute_resource_requirements": {
+        "number_of_accelerator_devices_required": 2,
+        "number_of_cpu_cores_required": 2,
+        "min_memory_required_in_mb": 1024
+      },
+      "runtime_config": {
+        "copy_count": 1
+      }
+    }
+  }
+}
