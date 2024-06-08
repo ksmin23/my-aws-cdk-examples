@@ -16,7 +16,7 @@ An inference component (IC) abstracts your ML model and enables you to assign CP
   - You can scale down to zero copies of a model to free up resources for other models. You can also specify to keep important models always loaded and ready to serve traffic.
 
 ![sagemaker-inference-component](./sagemaker-inference-component.gif "Original file name: ML-15819-GIF6.gif")
-<p style="text-align: center;">(Image Source: <a href="https://aws.amazon.com/blogs/machine-learning/reduce-model-deployment-costs-by-50-on-average-using-sagemakers-latest-features/">AWS Blog</a>)</p>
+<p align="center">(Image Source: <a href="https://aws.amazon.com/blogs/machine-learning/reduce-model-deployment-costs-by-50-on-average-using-sagemakers-latest-features/">AWS Blog</a>)</p>
 
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
