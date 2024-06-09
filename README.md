@@ -115,7 +115,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [sagemaker-realtime-inference/jumpstart](./sagemaker/model-inference-endpoints/sagemaker-realtime-inference/jumpstart) | Real-time Inference using SageMaker JumpStart | sagemaker real-time endpoint, jumpstart |
 | [sagemaker-realtime-inference/hugging-face](./sagemaker/model-inference-endpoints/sagemaker-realtime-inference/hugging-face) | Real-time Inference using Hugging Face DLC | sagemaker real-time endpoint, hugging face |
 | [sagemaker-realtime-inference/pytorch](./sagemaker/model-inference-endpoints/sagemaker-realtime-inference/pytorch) | Real-time Inference using PyTorch DLC | sagemaker real-time endpoint, pytorch |
-| [sagemaker-inference-component](./sagemaker/inference-component) | Real-time Inference with Inference Component capabilities | sagemaker real-time endpoint, inference component |
+| [sagemaker-inference-component](./sagemaker/inference-component) | ![](./sagemaker/inference-component/sagemaker-inference-component.gif) | sagemaker real-time endpoint, inference component, multiple FMs on the same instance |
 
 Enjoy!
 
