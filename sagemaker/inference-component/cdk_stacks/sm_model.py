@@ -15,7 +15,6 @@ from cdklabs.generative_ai_cdk_constructs import (
   SageMakerInstanceType,
 )
 
-# from sagemaker.huggingface import get_huggingface_llm_image_uri
 from .utils import name_from_base
 
 
