@@ -63,11 +63,21 @@ class SageMakerNotebookStack(Stack):
       ]
     }))
 
+    sagemaker_mlflow_policy_doc = aws_iam.PolicyDocument()
+    sagemaker_mlflow_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "sagemaker-mlflow:*"
+      ]
+    }))
+
     sagemaker_notebook_role = aws_iam.Role(self, 'SageMakerNotebookRole',
       role_name=f'SageMakerNotebookRole-{self.stack_name}',
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
       inline_policies={
-        'sagemaker-custome-execution-role': sagemaker_notebook_role_policy_doc
+        'sagemaker-custome-execution-role': sagemaker_notebook_role_policy_doc,
+        'sagemaker-mlflow-policy': sagemaker_mlflow_policy_doc,
       },
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
@@ -103,7 +113,7 @@ sudo make install
 popd
 
 # You can list all discoverable environments with `conda info --envs`.
-for each in python3 pytorch_p38
+for each in python3
 do
     source /home/ec2-user/anaconda3/bin/activate ${{each}}
     pip install --upgrade pretty_errors
