@@ -77,7 +77,7 @@ command.
 ## Running Test
 
 1. Open the jupyter notebook, `training_job_on_premise.ipynb` in `example/sklearn_diabetes_regression` directory on your jupyter lab.
-2. Replace `MLFLOW_TRACKING_URI` with the mlflow server deployed on Amazon EC2 instance.
+2. Replace `MLFLOW_TRACKING_URI` with the mlflow server deployed on Amazon ECS cluster.
 3. Run all cells in `training_job_on_premise.ipynb`.
 4. Open the mlflow web in your browser and you can see the screen like this:
    ![mlflow-v2.6.0-web-ui](./mlflow-v2.6.0-web-ui.png)
