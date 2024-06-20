@@ -12,7 +12,6 @@ from constructs import Construct
 
 from cdklabs.generative_ai_cdk_constructs import (
   DeepLearningContainerImage,
-  SageMakerInstanceType,
 )
 
 from .utils import name_from_base
