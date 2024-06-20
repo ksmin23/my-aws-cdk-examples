@@ -127,6 +127,15 @@ class SageMakerStudioStack(Stack):
       "actions": ["iam:PassRole"]
     }))
 
+    sagemaker_mlflow_policy_doc = aws_iam.PolicyDocument()
+    sagemaker_mlflow_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "sagemaker-mlflow:*"
+      ]
+    }))
+
     sagemaker_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
       role_name=f'AmazonSageMakerStudioExecutionRole-{self.stack_name}',
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
@@ -134,6 +143,7 @@ class SageMakerStudioStack(Stack):
       inline_policies={
         'sagemaker-execution-policy': sagemaker_execution_policy_doc,
         'sagemaker-docker-build-policy': sagemaker_docker_build_policy_doc,
+        'sagemaker-mlflow-policy': sagemaker_mlflow_policy_doc,
       },
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
