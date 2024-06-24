@@ -128,6 +128,26 @@ Enjoy!
  * `cdk bootstrap --profile <AWS Profile>` Deploys the CDK Toolkit staging stack; see [Bootstrapping](https://docs.aws.amazon.com/cdk/v2/guide/bootstrapping.html)
 
 
+## How to fetch specific source directories
+
+This repository is huge, containing a vast number of files, making it a `monorepo`.
+Consequently, if you wish to fetch specific source directories instead of downloading the entire repository,
+we recommend using the `git sparse-checkout` command.
+
+For example, let's say you want to clone the `cognito-api-lambda` project in `api-gateway` directory.
+
+In that case, open your terminal and run the following command.
+
+   ```
+   git clone https://github.com/ksmin23/my-aws-cdk-examples.git
+   cd my-aws-cdk-examples
+   git sparse-checkout init --cone
+   git sparse-checkout set api-gateway/cognito-api-lambda
+   ```
+
+:information_source: For more information about `git sparse-checkout`, see [this article](https://github.blog/2020-01-17-bring-your-monorepo-down-to-size-with-sparse-checkout/).
+
+
 ## References
 
  * [Working with the AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/work-with.html)
