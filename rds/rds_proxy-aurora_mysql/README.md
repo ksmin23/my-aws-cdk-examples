@@ -241,10 +241,18 @@ Enjoy!
     </pre>
 
 ## References
-- [Managing connections with Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html)
+
 - [Amazon Aurora MySQL reference](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html)
+- [Managing connections with Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-managing.html)
+  - [Configuring connection settings](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-managing.html#rds-proxy-connection-pooling-tuning)
+    - [IdleClientTimeout](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-managing.html#rds-proxy-connection-pooling-tuning.idleclienttimeout)
+    - [MaxConnectionsPercent](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-managing.html#rds-proxy-connection-pooling-tuning.maxconnectionspercent)
+    - [MaxIdleConnectionsPercent](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-managing.html#rds-proxy-connection-pooling-tuning.maxidleconnectionspercent)
+    - [ConnectionBorrowTimeout](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy-managing.html#rds-proxy-connection-pooling-tuning.connectionborrowtimeout)
+- [Monitoring Amazon RDS Proxy metrics with Amazon CloudWatch](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.monitoring.html)
 - [Troubleshooting for RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.troubleshooting.html)
   - ```ERROR 3159 (HY000): This RDS Proxy requires TLS connections.```
 - [Use Amazon RDS Proxy with read-only endpoints (by Peter Celentano, on 04 JAN 2022)](https://aws.amazon.com/ko/blogs/database/use-amazon-rds-proxy-with-read-only-endpoints/)
-- [aws rds create-db-proxy-endpoint](https://docs.aws.amazon.com/cli/latest/reference/rds/create-db-proxy-endpoint.html)
-
+- [aws rds create-db-proxy-endpoint](https://docs.aws.amazon.com/cli/latest/reference/rds/create-db-proxy-endpoint.html) - command to create a `DBProxyEndpoint`
+- [(AWS re:Invent 2020) Deep dive into Amazon RDS Proxy for scaling applications](https://d1.awsstatic.com/events/reinvent/2020/Deep_dive_into_Amazon_RDS_Proxy_for_scaling_applications_DAT318.pdf)
+- [(AWS Prescriptive Guidance) Increasing application scalability, performance, and availability by using Amazon RDS Proxy](https://docs.aws.amazon.com/prescriptive-guidance/latest/amazon-rds-proxy/introduction.html)
