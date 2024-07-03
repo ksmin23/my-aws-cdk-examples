@@ -2,17 +2,15 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
-import json
-
 import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
   aws_ec2,
   aws_rds,
-  aws_secretsmanager
 )
 from constructs import Construct
+
 
 class PostgresqlDBStack(Stack):
 
@@ -50,8 +48,8 @@ class PostgresqlDBStack(Stack):
 
     #XXX: To list all of the available parameter group families, use the following command:
     # aws rds describe-db-engine-versions --query "DBEngineVersions[].DBParameterGroupFamily"
-    rds_cluster_param_group = aws_rds.CfnDBClusterParameterGroup(self, "PostgresqlClusterParamGroup",
-      family="postgres15",
+    db_cluster_param_group = aws_rds.CfnDBClusterParameterGroup(self, "PostgresqlClusterParamGroup",
+      family='postgres16',
       parameters={
         'log_min_duration_statement': '15000', # 15 sec
         'default_transaction_isolation': 'read committed',
@@ -59,20 +57,22 @@ class PostgresqlDBStack(Stack):
         'rds.allowed_extensions': '*',
         'shared_preload_libraries': 'pg_stat_statements'
       },
-      description=f'Custom cluster parameter group for {aws_rds.PostgresEngineVersion.postgres_major_version}'
+      description='Custom db cluster parameter group for postgres16',
+      db_cluster_parameter_group_name=f'db-cluster-param-group-{db_cluster_name.lower()}'
     )
 
     #XXX: To list all of the available parameter group families, use the following command:
     # aws rds describe-db-engine-versions --query "DBEngineVersions[].DBParameterGroupFamily"
-    rds_db_param_group = aws_rds.CfnDBParameterGroup(self, "PostgresqlDBParamGroup",
-      family="postgres15",
+    db_instance_param_group = aws_rds.CfnDBParameterGroup(self, "PostgresqlDBParamGroup",
+      family='postgres16',
       parameters={
         'log_min_duration_statement': '15000', # 15 sec
         'default_transaction_isolation': 'read committed',
         'rds.allowed_extensions': '*',
         'shared_preload_libraries': 'pg_stat_statements'
       },
-      description=f'Custom parameter group for {aws_rds.PostgresEngineVersion.postgres_major_version}',
+      description='Custom db instance parameter group for postgres16',
+      db_parameter_group_name=f'db-instance-param-group-{db_cluster_name.lower()}'
     )
 
     db_cluster = aws_rds.CfnDBCluster(self, "PostgresqlDBCluster",
@@ -84,12 +84,14 @@ class PostgresqlDBStack(Stack):
       # see the following link:
       # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#Concepts.DBInstanceClass.Support
       db_cluster_instance_class="db.r6gd.large",
-      db_cluster_parameter_group_name=rds_cluster_param_group.db_cluster_parameter_group_name,
-      db_instance_parameter_group_name=rds_db_param_group.db_parameter_group_name,
+      #XXX: aws_rds.CfnDBClusterParameterGroup.db_cluster_parameter_group_name is None
+      # So use aws_rds.CfnDBClusterParameterGroup.ref
+      db_cluster_parameter_group_name=db_cluster_param_group.ref,
+      db_instance_parameter_group_name=db_instance_param_group.attr_db_parameter_group_name,
       db_subnet_group_name=rds_subnet_group.subnet_group_name,
       engine="postgres",
       engine_mode="provisioned",
-      engine_version=aws_rds.PostgresEngineVersion.VER_15_3.postgres_full_version, # "15.3",
+      engine_version=aws_rds.PostgresEngineVersion.VER_16_3.postgres_full_version,
       manage_master_user_password=True,
       master_username="postgres",
       port=5432,
@@ -102,6 +104,8 @@ class PostgresqlDBStack(Stack):
       storage_type="io1",
       vpc_security_group_ids=[sg_postgresql_server.security_group_id]
     )
+    db_cluster.add_dependency(db_cluster_param_group)
+    db_cluster.add_dependency(db_instance_param_group)
 
 
     cdk.CfnOutput(self, 'DBClusterEndpoint',
@@ -110,3 +114,9 @@ class PostgresqlDBStack(Stack):
     cdk.CfnOutput(self, 'DBClusterReadEndpoint',
       value=f"{db_cluster.attr_read_endpoint_address}:{db_cluster.attr_endpoint_port}",
       export_name=f'{self.stack_name}-DBClusterReadEndpoint')
+    cdk.CfnOutput(self, 'DBClusterParamGroupName',
+      value=db_cluster_param_group.ref,
+      export_name=f'{self.stack_name}-DBClusterParamGroupName')
+    cdk.CfnOutput(self, 'DBInstanceParamGroupName',
+      value=db_instance_param_group.attr_db_parameter_group_name,
+      export_name=f'{self.stack_name}-DBInstanceParamGroupName')

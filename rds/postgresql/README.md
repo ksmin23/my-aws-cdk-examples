@@ -77,7 +77,7 @@ Enjoy!
 
 # Example
 
-1. Install PostgreSQL 13 on Amazon Linux 2
+1. (1) Install PostgreSQL 13 on Amazon Linux 2
 
    <pre>
    $ sudo amazon-linux-extras install epel
@@ -85,6 +85,11 @@ Enjoy!
    $ sudo amazon-linux-extras enable postgresql13
    $ sudo yum clean metadata
    $ sudo yum install -y postgresql
+   </pre>
+
+   (2) Install PostgreSQL Client on Ubuntu
+   <pre>
+   $ sudo apt install -y postgresql-client
    </pre>
 
 2. Connect to PostgreSQL
