@@ -136,6 +136,17 @@ class SageMakerStudioStack(Stack):
       ]
     }))
 
+    bedrock_access_policy_doc = aws_iam.PolicyDocument()
+    bedrock_access_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "bedrock:ListFoundationModels",
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ]
+    }))
+
     sagemaker_execution_role = aws_iam.Role(self, 'SageMakerExecutionRole',
       role_name=f'AmazonSageMakerStudioExecutionRole-{self.stack_name}',
       assumed_by=aws_iam.ServicePrincipal('sagemaker.amazonaws.com'),
@@ -144,6 +155,7 @@ class SageMakerStudioStack(Stack):
         'sagemaker-execution-policy': sagemaker_execution_policy_doc,
         'sagemaker-docker-build-policy': sagemaker_docker_build_policy_doc,
         'sagemaker-mlflow-policy': sagemaker_mlflow_policy_doc,
+        'bedrock-access-policy': bedrock_access_policy_doc
       },
       managed_policies=[
         aws_iam.ManagedPolicy.from_aws_managed_policy_name('AmazonSageMakerFullAccess'),
@@ -164,10 +176,11 @@ class SageMakerStudioStack(Stack):
       execution_role=sagemaker_execution_role.role_arn
     )
 
+    sm_studio_domain_name = self.node.try_get_context('sagemaker_studio_domain_name') or 'default-studio-domain'
     sagemaker_studio_domain = aws_sagemaker.CfnDomain(self, 'SageMakerStudioDomain',
       auth_mode='IAM', # [SSO | IAM]
       default_user_settings=sm_studio_user_settings,
-      domain_name='studio-public',
+      domain_name=sm_studio_domain_name,
       subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PUBLIC).subnet_ids,
       vpc_id=vpc.vpc_id,
       app_network_access_type='PublicInternetOnly' # [PublicInternetOnly | VpcOnly]
