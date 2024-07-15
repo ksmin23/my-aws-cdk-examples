@@ -62,7 +62,7 @@ class OpensearchStack(Stack):
       domain_name=OPENSEARCH_DOMAIN_NAME,
       #XXX: Supported versions of OpenSearch and Elasticsearch
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html#choosing-version
-      version=aws_opensearchservice.EngineVersion.OPENSEARCH_2_11,
+      version=aws_opensearchservice.EngineVersion.OPENSEARCH_2_13,
       #XXX: Amazon OpenSearch Service - Current generation instance types
       # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html#latest-gen
       # - The OR1 instance types require OpenSearch 2.11 or later.

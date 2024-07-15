@@ -235,6 +235,7 @@ Enjoy!
     GET _cat/plugins?v
     </pre>
 - [Amazon OpenSearch Service - Importing and associating packages](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/custom-packages.html#custom-packages-assoc)
+  - [Amazon OpenSearch Service, 한국어 분석을 위한 '노리(Nori)' 플러그인 활용 (2023-11-23)](https://aws.amazon.com/ko/blogs/tech/amazon-opensearch-service-korean-nori-plugin-for-analysis/)
 - [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli
