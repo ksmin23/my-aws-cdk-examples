@@ -1,0 +1,5 @@
+{
+  "ecr_repository_name": "langfuse",
+  "src_docker_image_version": "ghcr.io/langfuse/langfuse",
+  "image_version": "latest"
+}
