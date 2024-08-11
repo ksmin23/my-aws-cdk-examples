@@ -43,7 +43,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 
 ## Set up `cdk.context.json`
 
-Then, we need to set approperly the cdk context configuration file, cdk.context.json.
+Then, we need to set approperly the cdk context configuration file, `cdk.context.json`.
 
 For example,
 <pre>
@@ -67,7 +67,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 Use `cdk deploy` command to create the stack shown above.
 
 ```
-(.venv) $ cdk deploy
+(.venv) $ cdk deploy --require-approval never
 ```
 
 ## Clean Up
