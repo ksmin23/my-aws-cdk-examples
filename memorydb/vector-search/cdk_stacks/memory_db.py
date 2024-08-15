@@ -62,7 +62,7 @@ class MemoryDBStack(Stack):
       # For more information, see https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search-limits.html#scaling-restrictions
       num_replicas_per_shard=1,
       num_shards=1,
-      parameter_group_name='default.memorydb-redis7.search.preview', #XXX: Vector search for MemoryDB
+      parameter_group_name='default.memorydb-redis7.search', #XXX: Vector search for MemoryDB
       security_group_ids=[sg_memorydb_server.security_group_id],
       snapshot_retention_limit=3,
       snapshot_window='16:00-20:00',
