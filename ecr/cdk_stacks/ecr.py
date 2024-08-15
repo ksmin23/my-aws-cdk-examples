@@ -18,7 +18,7 @@ class ECRStack(Stack):
     super().__init__(scope, construct_id, **kwargs)
 
     repository_name = self.node.try_get_context('ecr_repository_name')
-    self.repository = aws_ecr.Repository(self, "LangfuseECRRepository",
+    self.repository = aws_ecr.Repository(self, "ECRRepository",
       empty_on_delete=True,
       encryption=aws_ecr.RepositoryEncryption.AES_256,
       removal_policy=cdk.RemovalPolicy.DESTROY,
@@ -42,9 +42,8 @@ class ECRStack(Stack):
     deploy_image_versions = [image_version] if image_version == "latest" else [image_version, "latest"]
 
     for i, deploy_image_version in enumerate(deploy_image_versions):
-      ecr_deploy.ECRDeployment(self, f"LangfuseECRDeployment-{i:03}",
+      ecr_deploy.ECRDeployment(self, f"ECRDeployment-{i:03d}",
         src=ecr_deploy.DockerImageName(f'{src_docker_image_version}:{image_version}'),
-        # src=ecr_deploy.DockerImageName(f'ghcr.io/langfuse/langfuse:{image_version}'),
         dest=ecr_deploy.DockerImageName(self.repository.repository_uri_for_tag_or_digest(deploy_image_version))
       )
 
