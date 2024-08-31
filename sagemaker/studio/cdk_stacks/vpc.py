@@ -12,6 +12,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+
 class VpcStack(Stack):
 
   def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -58,6 +59,7 @@ class VpcStack(Stack):
           )
         }
       )
+
 
     cdk.CfnOutput(self, 'VPCID', value=self.vpc.vpc_id,
       export_name=f'{self.stack_name}-VPCID')

@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+# vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+
 import os
 import random
 import string
@@ -32,20 +35,21 @@ class ElasticsearchStack(Stack):
     # check https://github.com/aws/aws-cdk/issues/12078
     # This error occurs when ZoneAwarenessEnabled in aws_opensearch.Domain(..) is set `true`
     #
-    # vpc_name = self.node.try_get_context('vpc_name')
-    # vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
-    #   is_default=True,
-    #   vpc_name=vpc_name
-    # )
-
-    vpc = aws_ec2.Vpc(self, "ElasticsearchHolVPC",
-      max_azs=3,
-      gateway_endpoints={
-        "S3": aws_ec2.GatewayVpcEndpointOptions(
-          service=aws_ec2.GatewayVpcEndpointAwsService.S3
-        )
-      }
-    )
+    if str(os.environ.get('USE_DEFAULT_VPC', 'false')).lower() == 'true':
+      vpc_name = self.node.try_get_context('vpc_name') or "default"
+      vpc = aws_ec2.Vpc.from_lookup(self, 'ExistingVPC',
+        is_default=True,
+        vpc_name=vpc_name
+      )
+    else:
+      vpc = aws_ec2.Vpc(self, "ElasticsearchHolVPC",
+        max_azs=3,
+        gateway_endpoints={
+          "S3": aws_ec2.GatewayVpcEndpointOptions(
+            service=aws_ec2.GatewayVpcEndpointAwsService.S3
+          )
+        }
+      )
 
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceClass.html
     #XXX: https://docs.aws.amazon.com/cdk/api/latest/python/aws_cdk.aws_ec2/InstanceSize.html#aws_cdk.aws_ec2.InstanceSize
