@@ -37,6 +37,21 @@ class LoggingApiCallsToFirehoseStack(Stack):
       timeout=cdk.Duration.minutes(5)
     )
 
+    #XXX: CloudWatch Logs role ARN must be set in account settings to enable logging
+    cloudwatch_role = aws_iam.Role(self, 'ApiGatewayCloudWatchRole',
+      assumed_by=aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
+      managed_policies=[
+        aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonAPIGatewayPushToCloudWatchLogs')
+      ]
+    )
+    cloudwatch_role.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
+
+    #XXX: CloudWatch Logs role ARN must be set in account settings to enable logging
+    apigw_account = aws_apigateway.CfnAccount(self, 'ApiGatewayAccount',
+      cloud_watch_role_arn=cloudwatch_role.role_arn
+    )
+    apigw_account.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
+
     random_gen_api_log_group = aws_logs.LogGroup(self, 'RandomGenApiLogs')
 
     #XXX: Using aws_apigateway.AccessLogFormat.custom(json.dumps({..}))
