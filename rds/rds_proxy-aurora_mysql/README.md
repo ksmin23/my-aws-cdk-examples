@@ -43,7 +43,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+$ export CDK_DEFAULT_REGION=$(aws configure get region)
 $ cdk -c vpc_name='<i>your-existing-vpc-name</i>' \
   -c db_cluster_name='<i>db-cluster-name</i>>'
   synth --all

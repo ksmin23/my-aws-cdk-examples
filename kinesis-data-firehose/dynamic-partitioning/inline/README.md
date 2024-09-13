@@ -43,7 +43,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ export CDK_DEFAULT_REGION=$(aws configure get region)
 (.venv) $ cdk synth \
   --parameters FirehoseStreamName=<i>'your-delivery-stream-name'</i> \
   --parameters FirehoseDynamicPartitionKeys=<i>'your-jq-expressions-to-parse-dynamic-partition-keys'</i> \
@@ -83,7 +83,7 @@ Now you can create kinesis data firehose with the above mapping of parameters to
 
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ export CDK_DEFAULT_REGION=$(aws configure get region)
 (.venv) $ cdk synth \
   --parameters FirehoseStreamName='PUT-S3-inline' \
   --parameters FirehoseDynamicPartitionKeys='{region:.region,device:.type.device,year:.event_timestamp|strftime("%Y"),month:.event_timestamp|strftime("%m"),day:.event_timestamp|strftime("%d"),hour:.event_timestamp|strftime("%H")}' \

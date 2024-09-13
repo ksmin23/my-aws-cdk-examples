@@ -43,7 +43,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ export CDK_DEFAULT_REGION=$(aws configure get region)
 (.venv) $ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> synth \
     -c msk_cluster_name=<i>'your-kafka-cluster-name'</i> \
     --parameters KafkaVersion=<i>'your-kafka-version'</i> \

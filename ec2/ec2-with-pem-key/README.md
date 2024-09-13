@@ -51,7 +51,7 @@ To import an existing VPC, you should specify the following environment variable
 
 ```
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ export CDK_DEFAULT_REGION=$(aws configure get region)
 ```
 
 If you pass context variable such as `vcp_name=<your vpc name>` (e.g. `vpc_name='[X]default'`), you can use the existing VPC.

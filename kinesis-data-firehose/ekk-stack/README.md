@@ -42,7 +42,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-$ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+$ export CDK_DEFAULT_REGION=$(aws configure get region)
 $ cdk -c es_domain_name='your-es-domain-name' \
       -c es_index_name='your-es-index-name' \
       synth
@@ -101,13 +101,13 @@ Enjoy!
 
 ## Remotely access your Amazon Elasticsearch Cluster using SSH tunnel from local machine
 1. Generate the new private and public keys `mynew_key` and `mynew_key.pub`, respectively:
-   
+
    ```
    $ ssh-keygen -t rsa -f mynew_key
    ```
 
 2. To access the Elasticsearch Cluster, add the ssh tunnel configuration to the ssh config file of the personal local PC as follows
-   
+
     ```
     # Elasticsearch Tunnel
     Host estunnel
@@ -134,17 +134,17 @@ Enjoy!
         IdentitiesOnly yes
         IdentityFile ~/.ssh/mynew_key.pub
         LocalForward 9200 vpc-ekk-stack-hol-qvwlxanar255vswqna37p2l2cy.us-east-1.es.amazonaws.com:443
-    
+
     ~$
     ```
 
 3. Use the following AWS CLI command to authorize the user and push the public key to the instance using the `send-ssh-public-key` command. To support this, you need the latest version of the AWS CLI.
-  
+
    ex) Bastion Host's instance details
    - Instance ID: `i-0989ec3292613a4f9`
    - Availability Zone: `us-east-1a`
    - Instance OS User: `ec2-user`
- 
+
    ```
    $ aws ec2-instance-connect send-ssh-public-key \
        --region us-east-1 \
@@ -154,9 +154,9 @@ Enjoy!
        --ssh-public-key file://${HOME}/.ssh/mynew_key.pub
 
    {
-     "RequestId": "505f8675-710a-11e9-9263-4d440e7745c6", 
+     "RequestId": "505f8675-710a-11e9-9263-4d440e7745c6",
      "Success": true
-   } 
+   }
    ```
 
 4. Run `ssh -N estunnel` in Terminal.

@@ -43,7 +43,7 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-(.venv) $ export CDK_DEFAULT_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r .region)
+(.venv) $ export CDK_DEFAULT_REGION=$(aws configure get region)
 (.venv) $ cdk synth --all \
               -c source_database_secret_name='<i>secret-full-name</i>' \
               -c mysql_client_security_group_name='<i>mysql-client-security-group-name</i>' \
