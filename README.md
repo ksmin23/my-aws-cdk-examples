@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/118-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/119-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -22,6 +22,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [bedrock/generative-ai-cdk-constructs](./bedrock/generative-ai-cdk-constructs) | Launch Knowledge Bases for Amazon Bedrock | amazon bedrock, knowledge bases |
 | [cloud9](./cloud9/) | ![cloud9](./cloud9/aws-cloud9.svg) | cloud9 |
 | [cloudfront/static-site](./cloudfront/static-site/) | ![cloudfront-s3-static-site-arch](./cloudfront/static-site/cloudfront-s3-static-site-arch.svg) | cloudfront |
+| [cognito](./cognito/) | Deploy Amazon Cognito that is an identity platform for web and mobile apps | cognito |
 | [custom-resources/sagemaker-jumstart-model-deploy](./custom-resources/sagemaker-jumstart-model-deploy/) | Deploy SageMaker JumpStart Model with CDK Custom Resources | sagemaker jumpstart, cdk custom-resources |
 | [dms/aurora_mysql-to-kinesis](./dms/aurora_mysql-to-kinesis/) | ![dms-mysql-to-kinesis-arch](./dms/aurora_mysql-to-kinesis/dms-mysql-to-kinesis-arch.svg) | dms, mysql, kinesis |
 | [dms/aurora_mysql-to-s3](./dms/aurora_mysql-to-s3/) | ![dms-mysql-to-s3-arch](./dms/aurora_mysql-to-s3/dms-mysql-to-s3-arch.svg) | dms, mysql, s3 |
