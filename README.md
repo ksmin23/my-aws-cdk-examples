@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/119-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/120-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -87,6 +87,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [msk-serverless](./msk-serverless/) | ![msk-serverless-arch](./msk-serverless/msk-serverless-arch.svg) | msk serverless(kafka) |
 | [mwaa(airflow)](./mwaa/) | ![mwaa-arch](./mwaa/mwaa-arch.svg) | mwaa(airflow) |
 | [neptune](./neptune/) | ![neptune-arch](./neptune/neptune-arch.svg) | sagemaker, neptune |
+| [neptune-analytics](./neptune-analytics/) | ![neptune-analytics-arch](./neptune-analytics/neptune-analytics-arch.svg) | sagemaker, neptune-analytics |
 | [rds/aurora_mysql](./rds/aurora_mysql/) | ![aurora_mysql](./rds/aurora_mysql/aurora_mysql-arch.svg) | aurora mysql, secrets manager |
 | [rds/aurora_postgresql](./rds/aurora_postgresql/) | ![aurora_postgresql](./rds/aurora_postgresql/aurora_postgresql-arch.svg) | aurora postgresql, secrets manager |
 | [rds/mariadb](./rds/mariadb/) | ![mariadb-arch](./rds/mariadb/mariadb-arch.svg) | mariadb, secrets manager |
