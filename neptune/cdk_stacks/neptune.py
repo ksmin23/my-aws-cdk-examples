@@ -78,7 +78,7 @@ class NeptuneStack(Stack):
     )
 
     neptune_query_timeout = int(self.node.try_get_context('neptune_query_timeout') or '20000')
-    db_instance_parameter_group = aws_neptune.CfnDBClusterParameterGroup(self, "NeptuneDBInstanceParameterGroup",
+    db_instance_parameter_group = aws_neptune.CfnDBParameterGroup(self, "NeptuneDBInstanceParameterGroup",
       description="neptune db parameter group",
       family="neptune1.3",
       parameters={
