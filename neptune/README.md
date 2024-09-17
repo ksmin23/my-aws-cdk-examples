@@ -2,7 +2,7 @@
 
 ![neptune-arch](./neptune-arch.svg)
 
-This is a sample project for Python development with CDK.
+This is an Amazon Neptune project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -35,13 +35,13 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synth --all
+(.venv) $ cdk synth --all
 ```
 
 Use `cdk deploy` command to create the stack shown above.
@@ -71,3 +71,12 @@ Delete the CloudFormation stack by running the below command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## References
+
+ * [Build Your First Graph Application with Amazon Neptune](https://catalog.workshops.aws/neptune-deep-dive/en-US)
+ * [Amazon Neptune Analytics Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/28907bd0-e855-428a-aabd-ae2173eef31b/en-US)
+ * [Using an AWS CloudFormation Stack to Create a Neptune DB Cluster](https://docs.aws.amazon.com/neptune/latest/userguide/get-started-cfn-create.html)
+ * [Use Neptune graph notebooks to get started quickly](https://docs.aws.amazon.com/neptune/latest/userguide/graph-notebooks.html)
+ * [(GitHub) amazon-neptune-samples](https://github.com/aws-samples/amazon-neptune-samples/)
+ * [(GitHub) aws/graph-notebook](https://github.com/aws/graph-notebook)
