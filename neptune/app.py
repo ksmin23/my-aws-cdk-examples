@@ -26,7 +26,7 @@ vpc_stack = VpcStack(app, 'NeptuneVpcStack',
 neptune_stack = NeptuneStack(app, 'NeptuneStack',
   vpc_stack.vpc,
   env=APP_ENV)
-neptune_stack.add_dependency(neptune_stack)
+neptune_stack.add_dependency(vpc_stack)
 
 neptune_workbench = SageMakerNotebookStack(app, 'NeptuneWorkbenchStack',
   neptune_stack.graph_db,
