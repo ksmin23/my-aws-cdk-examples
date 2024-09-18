@@ -37,6 +37,145 @@ class NeptuneServerlessStack(Stack):
       }
     )
 
+    neptune_ml_policy_doc = aws_iam.PolicyDocument()
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "ec2:CreateNetworkInterface",
+        "ec2:CreateNetworkInterfacePermission",
+        "ec2:CreateVpcEndpoint",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DeleteNetworkInterfacePermission",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeRouteTables",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeVpcEndpoints",
+        "ec2:DescribeVpcs"
+      ]
+    }))
+
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:ecr:*:*:repository/*"],
+      "actions": [
+        "ecr:GetAuthorizationToken",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability"
+      ]
+    }))
+
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:ecr:*:*:repository/*"],
+      "actions": [
+        "iam:PassRole"
+      ],
+      "conditions": {
+        "StringEquals": {
+          "iam:PassedToService": [
+            "sagemaker.amazonaws.com"
+          ]
+        }
+      }
+    }))
+
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:kms:*:*:key/*"],
+      "actions": [
+        "kms:CreateGrant",
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+      ]
+    }))
+
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:logs:*:*:log-group:/aws/sagemaker/*"],
+      "actions": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+    }))
+
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:sagemaker:*:*:*"],
+      "actions": [
+        "sagemaker:CreateEndpoint",
+        "sagemaker:CreateEndpointConfig",
+        "sagemaker:CreateHyperParameterTuningJob",
+        "sagemaker:CreateModel",
+        "sagemaker:CreateProcessingJob",
+        "sagemaker:CreateTrainingJob",
+        "sagemaker:DeleteEndpoint",
+        "sagemaker:DeleteEndpointConfig",
+        "sagemaker:StopHyperParameterTuningJob",
+        "sagemaker:DeleteModel",
+        "sagemaker:StopProcessingJob",
+        "sagemaker:StopTrainingJob",
+        "sagemaker:DescribeEndpoint",
+        "sagemaker:DescribeEndpointConfig",
+        "sagemaker:DescribeHyperParameterTuningJob",
+        "sagemaker:DescribeModel",
+        "sagemaker:DescribeProcessingJob",
+        "sagemaker:DescribeTrainingJob",
+        "sagemaker:InvokeEndpoint",
+        "sagemaker:ListTags",
+        "sagemaker:AddTags",
+        "sagemaker:ListTrainingJobsForHyperParameterTuningJob",
+        "sagemaker:UpdateEndpoint",
+        "sagemaker:UpdateEndpointWeightsAndCapacities"
+      ]
+    }))
+
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["*"],
+      "actions": [
+        "sagemaker:ListEndpointConfigs",
+        "sagemaker:ListEndpoints",
+        "sagemaker:ListHyperParameterTuningJobs",
+        "sagemaker:ListModels",
+        "sagemaker:ListProcessingJobs",
+        "sagemaker:ListTrainingJobs"
+      ]
+    }))
+
+    neptune_ml_policy_doc.add_statements(aws_iam.PolicyStatement(**{
+      "effect": aws_iam.Effect.ALLOW,
+      "resources": ["arn:aws:s3:::*"],
+      "actions": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:AbortMultipartUpload",
+        "s3:ListBucket"
+      ]
+    }))
+
+    neptune_ml_role = aws_iam.Role(self, 'NeptuneMLRole',
+      role_name=f'NeptuneMLRole-{self.stack_name}',
+      assumed_by=aws_iam.ServicePrincipal('rds.amazonaws.com'),
+      inline_policies={
+        'NeptuneMLPolicy': neptune_ml_policy_doc
+      }
+    )
+
+    neptune_ml_role.assume_role_policy.add_statements(aws_iam.PolicyStatement(**{
+      "principals": [
+        aws_iam.ServicePrincipal('sagemaker.amazonaws.com')
+      ],
+      "actions": [
+        "sts:AssumeRole"
+      ]
+    }))
+
     self.sg_graph_db_client = aws_ec2.SecurityGroup(self, 'NeptuneClientSG',
       vpc=vpc,
       allow_all_outbound=True,
@@ -73,6 +212,7 @@ class NeptuneServerlessStack(Stack):
       family="neptune1.3",
       parameters={
         'neptune_enable_audit_log': neptune_enable_audit_log,
+        'neptune_ml_iam_role': neptune_ml_role.role_arn
       },
       name=f"{db_cluster_id}-db-cluster-params"
     )
@@ -93,6 +233,9 @@ class NeptuneServerlessStack(Stack):
       associated_roles=[
         aws_neptune.CfnDBCluster.DBClusterRoleProperty(
           role_arn=neptune_load_from_s3_role.role_arn
+        ),
+        aws_neptune.CfnDBCluster.DBClusterRoleProperty(
+          role_arn=neptune_ml_role.role_arn
         )
       ],
       availability_zones=availability_zones,
@@ -110,6 +253,8 @@ class NeptuneServerlessStack(Stack):
       vpc_security_group_ids=[sg_graph_db.security_group_id]
     )
     self.graph_db.add_dependency(self.graph_db_subnet_group)
+    self.graph_db.add_dependency(db_cluster_parameter_group)
+    self.graph_db.add_dependency(db_instance_parameter_group)
 
     db_instance_id = self.node.try_get_context('neptune_db_instance_id') or db_cluster_id
     graph_db_instance = aws_neptune.CfnDBInstance(self, 'NeptuneInstance',
@@ -119,6 +264,7 @@ class NeptuneServerlessStack(Stack):
       availability_zone=availability_zones[0],
       db_cluster_identifier=self.graph_db.db_cluster_identifier,
       db_instance_identifier=db_instance_id,
+      db_parameter_group_name=db_instance_parameter_group.name,
       preferred_maintenance_window='sun:18:00-sun:18:30'
     )
     graph_db_instance.add_dependency(self.graph_db)
@@ -131,6 +277,7 @@ class NeptuneServerlessStack(Stack):
       availability_zone=availability_zones[-1],
       db_cluster_identifier=self.graph_db.db_cluster_identifier,
       db_instance_identifier=f'{db_instance_id}-{db_replica_id_suffix}',
+      db_parameter_group_name=db_instance_parameter_group.name,
       preferred_maintenance_window='sun:18:00-sun:18:30'
     )
     graph_db_replica_instance.add_dependency(self.graph_db)
@@ -155,3 +302,6 @@ class NeptuneServerlessStack(Stack):
     cdk.CfnOutput(self, 'NeptuneLoadFromS3RoleArn',
       value=neptune_load_from_s3_role.role_arn,
       export_name=f'{self.stack_name}-NeptuneLoadFromS3RoleArn')
+    cdk.CfnOutput(self, 'NeptuneMLRoleArn',
+      value=neptune_ml_role.role_arn,
+      export_name=f'{self.stack_name}-NeptuneMLRoleArn')

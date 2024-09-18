@@ -37,11 +37,16 @@ class SageMakerNotebookStack(Stack):
       ]
     )
 
+    neptune_load_from_s3_role = graph_db.associated_roles[0]
+    neptune_ml_role = graph_db.associated_roles[1]
+
     neptune_wb_lifecycle_content = '''#!/bin/bash
 sudo -u ec2-user -i <<'EOF'
 echo "export GRAPH_NOTEBOOK_AUTH_MODE=DEFAULT" >> ~/.bashrc
 echo "export GRAPH_NOTEBOOK_HOST={NeptuneClusterEndpoint}" >> ~/.bashrc
 echo "export GRAPH_NOTEBOOK_PORT={NeptuneClusterPort}" >> ~/.bashrc
+echo "export NEPTUNE_LOAD_FROM_S3_ROLE_ARN={NeptuneLoadFromS3RoleArn}" >> ~/.bashrc
+echo "export NEPTUNE_ML_ROLE_ARN={NeptuneMLRoleArn}" >> ~/.bashrc
 echo "export AWS_REGION={AWS_Region}" >> ~/.bashrc
 
 aws s3 cp s3://aws-neptune-notebook/graph_notebook.tar.gz /tmp/graph_notebook.tar.gz
@@ -51,6 +56,8 @@ tar -zxvf /tmp/graph_notebook.tar.gz -C /tmp
 EOF
 '''.format(NeptuneClusterEndpoint=graph_db.attr_endpoint,
     NeptuneClusterPort=graph_db.attr_port,
+    NeptuneLoadFromS3RoleArn=neptune_load_from_s3_role.role_arn,
+    NeptuneMLRoleArn=neptune_ml_role.role_arn,
     AWS_Region=cdk.Aws.REGION)
 
     neptune_wb_lifecycle_config_prop = aws_sagemaker.CfnNotebookInstanceLifecycleConfig.NotebookInstanceLifecycleHookProperty(
