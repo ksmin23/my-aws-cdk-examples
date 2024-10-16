@@ -24,5 +24,5 @@ class VpcStack(Stack):
 
     #XXX: The Name field of every Export member must be specified and consist only of alphanumeric characters, colons, or hyphens.
     cdk.CfnOutput(self, 'VPCID', value=self.vpc.vpc_id,
-      export_name='{}-VPCID'.format(self.stack_name))
+      export_name=f'{self.stack_name}-VPCID')
 
