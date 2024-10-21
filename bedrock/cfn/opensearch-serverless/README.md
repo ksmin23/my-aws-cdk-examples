@@ -109,7 +109,7 @@ For example,
 </pre>
 :warning: It would be better **NOT TO USE** `metadata` for `metadata_field` in OpenSearch serverless field mapping. The popular LLM application frameworks like LangChain, LlamaIndex use `metadata` with data type other than `text` for OpenSearch field mapping. So to avoid conflicts when using the popular LLM frameworks, be careful to use `metadata` field name.
 
-Now this point you can now synthesize the CloudFormation template for this code.
+At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)

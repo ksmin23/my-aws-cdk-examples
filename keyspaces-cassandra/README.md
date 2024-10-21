@@ -113,7 +113,7 @@ WITH CUSTOM_PROPERTIES = {
               'pii': 'true'};
 ```
 
-Now this point you can now synthesize the CloudFormation template for this code.
+At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
