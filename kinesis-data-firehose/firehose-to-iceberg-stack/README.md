@@ -103,7 +103,7 @@ For example,
   },
   "s3_bucket_name": "trans-datalake-iceberg-use1",
   "output_prefix": "cdc_iceberg_demo_db/retail_trans_iceberg",
-  "error_output_prefix":" error/cdc_iceberg_demo_db/retail_trans_iceberg/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}"
+  "error_output_prefix": "error/cdc_iceberg_demo_db/retail_trans_iceberg/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}"
 }
 </pre>
 
