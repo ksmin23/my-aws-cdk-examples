@@ -56,10 +56,12 @@ Before synthesizing the CloudFormation, you need to prepare the followings:
 
 - Go to [Athena](https://console.aws.amazon.com/athena/home) on the AWS Management console.
 - Create an Apache Iceberg table.<br/>
-  For example, a table named `retail_trans_iceberg` is created in the `default' database by running the following query.
+  For example, a table named `retail_trans_iceberg` is created in the `cdc_iceberg_demo_db` database by running the following query.
 
   ```
-  CREATE TABLE default.retail_trans_iceberg (
+  CREATE DATABASE IF NOT EXISTS cdc_iceberg_demo_db;
+
+  CREATE TABLE cdc_iceberg_demo_db.retail_trans_iceberg (
     trans_id int,
     customer_id string,
     event string,
@@ -97,7 +99,7 @@ For example,
     "number_of_retries": 3
   },
   "destination_iceberg_table_configuration": {
-    "database_name": "default",
+    "database_name": "cdc_iceberg_demo_db",
     "table_name": "retail_trans_iceberg",
     "unique_keys": ["trans_id"]
   },

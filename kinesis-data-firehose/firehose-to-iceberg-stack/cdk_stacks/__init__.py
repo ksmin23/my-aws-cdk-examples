@@ -1,2 +1,4 @@
 from .firehose_to_iceberg import FirehoseToIcebergStack
 from .firehose_data_proc_lambda import FirehoseDataProcLambdaStack
+from .firehose_role import FirehoseRoleStack
+from .lakeformation_permissions import DataLakePermissionsStack

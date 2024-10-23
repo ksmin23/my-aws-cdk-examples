@@ -6,7 +6,6 @@ import aws_cdk as cdk
 
 from aws_cdk import (
   Stack,
-  aws_iam,
   aws_s3 as s3,
   aws_kinesisfirehose
 )
@@ -17,7 +16,9 @@ from aws_cdk.aws_kinesisfirehose import CfnDeliveryStream as cfn
 
 class FirehoseToIcebergStack(Stack):
 
-  def __init__(self, scope: Construct, construct_id: str, data_transform_lambda_fn, **kwargs) -> None:
+  def __init__(self, scope: Construct, construct_id: str,
+               data_transform_lambda_fn, firehose_role, **kwargs) -> None:
+
     super().__init__(scope, construct_id, **kwargs)
 
     s3_bucket_name = self.node.try_get_context("s3_bucket_name")
@@ -37,101 +38,17 @@ class FirehoseToIcebergStack(Stack):
     s3_output_prefix = self.node.try_get_context("output_prefix")
     s3_error_output_prefix = self.node.try_get_context("error_output_prefix")
 
-
-    firehose_role_policy_doc = aws_iam.PolicyDocument()
-
-    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": [s3_bucket.bucket_arn, "{}/*".format(s3_bucket.bucket_arn)],
-      "actions": [
-        "s3:AbortMultipartUpload",
-        "s3:GetBucketLocation",
-        "s3:GetObject",
-        "s3:ListBucket",
-        "s3:ListBucketMultipartUploads",
-        "s3:PutObject"
-      ]
-    }))
-
-    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      "resources": [
-        f"arn:aws:glue:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:catalog",
-        f"arn:aws:glue:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:database/*",
-        f"arn:aws:glue:{cdk.Aws.REGION}:{cdk.Aws.ACCOUNT_ID}:table/*"
-      ],
-      "actions": [
-        "glue:GetTable",
-        "glue:GetTables",
-        "glue:GetDatabase",
-        "glue:GetDatabases",
-        "glue:CreateTable",
-        "glue:UpdateTable",
-        "glue:DeleteTable",
-        "glue:BatchCreatePartition",
-        "glue:BatchDeletePartition"
-      ]
-    }))
-
-    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
-      effect=aws_iam.Effect.ALLOW,
-      resources=["*"],
-      actions=[
-        "ec2:DescribeVpcs",
-        "ec2:DescribeVpcAttribute",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:CreateNetworkInterface",
-        "ec2:CreateNetworkInterfacePermission",
-        "ec2:DeleteNetworkInterface"
-      ]
-    ))
-
-    #XXX: https://docs.aws.amazon.com/ko_kr/cdk/latest/guide/tokens.html
-    # String-encoded tokens:
-    #  Avoid manipulating the string in other ways. For example,
-    #  taking a substring of a string is likely to break the string token.
     firehose_log_group_name = f"/aws/kinesisfirehose/{firehose_stream_name}"
-    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(
-      effect=aws_iam.Effect.ALLOW,
-      #XXX: The ARN will be formatted as follows:
-      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
-      resources=[self.format_arn(service="logs", resource="log-group",
-        resource_name="{}:log-stream:*".format(firehose_log_group_name),
-        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
-      actions=["logs:PutLogEvents"]
-    ))
-
-    firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
-      "effect": aws_iam.Effect.ALLOW,
-      #XXX: The ARN will be formatted as follows:
-      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
-      "resources": [self.format_arn(partition="aws", service="lambda",
-        region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, resource="function",
-        resource_name="{}:*".format(data_transform_lambda_fn.function_name),
-        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
-      "actions": ["lambda:InvokeFunction",
-        "lambda:GetFunctionConfiguration"]
-    }))
-
-    firehose_role = aws_iam.Role(self, "KinesisFirehoseServiceRole",
-      role_name="KinesisFirehoseServiceRole-{stream_name}-{region}".format(
-        stream_name=firehose_stream_name, region=cdk.Aws.REGION),
-      assumed_by=aws_iam.ServicePrincipal("firehose.amazonaws.com"),
-      path='/service-role/',
-      #XXX: use inline_policies to work around https://github.com/aws/aws-cdk/issues/5221
-      inline_policies={
-        "firehose_role_policy": firehose_role_policy_doc
-      }
-    )
 
     lambda_proc = cfn.ProcessorProperty(
       type="Lambda",
       parameters=[
         cfn.ProcessorParameterProperty(
           parameter_name="LambdaArn",
-          parameter_value='{}:{}'.format(data_transform_lambda_fn.function_arn, data_transform_lambda_fn.latest_version.version)
+          parameter_value='{}:{}'.format(
+            data_transform_lambda_fn.function_arn,
+            data_transform_lambda_fn.latest_version.version
+          )
         ),
         cfn.ProcessorParameterProperty(
           parameter_name="NumberOfRetries",
@@ -178,7 +95,7 @@ class FirehoseToIcebergStack(Stack):
           "logGroupName": firehose_log_group_name,
           "logStreamName": "DestinationDelivery"
         },
-        # compression_format="UNCOMPRESSED", # [GZIP | HADOOP_SNAPPY | Snappy | UNCOMPRESSED | ZIP]
+        compression_format="UNCOMPRESSED", # [GZIP | HADOOP_SNAPPY | Snappy | UNCOMPRESSED | ZIP]
         error_output_prefix=s3_error_output_prefix,
         prefix=s3_output_prefix,
       ),
@@ -203,12 +120,13 @@ class FirehoseToIcebergStack(Stack):
       s3_backup_mode='FailedDataOnly'
     )
 
-    firehose_to_iceberg_delivery_stream = aws_kinesisfirehose.CfnDeliveryStream(self, "FirehoseToIceberg",
+    delivery_stream = aws_kinesisfirehose.CfnDeliveryStream(self, "FirehoseToIceberg",
       delivery_stream_name=firehose_stream_name,
       delivery_stream_type="DirectPut",
       iceberg_destination_configuration=iceberg_dest_config,
       tags=[{"key": "Name", "value": firehose_stream_name}]
     )
+
 
     cdk.CfnOutput(self, 'S3DestBucket',
       value=s3_bucket.bucket_name,

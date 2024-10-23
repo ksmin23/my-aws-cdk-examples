@@ -21,6 +21,9 @@ def lambda_handler(event, context):
     metadata = json_value['metadata']
     operation = metadata['operation']
 
+    if operation not in ('insert', 'update', 'delete'):
+      continue
+
     firehose_record = {
       'data': base64.b64encode(data.encode('utf-8')),
       'recordId': record['recordId'],

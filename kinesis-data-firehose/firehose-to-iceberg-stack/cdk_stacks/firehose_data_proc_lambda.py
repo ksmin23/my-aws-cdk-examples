@@ -24,7 +24,7 @@ class FirehoseDataProcLambdaStack(Stack):
     LAMBDA_FN_NAME = "FirehoseToIcebergTransformer"
     self.data_proc_lambda_fn = aws_lambda.Function(self, "FirehoseToIcebergTransformer",
       runtime=aws_lambda.Runtime.PYTHON_3_11,
-      function_name="FirehoseToIcebergTransformer",
+      function_name=LAMBDA_FN_NAME,
       handler="firehose_to_iceberg_transformer.lambda_handler",
       description="Transform records to Apache Iceberg table",
       code=aws_lambda.Code.from_asset(os.path.join(os.path.dirname(__file__), '../src/main/python')),
