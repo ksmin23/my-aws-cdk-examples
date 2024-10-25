@@ -113,7 +113,6 @@ class FirehoseToS3Stack(Stack):
       role_name="KinesisFirehoseServiceRole-{stream_name}-{region}".format(
         stream_name=FIREHOSE_STREAM_NAME.value_as_string, region=cdk.Aws.REGION),
       assumed_by=aws_iam.ServicePrincipal("firehose.amazonaws.com"),
-      path='/service-role/',
       #XXX: use inline_policies to work around https://github.com/aws/aws-cdk/issues/5221
       inline_policies={
         "firehose_role_policy": firehose_role_policy_doc

@@ -127,21 +127,17 @@ class KinesisFirehoseStack(Stack):
 
     firehose_role_policy_doc.add_statements(aws_iam.PolicyStatement(**{
       "effect": aws_iam.Effect.ALLOW,
-      #XXX: The ARN will be formatted as follows:
-      # arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
-      "resources": [self.format_arn(partition="aws", service="lambda",
-        region=cdk.Aws.REGION, account=cdk.Aws.ACCOUNT_ID, resource="function",
-        resource_name="{}:*".format(data_transform_lambda_fn.function_name),
-        arn_format=cdk.ArnFormat.COLON_RESOURCE_NAME)],
-      "actions": ["lambda:InvokeFunction",
-        "lambda:GetFunctionConfiguration"]
+      "resources": [f"{data_transform_lambda_fn.function_arn}:*"],
+      "actions": [
+        "lambda:InvokeFunction",
+        "lambda:GetFunctionConfiguration"
+      ]
     }))
 
     firehose_role = aws_iam.Role(self, "KinesisFirehoseServiceRole",
       role_name="KinesisFirehoseServiceRole-{stream_name}-{region}".format(
         stream_name=FIREHOSE_STREAM_NAME.value_as_string, region=cdk.Aws.REGION),
       assumed_by=aws_iam.ServicePrincipal("firehose.amazonaws.com"),
-      path='/service-role/',
       #XXX: use inline_policies to work around https://github.com/aws/aws-cdk/issues/5221
       inline_policies={
         "firehose_role_policy": firehose_role_policy_doc
