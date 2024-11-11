@@ -38,30 +38,42 @@ Once the virtualenv is activated, you can install the required dependencies.
 ```
 (.venv) $ pip install -r requirements.txt
 ```
+> To add additional dependencies, for example other CDK libraries, just add
+them to your `setup.py` file and rerun the `pip install -r requirements.txt`
+command.
+
+## Set up cdk.context.json
+Then, we need to set approperly the cdk context configuration file, `cdk.context.json`.
+
+For example,
+
+```
+{
+  "vpc_name": "default",
+  "msk_configuration": {
+    "kafka_cluster_name": "MSK-Demo",
+    "kafka_version": "3.6.0",
+    "kafka_broker_instance_type": "express.m7g.large",
+    "kafka_broker_ebs_volume_size": "100"
+  }
+}
+```
+
+## Deploy
 
 At this point you can now synthesize the CloudFormation template for this code.
 
 <pre>
 (.venv) $ export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 (.venv) $ export CDK_DEFAULT_REGION=$(aws configure get region)
-(.venv) $ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> synth \
-    --parameters KafkaClusterName=<i>'your-kafka-cluster-name'</i> \
-    --parameters KafkaVersion=<i>'your-kafka-version'</i> \
-    --all
+(.venv) $ cdk synth --all
 </pre>
 
 Use `cdk deploy` command to create the stack shown above,
 
 <pre>
-(.venv) $ cdk -c vpc_name=<i>'your-existing-vpc-name'</i> deploy
-    --parameters KafkaClusterName=<i>'your-kafka-cluster-name'</i> \
-    --parameters KafkaVersion=<i>'your-kafka-version'</i> \
-    --all
+(.venv) $ cdk deploy --require-approval never --all
 </pre>
-
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
 
 ## Run Test
 
@@ -72,9 +84,9 @@ First connect your EC2 Host using `mssh` command, you can create a topic on the 
 <pre>
 (.venv) $ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
 $ cd opt/kafka
-$ export ZooKeeperConnectionString=<i>Your-ZooKeeper-Servers</i>
+$ export BootstrapBrokerString=<i>Your-Broker-Servers</i>
 $ bin/kafka-topics.sh --create \
-    --zookeeper $ZooKeeperConnectionString \
+    --zookeeper $BootstrapBrokerString \
     --replication-factor 3 \
     --partitions 1 \
     --topic AWSKafkaTutorialTopic
@@ -93,6 +105,8 @@ To consume data on the topic, open another terminal and connect the client host,
 
 <pre>
 (.venv) $ mssh --region <i>us-east-1</i> ec2-user@@i-001234a4bf70dec41EXAMPLE
+$ export BootstrapBrokerString=<i>Your-Broker-Servers</i>
+$ cd opt/kafka
 $ bin/kafka-console-consumer.sh \
     --bootstrap-server $BootstrapBrokerString \
     --topic AWSKafkaTutorialTopic \
@@ -124,6 +138,7 @@ Enjoy!
  * [Getting Started Using Amazon MSK](https://docs.aws.amazon.com/msk/latest/developerguide/getting-started.html)
  * [Amazon MSK - Port information](https://docs.aws.amazon.com/msk/latest/developerguide/port-info.html)
  * [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+ * [Introducing Express brokers for Amazon MSK to deliver high throughput and faster scaling for your Kafka clusters (2024-11-07)](https://aws.amazon.com/blogs/aws/introducing-express-brokers-for-amazon-msk-to-deliver-high-throughput-and-faster-scaling-for-your-kafka-clusters/)
  * [Connect using the EC2 Instance Connect CLI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#ec2-instance-connect-connecting-ec2-cli)
    <pre>
    $ sudo pip install ec2instanceconnectcli

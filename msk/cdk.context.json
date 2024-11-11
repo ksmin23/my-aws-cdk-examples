@@ -1,3 +1,9 @@
 {
-  "vpc_name": "Your-VPC-Name"
+  "vpc_name": "default",
+  "msk_configuration": {
+    "kafka_clusterName": "MSK-weBJD",
+    "kafka_version": "3.6.0",
+    "kafka_broker_instance_type": "express.m7g.large",
+    "kafka_broker_ebs_volume_size": "100"
+  }
 }

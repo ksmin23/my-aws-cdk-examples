@@ -61,9 +61,9 @@ yum install java-1.8.0-openjdk-devel -y
 
 cd /home/ec2-user
 mkdir -p opt && cd opt
-wget https://archive.apache.org/dist/kafka/2.8.1/kafka_2.12-2.8.1.tgz
-tar -xzf kafka_2.12-2.8.1.tgz
-ln -nsf kafka_2.12-2.8.1 kafka
+wget https://archive.apache.org/dist/kafka/3.5.1/kafka_2.12-3.5.1.tgz
+tar -xzf kafka_2.12-3.5.1.tgz
+ln -nsf kafka_2.12-3.5.1 kafka
 
 cd /home/ec2-user
 chown -R ec2-user ./opt
