@@ -42,7 +42,7 @@ Once the virtualenv is activated, you can install the required dependencies.
 them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
-## Set up cdk.context.json
+## Set up `cdk.context.json`
 Then, we need to set approperly the cdk context configuration file, `cdk.context.json`.
 
 For example,
