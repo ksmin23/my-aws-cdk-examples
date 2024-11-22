@@ -109,3 +109,7 @@ Enjoy!
 
  * [AWS re:Invent 2023 - [LAUNCH] Introducing Amazon ElastiCache Serverless (DAT342)](https://youtu.be/YYStP97pbXo?si=z-WvXJ_Kg_0PrmRc)
  * [Amazon ElastiCache Serverless for Redis and Memcached is now available (2023-11-27)](https://aws.amazon.com/blogs/aws/amazon-elasticache-serverless-for-redis-and-memcached-now-generally-available/)
+ * [Amazon ElastiCache and Amazon MemoryDB announce support for Valkey (2024-10-08)](https://aws.amazon.com/blogs/database/amazon-elasticache-and-amazon-memorydb-announce-support-for-valkey/)
+ * [Get started with Amazon ElastiCache for Valkey (2024-10-08)](https://aws.amazon.com/blogs/database/get-started-with-amazon-elasticache-for-valkey/)
+ * [Get started with Amazon MemoryDB for Valkey (2024-10-08)](https://aws.amazon.com/blogs/database/get-started-with-amazon-memorydb-for-valkey/)
+ * [Amazon ElastiCache version 8.0 for Valkey brings faster scaling and improved memory efficiency (2024-11-21)](https://aws.amazon.com/blogs/database/amazon-elasticache-version-8-0-for-valkey-brings-faster-scaling-and-improved-memory-efficiency/)

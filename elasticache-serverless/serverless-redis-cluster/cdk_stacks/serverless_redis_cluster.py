@@ -39,7 +39,7 @@ class ServerlessRedisClusterStack(Stack):
       description='redis-cluster-server-sg')
 
     serverless_redis = aws_elasticache.CfnServerlessCache(self, 'ServerlessRedisCache',
-      engine='redis',
+      engine='valkey', # [redis, valkey]
       serverless_cache_name='serverless-redis',
 
       cache_usage_limits=aws_elasticache.CfnServerlessCache.CacheUsageLimitsProperty(
@@ -52,11 +52,10 @@ class ServerlessRedisClusterStack(Stack):
         )
       ),
       daily_snapshot_time='19:00', # HH:MM (UTC format)
-      # major_engine_version='7', #XXX: Specified engine does not support major engine version (7.0)
+      # major_engine_version='8', #XXX: Specified engine does not support major engine version (8.0)
       security_group_ids=[sg_elasticache.security_group_id],
       snapshot_retention_limit=3,
-      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids,
-      # user_group_id="userGroupId" #XXX: ???
+      subnet_ids=vpc.select_subnets(subnet_type=aws_ec2.SubnetType.PRIVATE_WITH_EGRESS).subnet_ids
     )
     serverless_redis.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
