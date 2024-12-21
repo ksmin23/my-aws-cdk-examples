@@ -119,6 +119,6 @@ Delete the CloudFormation stack by running the below command.
  * [Amazon MemoryDB Engine versions](https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html)
  * [Amazon MemoryDB Restricted commands](https://docs.aws.amazon.com/memorydb/latest/devguide/restrictedcommands.html)
  * [Valkey Documentation](https://valkey.io/docs/)
- * [(GitHub) Valke](https://github.com/valkey-io)
+ * [(GitHub) Valkey](https://github.com/valkey-io)
 
 Enjoy!
