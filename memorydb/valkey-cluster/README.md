@@ -74,56 +74,27 @@ Now we will be able to deploy all the CDK stacks at once like this:
 (.venv) $ cdk deploy --require-approval never --all
 ```
 
-<!-- ## Verify
+## Verify
 
-After a few minutes, the cluster is running and you can connect using the [Redis command line interface](https://redis.io/topics/rediscli) or any [Redis client](https://redis.io/clients).
+After a few minutes, the cluster is running and you can connect using the [Valkey command line interface](https://github.com/valkey-io/valkey).
 
-All MemoryDB clusters run in a virtual private cloud (VPC). You need to EC2 instance or Cloud9 in your VPC to access MemoryDB clusters. Also either EC2 instance or Cloud9 must be given a proper security group such as `memorydb-client-sg` created in the stack above.
+All MemoryDB clusters run in a virtual private cloud (VPC).
+You need to EC2 instance or Cloud9 in your VPC to access MemoryDB clusters.
+Also either EC2 instance or Cloud9 must be given a proper security group such as `memorydb-client-sg` created in the stack above.
 
-:information_source: The `username` and `password` are stored in the [AWS Secrets Manager](https://console.aws.amazon.com/secretsmanager/listsecrets) as a name such as `MemoryDBSecret-xxxxxxxxxxxx`.
-
-
-### Connect to Amazon MemoryDB using Redis command line interface
+### Connect to Amazon MemoryDB using Valkey command line interface
 
 <pre>
-$ wget https://download.redis.io/releases/redis-6.2.6.tar.gz
-$ tar -xzvf redis-6.2.6.tar.gz
-$ cd redis-6.2.6
-$ make MALLOC=jemalloc BUILD_TLS=yes
+$ wget https://github.com/valkey-io/valkey/archive/refs/tags/7.2.7.tar.gz
+$ tar -xzvf 7.2.7.tar.gz
+$ cd valkey-7.2.7
+$ make BUILD_TLS=yes
 $ sudo make install
-$ redis-cli -c --tls -h <i>memorydb-cluster-endpoint</i> --user <i>'user-name'</i> --askpass
-Please input password: ****************
+$ MEMORYDB_CLUSTER_ENDPOINT=$(aws cloudformation describe-stacks --stack-name <i>MemoryDBStack</i> \
+| jq -r '.Stacks[0].Outputs | map(select(.OutputKey == "MemoryDBClusterEndpoint")) | .[0].OutputValue')
+$ valkey-cli -h <i>${MEMORYDB_CLUSTER_ENDPOINT}</i> -p 6379 -c --tls
 clustercfg.<i>your-memorydb-name</i>.memorydb.<i>region</i>.amazonaws.com:6379>
 </pre>
-
-### Connect to Amazon MemoryDB using Python Redis client
-
-<pre>
-$ pip install redis-py-cluster
-$ python
-Python 3.9.7 (default, Oct 13 2021, 06:44:56)
-[GCC 4.8.5 20150623 (Red Hat 4.8.5-28)] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> from rediscluster import RedisCluster
->>> db_host = 'clustercfg.your-memorydb-name.memorydb.region.amazonaws.com'
->>> db_port = 6379
->>> db_username = 'user-name'
->>> db_password = 'user-password'
->>> redis_cluster_options = {
-...   'startup_nodes': [{"host": db_host, "port": db_port}],
-...   'decode_responses': True,
-...   'skip_full_coverage_check': True,
-...   'ssl': True,
-...   'username': db_username,
-...   'password': db_password
-... }
->>> redis = RedisCluster(**redis_cluster_options)
->>> if redis.ping():
-...     print("Connected to Redis")
-...
-Connected to Redis
->>>
-</pre> -->
 
 ## Useful commands
 
@@ -140,5 +111,6 @@ Connected to Redis
  * [Amazon MemoryDB Engine versions](https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html)
  * [Amazon MemoryDB Restricted commands](https://docs.aws.amazon.com/memorydb/latest/devguide/restrictedcommands.html)
  * [Valkey Documentation](https://valkey.io/docs/)
+ * [(GitHub) Valke](https://github.com/valkey-io)
 
 Enjoy!
