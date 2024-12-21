@@ -96,6 +96,14 @@ $ valkey-cli -h <i>${MEMORYDB_CLUSTER_ENDPOINT}</i> -p 6379 -c --tls
 clustercfg.<i>your-memorydb-name</i>.memorydb.<i>region</i>.amazonaws.com:6379>
 </pre>
 
+## Clean Up
+
+Delete the CloudFormation stack by running the below command.
+
+```
+(.venv) $ cdk destroy --force --all
+```
+
 ## Useful commands
 
  * `cdk ls`          list all stacks in the app
