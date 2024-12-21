@@ -54,7 +54,7 @@ For example:
     "engine": "Valkey",
     "engine_version": "7.3",
     "multi_region_cluster_name_suffix": "mrc-demo",
-    "num_shards": 1
+    "num_shards": 3
   }
 }
 </pre>
@@ -83,24 +83,70 @@ Create the Regional cluster within your Multi-Region cluster with the appropriat
 (.venv) cd ../valkey-cluster
 (.venv) cdk deploy \
             -c memorydb_multi_region_cluster_name=${MULTI_REGION_CLUSTER_NAME} \
-            --force --all
+            --require-approval never --all
 </pre>
 
 #### Step 3) Region 2 cluster setting
 
 You can add a second Regional cluster to your Multi-Region cluster after the Multi-Region cluster and the first Regional cluster are set up.
 
-First, change the default region of your aws account to a second region where you deploy a second memorydb cluster like this:
+First, change the default region of your aws account to a second region (e.g., `us-west-2`) where you deploy a second memorydb cluster like this:
 <pre>
-(.venv) aws configure set region <i>us-east-2</i>
+(.venv) aws configure set region <i>us-west-2</i>
 </pre>
 
 Then deploy the cdk stacks for the second memorydb cluster to the second region.
 <pre>
 (.venv) cdk deploy \
             -c memorydb_multi_region_cluster_name=${MULTI_REGION_CLUSTER_NAME} \
-            --force --all
+            --require-approval never --all
 </pre>
+
+## Clean Up
+
+The process of deleting a memorydb multi-region cluster involves reversing the steps taken during its creation. This cleanup procedure consists of three main steps:
+
+#### Step 1) Remove Region 2 cluster
+
+To delete the cluster in the second region:
+
+1. Navigate to the `valkey-cluster` directory.
+2. Verify that the AWS CLI is configured for the `us-west-2` region.
+3. Execute the CDK destroy command:
+   <pre>
+   (.venv) basename $(pwd)
+   valkey-cluster
+   (.venv) aws configure get region
+   us-west-2
+   (.venv) cdk destroy --force --all
+   </pre>
+
+#### Step 2) Remove Region 1 cluster
+
+For deleting the cluster in the first region:
+
+1. Ensure you're still in the `valkey-cluster` directory.
+2. Set the AWS CLI region to your default CDK region.
+3. Run the CDK destroy command:
+   <pre>
+   (.venv) basename $(pwd)
+   valkey-cluster
+   (.venv) aws configure set region <i>${CDK_DEFAULT_REGION}</i>
+   (.venv) cdk destroy --force --all
+   </pre>
+
+#### Step 3) Remove Multi-Region cluster
+
+After removing both regional clusters, proceed to delete the multi-region cluster setup.
+
+1. Navigate to the `multi-region-cluster` directory.
+2. Execute the CDK destroy command:
+   <pre>
+   (.venv) cd ../multi-region-cluster
+   (.venv) basename $(pwd)
+   multi-region-cluster
+   (.venv) cdk destroy --force --all
+   </pre>
 
 ## Useful commands
 

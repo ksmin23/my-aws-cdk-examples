@@ -54,7 +54,7 @@ For example:
     "cluster_name": "valkeydb",
     "engine": "Valkey",
     "engine_version": "7.3",
-    "num_shards": 1,
+    "num_shards": 3,
     "num_replicas_per_shard": 1
   }
 }
