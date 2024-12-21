@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/122-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/124-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -81,8 +81,10 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [lambda/alb-path-routing-lambda](./lambda/alb-path-routing-lambda/) | ![alb-path-routing-lambda](./lambda/alb-path-routing-lambda/aws-alb-path-routing-lambda-arch.svg) | lambda, application load balancer |
 | [lambda/async-invoke](./lambda/async-invoke/) | ![aws-lambda-async-invocation](./lambda/async-invoke/aws-lambda-async-invocation.svg) | lambda, sns, event-bridge |
 | [lambda/lambda-custom-container](./lambda/lambda-custom-container/) | ![aws-lambda-custom-container](./lambda/lambda-custom-container/aws-lambda-custom-container.svg) | lambda, ecr, custom container |
-| [memorydb-for-redis](./memorydb/redis-cluster) | ![memorydb-for-redis](./memorydb/redis-cluster/amazon-memorydb.svg) | memorydb |
+| [memorydb-for-valkey](./memorydb/valkey-cluster) | ![memorydb-for-valkey](./memorydb/valkey-cluster/amazon-memorydb-for-valkey.svg) | memorydb for Valkey |
+| [memorydb-for-redis](./memorydb/redis-cluster) | ![memorydb-for-redis](./memorydb/redis-cluster/amazon-memorydb.svg) | memorydb for Redis OSS |
 | [memorydb-for-redis for vector search](./memorydb/vector-search) | ![memorydb-for-redis-for-vectorsearch](./memorydb/vector-search/amazon-memorydb.svg) | memorydb for vector search |
+| [memorydb-multi-region-cluster](./memorydb/multi-region-cluster) | ![memorydb-multi-region-cluster](./memorydb/multi-region-cluster/amazon-memorydb-multi-region-cluster.svg) | memorydb multi-region cluster |
 | [msk](./msk/) | ![msk-arch](./msk/msk-arch.svg) | msk(kafka) |
 | [msk_aplha](./msk_alpha/) | ![msk-arch](./msk_alpha/msk-arch.svg) | msk(kafka) |
 | [msk-serverless](./msk-serverless/) | ![msk-serverless-arch](./msk-serverless/msk-serverless-arch.svg) | msk serverless(kafka) |

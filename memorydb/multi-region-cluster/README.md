@@ -1,6 +1,8 @@
 
 # Amazon MemoryDB Multi-Region Cluster
 
+![amazon-memorydb-multi-region-cluster](./amazon-memorydb-multi-region-cluster.svg)
+
 This is a CDK Python project for Amazon MemoryDB Multi-Region cluster.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
