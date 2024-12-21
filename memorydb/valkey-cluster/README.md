@@ -76,7 +76,7 @@ Now we will be able to deploy all the CDK stacks at once like this:
 
 ## Verify
 
-After a few minutes, the cluster is running and you can connect using the [Valkey command line interface](https://github.com/valkey-io/valkey).
+After a few minutes, the cluster is running and you can connect using the [Valkey command line interface](https://valkey.io/topics/cli/).
 
 All MemoryDB clusters run in a virtual private cloud (VPC).
 You need to EC2 instance or Cloud9 in your VPC to access MemoryDB clusters.
