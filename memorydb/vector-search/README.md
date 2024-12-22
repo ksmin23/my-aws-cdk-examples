@@ -144,6 +144,7 @@ Connected to Redis
  * [Vector search commands - Amazon MemoryDB for Redis](https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search-commands.html)
  * [Amazon MemoryDB for Redis engine versions](https://docs.aws.amazon.com/memorydb/latest/devguide/engine-versions.html)
  * [Amazon MemoryDB for Redis Samples](https://github.com/aws-samples/amazon-memorydb-for-redis-samples)
+ * [(AWS Blog) Improve speed and reduce cost for generative AI workloads with a persistent semantic cache in Amazon MemoryDB (2024-08-16)](https://aws.amazon.com/blogs/database/improve-speed-and-reduce-cost-for-generative-ai-workloads-with-a-persistent-semantic-cache-in-amazon-memorydb/)
  * [Redis ACL](https://redis.io/topics/acl)
  * [Redis Documentation](https://redis.io/documentation)
  * [Redis as a vector database quick start guide](https://redis.io/docs/get-started/vector-database/)
