@@ -1,9 +1,9 @@
 
 # Amazon MemoryDB for Redis for Vector Search
 
-![amazon-memorydb-for-redis](./amazon-memorydb.svg)
+![amazon-memorydb-for-vector-search](./amazon-memorydb.svg)
 
-This is a collection of projects for Python development with CDK.
+This is a CDK Python project for Amazon MemoryDB for Vector Search.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -50,7 +50,13 @@ For example:
 <pre>
 {
   "memorydb_user_name": "<i>memdb-admin</i>",
-  "memorydb_cluster_name": "<i>vectordb</i>"
+  "memorydb": {
+    "node_type": "db.r7g.xlarge",
+    "cluster_name": <i>"vectordb"</i>,
+    "engine": "Redis",
+    "engine_version": "7.1",
+    "num_replicas_per_shard": 1
+  }
 }
 </pre>
 
@@ -80,9 +86,9 @@ All MemoryDB clusters run in a virtual private cloud (VPC). You need to EC2 inst
 ### Connect to Amazon MemoryDB using Redis command line interface
 
 <pre>
-$ wget https://download.redis.io/releases/redis-6.2.6.tar.gz
-$ tar -xzvf redis-6.2.6.tar.gz
-$ cd redis-6.2.6
+$ wget https://download.redis.io/releases/redis-7.0.15.tar.gz
+$ tar -xzvf redis-7.0.15.tar.gz
+$ cd redis-7.0.15
 $ make MALLOC=jemalloc BUILD_TLS=yes
 $ sudo make install
 $ redis-cli -c --tls -h <i>memorydb-cluster-endpoint</i> --user <i>'user-name'</i> --askpass
@@ -104,8 +110,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> db_username = <i>'user-name'</i>
 >>> db_password = <i>'user-password'</i>
 >>> redis_client = redis.Redis(host=db_host, port=db_port,
-                               username=db_username, password=db_password,
-                               decode_responses=True, ssl=True, ssl_cert_reqs="none")
+      username=db_username, password=db_password,
+      decode_responses=True, ssl=True, ssl_cert_reqs="none")
 >>> if redis_client.ping():
 ...     print("Connected to Redis")
 ...
@@ -124,6 +130,10 @@ Connected to Redis
  * `cdk deploy`      deploy this stack to your default AWS account/region
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
+
+## Considerations
+
+ * [Amazon MemoryDB - Vector search features and limits](https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search.html)
 
 ## Learn more
 
