@@ -111,15 +111,15 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> db_username = 'user-name'
 >>> db_password = 'user-password'
 >>> redis_cluster_options = {
-...   'startup_nodes': [{"host": db_host, "port": db_port}],
-...   'decode_responses': True,
-...   'skip_full_coverage_check': True,
-...   'ssl': True,
-...   'username': db_username,
-...   'password': db_password
-... }
->>> redis = RedisCluster(**redis_cluster_options)
->>> if redis.ping():
+    'startup_nodes': [{"host": db_host, "port": db_port}],
+    'decode_responses': True,
+    'skip_full_coverage_check': True,
+    'ssl': True,
+    'username': db_username,
+    'password': db_password
+  }
+>>> redis_client = RedisCluster(**redis_cluster_options)
+>>> if redis_client.ping():
 ...     print("Connected to Redis")
 ...
 Connected to Redis
