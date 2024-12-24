@@ -59,6 +59,8 @@ class BatchWithEC2Stack(Stack):
         type='EC2',
 
         # the properties below are optional
+        #XXX: Instance type allocation strategies for AWS Batch
+        # https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html
         allocation_strategy='BEST_FIT',
         desiredv_cpus=0,
         minv_cpus=0,
@@ -66,6 +68,11 @@ class BatchWithEC2Stack(Stack):
           image_type='ECS_AL2'
         )],
         instance_role=ecs_instance_profile_role.attr_arn,
+        #XXX: The instances types that can be launched. You can specify instance families to launch
+        # any instance type within those families (for example, `c5` or `p3`` ), or you can specify
+        # specific sizes within a family (such as `c5.8xlarge` ). You can also choose optimal to select
+        # instance types (from the `C4`, `M4`, and `R4` instance families) that match the demand of your job queues.
+        # https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_batch/CfnComputeEnvironment.html#computeresourcesproperty
         instance_types=['optimal'],
         security_group_ids=[sg_batch_instance.security_group_id]
       ),
