@@ -5,8 +5,6 @@ from aws_cdk import (
   Stack,
   aws_ec2,
   aws_ecs,
-  aws_ecr,
-  aws_ecr_assets,
   aws_elasticloadbalancingv2 as aws_elbv2,
   aws_iam,
 )
