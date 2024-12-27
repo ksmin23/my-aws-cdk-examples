@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/124-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/125-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -96,6 +96,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [rds/aurora_postgresql](./rds/aurora_postgresql/) | ![aurora_postgresql](./rds/aurora_postgresql/aurora_postgresql-arch.svg) | aurora postgresql, secrets manager |
 | [rds/mariadb](./rds/mariadb/) | ![mariadb-arch](./rds/mariadb/mariadb-arch.svg) | mariadb, secrets manager |
 | [rds/rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/) | ![rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/rds_proxy-aurora_mysql-arch.svg) | rds-proxy, aurora mysql, secrets manager |
+| [rds/nlb-aurora_mysql](./rds/nlb-aurora_mysql/) | ![nlb-aurora_mysql](./rds/nlb-aurora_mysql/nlb_for_aurora_mysql-arch.svg) | network load balancer (nlb), aurora mysql, secrets manager |
 | [rds/nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/) | ![nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/nginx-rds-proxy-aurora_mysql-arch.svg) | NGINX, aurora mysql, secrets manager |
 | [rds/sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/) | ![sagemaker-aurora_mysql](./rds/sagemaker-aurora_mysql/mysql-sagemaker-arch.svg) | aurora mysql, secrets manager, sagemaker notebook |
 | [rds/sagemaker-aurora_postgresql](./rds/sagemaker-aurora_postgresql/) | ![sagemaker-aurora_postgresql](./rds/sagemaker-aurora_postgresql/postgresql-sagemaker-arch.svg) | aurora postgresql, secrets manager, sagemaker notebook |
