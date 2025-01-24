@@ -95,6 +95,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [rds/aurora_mysql](./rds/aurora_mysql/) | ![aurora_mysql](./rds/aurora_mysql/aurora_mysql-arch.svg) | aurora mysql, secrets manager |
 | [rds/aurora_postgresql](./rds/aurora_postgresql/) | ![aurora_postgresql](./rds/aurora_postgresql/aurora_postgresql-arch.svg) | aurora postgresql, secrets manager |
 | [rds/mariadb](./rds/mariadb/) | ![mariadb-arch](./rds/mariadb/mariadb-arch.svg) | mariadb, secrets manager |
+| [rds/mysql](./rds/mysql/) | ![mysql-arch](./rds/mysql/mysql-arch.svg) | mysql, secrets manager |
 | [rds/rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/) | ![rds_proxy-aurora_mysql](./rds/rds_proxy-aurora_mysql/rds_proxy-aurora_mysql-arch.svg) | rds-proxy, aurora mysql, secrets manager |
 | [rds/nlb-aurora_mysql](./rds/nlb-aurora_mysql/) | ![nlb-aurora_mysql](./rds/nlb-aurora_mysql/nlb_for_aurora_mysql-arch.svg) | network load balancer (nlb), aurora mysql, secrets manager |
 | [rds/nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/) | ![nginx-rds_proxy-aurora_mysql](./rds/nginx-rds_proxy-aurora_mysql/nginx-rds-proxy-aurora_mysql-arch.svg) | NGINX, aurora mysql, secrets manager |
