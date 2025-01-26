@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/126-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/127-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -40,6 +40,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [ecr](./ecr/) | upload Docker image into Amazon ECR Repository | ecr |
 | [ecs-patterns/alb-fargate-service](./ecs-patterns/alb-fargate-service/) | ![ecs-alb-fargate-service-arch](./ecs-patterns/alb-fargate-service/ecs-alb-fargate-service-arch.svg) | ecs patterns, Application Loadbalancer Fargate Service |
 | [ecs-patterns/nlb-fargate-service](./ecs-patterns/nlb-fargate-service/) | ![ecs-nlb-fargate-service-arch](./ecs-patterns/nlb-fargate-service/ecs-nlb-fargate-service-arch.svg)  | ecs patterns, Network Loadbalancer Fargate Service |
+| [ecs-patterns/fargate-service-with-efs](./ecs-patterns/fargate-service-with-efs/) | a Public Facing load balanced Fargate service with an EFS Filesystem mount | ecs patterns, Application Loadbalancer Fargate Service, efs |
 | [elasticache/redis](./elasticache/redis/) | ![elasticache-redis-arch](./elasticache/redis/elasticache-for-redis-arch.svg) | redis |
 | [elasticache/redis-primary-replica](./elasticache/redis-primary-replica/) | ![elasticache-redis-primary-replica-arch](./elasticache/redis-primary-replica/elasticache-for-redis-primary-replica-arch.svg) | redis primary-replica cluster |
 | [elasticache/redis-cluster](./elasticache/redis-cluster/) | ![elasticache-redis-cluster-arch](./elasticache/redis-cluster/elasticache-for-redis-cluster-arch.svg) | redis-cluster |
