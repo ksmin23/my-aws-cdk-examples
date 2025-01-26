@@ -114,5 +114,4 @@ Enjoy!
 ## References
 
  * [(AWS Blog) Amazon Elastic Container Service & AWS Fargate, now support Amazon Elastic File System (2020-04-08)](https://aws.amazon.com/blogs/aws/amazon-ecs-supports-efs/)
- * [(GitHub) aws-cdk-examples/typescript/ecs
-/fargate-service-with-efs](https://github.com/aws-samples/aws-cdk-examples/tree/main/typescript/ecs/fargate-service-with-efs)
+ * [(GitHub) aws-cdk-examples/typescript/ecs/fargate-service-with-efs](https://github.com/aws-samples/aws-cdk-examples/tree/main/typescript/ecs/fargate-service-with-efs)
