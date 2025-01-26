@@ -8,8 +8,10 @@ import aws_cdk as cdk
 
 from cdk_stacks import (
   ECRStack,
-  ECSAlbFargateServiceWithEfsStack,
+  ApplicationLoadBalancerStack,
+  ECSAlbFargateServiceStack,
   ECSClusterStack,
+  EFSStack,
   VpcStack
 )
 
@@ -29,18 +31,33 @@ vpc_stack = VpcStack(app, "FargateServiceWithEfsVpcStack",
 )
 vpc_stack.add_dependency(ecr_stack)
 
+alb_stack = ApplicationLoadBalancerStack(app, "FargateServiceWithEfsALBStack",
+  vpc_stack.vpc,
+  env=AWS_ENV
+)
+alb_stack.add_dependency(vpc_stack)
+
 ecs_cluster_stack = ECSClusterStack(app, "FargateServiceWithEfsECSClusterStack",
   vpc_stack.vpc,
   env=AWS_ENV
 )
 ecs_cluster_stack.add_dependency(vpc_stack)
 
-ecs_fargate_stack = ECSAlbFargateServiceWithEfsStack(app, "FargateServiceWithEfsECSServiceStack",
+efs_stack = EFSStack(app, "FargateServiceWithEfsEFSStack",
+  vpc_stack.vpc,
+  env=AWS_ENV
+)
+efs_stack.add_dependency(ecs_cluster_stack)
+
+ecs_fargate_stack = ECSAlbFargateServiceStack(app, "FargateServiceWithEfsECSServiceStack",
   vpc_stack.vpc,
   ecs_cluster_stack.ecs_cluster,
   ecr_stack.repositories,
+  alb_stack.load_balancer,
+  efs_stack.sg_efs_inbound,
+  efs_stack.efs_file_system,
   env=AWS_ENV
 )
-ecs_fargate_stack.add_dependency(ecs_cluster_stack)
+ecs_fargate_stack.add_dependency(efs_stack)
 
 app.synth()
