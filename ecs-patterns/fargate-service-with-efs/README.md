@@ -36,7 +36,7 @@ If you are a Windows platform, you would activate the virtualenv like this:
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+(.venv) $ pip install -r requirements.txt
 ```
 
 > To add additional dependencies, for example other CDK libraries, just add
@@ -86,7 +86,10 @@ We can list all the CDK stacks by using the `cdk list` command prior to deployme
 (.venv) $ cdk list
 FargateServiceWithEfsECRStack
 FargateServiceWithEfsVpcStack
+FargateServiceWithEfsALBStack
 FargateServiceWithEfsECSClusterStack
+FargateServiceWithEfsEFSStack
+FargateServiceWithEfsECSTaskStack
 FargateServiceWithEfsECSServiceStack
 ```
 
