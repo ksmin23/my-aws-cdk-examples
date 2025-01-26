@@ -1,0 +1,12 @@
+{
+  "vpc_name": "default",
+  "ecr": [
+    {
+      "repository_name": "cloudcmd",
+      "docker_image_name": "coderaiser/cloudcmd",
+      "tag": "18.5.0-alpine"
+    }
+  ],
+  "ecs_cluster_name": "fargate-service-with-efs-cluster",
+  "ecs_service_name": "cloudcmd"
+}
