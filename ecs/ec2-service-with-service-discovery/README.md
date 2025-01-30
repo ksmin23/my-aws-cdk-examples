@@ -56,7 +56,9 @@ For example,
       "docker_image_name": "nginx",
       "tag": "stable-perl"
     }
-  ]
+  ],
+  "ecs_cluster_name": "awsvpc-ecs-demo",
+  "private_dns_namespace_name": "awsvpc-ecs-demo.local"
 }
 ```
 

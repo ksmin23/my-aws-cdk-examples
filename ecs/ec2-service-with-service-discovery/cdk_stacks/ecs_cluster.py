@@ -52,7 +52,7 @@ class ECSClusterStack(Stack):
       min_capacity=MIN_CAPACITY,
       max_capacity=MAX_CAPACITY
     )
-    # asg.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
+    asg.apply_removal_policy(cdk.RemovalPolicy.DESTROY)
 
     # Create and add capacity provider to the cluster
     capacity_provider = aws_ecs.AsgCapacityProvider(self, "AsgCapacityProvider",
