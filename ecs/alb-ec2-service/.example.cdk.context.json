@@ -1,0 +1,10 @@
+{
+  "vpc_name": "default",
+  "ecr": [
+    {
+      "repository_name": "nginx",
+      "docker_image_name": "nginx",
+      "tag": "stable-perl"
+    }
+  ]
+}

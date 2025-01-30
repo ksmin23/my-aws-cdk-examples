@@ -1,0 +1,12 @@
+{
+  "vpc_name": "default",
+  "ecr": [
+    {
+      "repository_name": "nginx",
+      "docker_image_name": "nginx",
+      "tag": "stable-perl"
+    }
+  ],
+  "ecs_cluster_name": "awsvpc-ecs-demo",
+  "private_dns_namespace_name": "awsvpc-ecs-demo.local"
+}

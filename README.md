@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/127-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/129-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -38,6 +38,8 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [ec2/dlami-wth-aws-neuron](./ec2/dlami-wth-aws-neuron/) | Launch Jupyter Server on Amazon Deep Learning AMI with AWS Neuron | jupyter, ec2, DLAMI, AWS Neuron |
 | [ec2/stable-diffusion-webui-on-dlami](./ec2/stable-diffusion-webui-on-dlami/) | ![Stable_Diffusion_WebUI_Screenshot](./ec2/stable-diffusion-webui-on-dlami/SD-WebUI-Screenshot.png) | Stable Diffusion WebUI, ec2, DLAMI |
 | [ecr](./ecr/) | upload Docker image into Amazon ECR Repository | ecr |
+| [ecs/alb-ec2-service](./ecs/alb-ec2-service) | Application Load Balanced EC2 Service on ECS | ecr, ecs, Applicaton Loadbalancer EC2 Service |
+| [ecs/ec2-service-with-service-discovery](./ecs/ec2-service-with-service-discovery) | EC2 Service with Task Networking on ECS | ecr, ecs, service discovery, EC2 Service |
 | [ecs-patterns/alb-fargate-service](./ecs-patterns/alb-fargate-service/) | ![ecs-alb-fargate-service-arch](./ecs-patterns/alb-fargate-service/ecs-alb-fargate-service-arch.svg) | ecs patterns, Application Loadbalancer Fargate Service |
 | [ecs-patterns/nlb-fargate-service](./ecs-patterns/nlb-fargate-service/) | ![ecs-nlb-fargate-service-arch](./ecs-patterns/nlb-fargate-service/ecs-nlb-fargate-service-arch.svg)  | ecs patterns, Network Loadbalancer Fargate Service |
 | [ecs-patterns/fargate-service-with-efs](./ecs-patterns/fargate-service-with-efs/) | a Public Facing load balanced Fargate service with an EFS Filesystem mount | ecs patterns, Application Loadbalancer Fargate Service, efs |
