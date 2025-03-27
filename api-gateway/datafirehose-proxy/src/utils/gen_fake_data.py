@@ -46,23 +46,26 @@ def main():
 
   options = parser.parse_args()
 
-  _ = Field(locale=Locale.EN, providers=[CustomDatetime])
-  schema = Schema(schema=lambda: {
-    "user_id": _("uuid"),
-    "session_id": _("token_hex", entropy=12),
-    "event": _("choice", items=['visit', 'view', 'list', 'like', 'cart', 'purchase']),
-    "referrer": _("internet.hostname"),
-    "user_agent": _("internet.user_agent"),
-    "ip": _("internet.ip_v4"),
-    "hostname": _("internet.hostname"),
-    "os": _("development.os"),
-    "timestamp": _("custom_datetime.timestamp"),
-    "uri": _("internet.uri", query_params_count=2)
-  })
+  _field = Field(locale=Locale.EN)
+  _field._generic.add_provider(CustomDatetime)
+
+  schema_definition = lambda: {
+    "user_id": _field("uuid"),
+    "session_id": _field("token_hex", entropy=12),
+    "event": _field("choice", items=['visit', 'view', 'list', 'like', 'cart', 'purchase']),
+    "referrer": _field("internet.hostname"),
+    "user_agent": _field("internet.user_agent"),
+    "ip": _field("internet.ip_v4"),
+    "hostname": _field("internet.hostname"),
+    "os": _field("development.os"),
+    "timestamp": _field("custom_datetime.timestamp"),
+    "uri": _field("internet.uri", query_params_count=2)
+  }
+  schema = Schema(schema=schema_definition, iterations=options.max_count)
 
   log_collector_url = f'{options.api_url}/streams/{options.stream_name}/{options.api_method}' if not options.dry_run else None
 
-  for record in schema.iterator(options.max_count):
+  for record in schema:
     if options.dry_run:
       print(json.dumps(record), file=sys.stderr)
       continue
