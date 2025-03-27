@@ -1,0 +1,30 @@
+{
+  "acknowledged-issue-numbers": [
+    32775
+  ],
+  "firehose_data_tranform_lambda": {
+    "s3_bucket_name": "s3-bucket-name-for-lambda-layer-resources",
+    "s3_object_key": "var/fastavro-lib-1.10.0-py-3.11.zip"
+  },
+  "data_firehose_configuration": {
+    "stream_name": "Firehose-To-Iceberg-Demo",
+    "buffering_hints": {
+      "interval_in_seconds": 60,
+      "size_in_mbs": 128
+    },
+    "transform_records_with_aws_lambda": {
+      "buffer_size": 3,
+      "buffer_interval": 300,
+      "number_of_retries": 3
+    },
+    "destination_iceberg_table_configuration": {
+      "database_name": "demo_iceberg_db",
+      "table_name": "demo_iceberg",
+      "unique_keys": [
+        "user_id", "timestamp"
+      ]
+    },
+    "output_prefix": "demo_iceberg_db/demo_iceberg",
+    "error_output_prefix": "error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}"
+  }
+}

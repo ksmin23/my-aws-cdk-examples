@@ -1,0 +1,6 @@
+boto3>=1.24.41
+mimesis==6.0.0
+requests>=2.31.0
+
+# packages for Lambda Layer
+fastavro==1.10.0
