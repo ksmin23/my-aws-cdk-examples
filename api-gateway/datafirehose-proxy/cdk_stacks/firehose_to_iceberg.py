@@ -2,9 +2,6 @@
 # -*- encoding: utf-8 -*-
 # vim: tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 
-# import random
-# import string
-
 import aws_cdk as cdk
 
 from aws_cdk import (
@@ -14,8 +11,6 @@ from aws_cdk import (
 from constructs import Construct
 
 from aws_cdk.aws_kinesisfirehose import CfnDeliveryStream as cfn_delivery_stream
-
-# random.seed(31)
 
 
 class FirehoseToIcebergStack(Stack):
@@ -28,7 +23,6 @@ class FirehoseToIcebergStack(Stack):
 
     data_firehose_configuration = self.node.try_get_context("data_firehose_configuration")
 
-    # FIREHOSE_DEFAULT_STREAM_NAME = 'PUT-Firehose-{}'.format(''.join(random.sample((string.ascii_letters), k=5)))
     delivery_stream_name = data_firehose_configuration['stream_name']
 
     firehose_log_group_name = f"/aws/kinesisfirehose/{delivery_stream_name}"
@@ -129,11 +123,6 @@ class FirehoseToIcebergStack(Stack):
     delivery_stream = aws_kinesisfirehose.CfnDeliveryStream(self, "FirehoseToIceberg",
       delivery_stream_name=delivery_stream_name,
       delivery_stream_type="DirectPut",
-      # delivery_stream_type="KinesisStreamAsSource",
-      # kinesis_stream_source_configuration={
-      #   "kinesisStreamArn": source_kinesis_stream.stream_arn,
-      #   "roleArn": firehose_role.role_arn
-      # },
       iceberg_destination_configuration=iceberg_dest_config,
       tags=[{"key": "Name", "value": delivery_stream_name}]
     )
