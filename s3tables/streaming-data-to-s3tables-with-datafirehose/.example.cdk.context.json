@@ -1,0 +1,21 @@
+{
+  "acknowledged-issue-numbers": [
+    32775
+  ],
+  "data_firehose_configuration": {
+    "stream_name": "firehose-s3tables",
+    "buffering_hints": {
+      "interval_in_seconds": 60,
+      "size_in_mbs": 128
+    },
+    "destination_iceberg_table_configuration": {
+      "database_name": "s3tables_demo_resource_link",
+      "table_name": "s3tables_demo_table"
+    },
+    "error_output_prefix": "error/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}"
+  },
+  "s3_tables": {
+    "namespace_name": "s3tables_demo_namespace",
+    "table_name": "s3tables_demo_table"
+  }
+}

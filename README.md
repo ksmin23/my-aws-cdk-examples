@@ -1,6 +1,6 @@
 # AWS CDK Python Examples
 
-![Stats](https://img.shields.io/badge/130-CDK_Projects-blue?style=for-the-badge)
+![Stats](https://img.shields.io/badge/131-CDK_Projects-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 
@@ -129,6 +129,7 @@ This repository contains a set of [AWS Cloud Development Kit](https://docs.aws.a
 | [sagemaker-realtime-inference/hugging-face](./sagemaker/model-inference-endpoints/sagemaker-realtime-inference/hugging-face) | Real-time Inference using Hugging Face DLC | sagemaker real-time endpoint, hugging face |
 | [sagemaker-realtime-inference/pytorch](./sagemaker/model-inference-endpoints/sagemaker-realtime-inference/pytorch) | Real-time Inference using PyTorch DLC | sagemaker real-time endpoint, pytorch |
 | [sagemaker-inference-component](./sagemaker/inference-component) | ![](./sagemaker/inference-component/sagemaker-inference-component.gif) | sagemaker real-time endpoint, inference component, multiple FMs on the same instance |
+| [s3tables/streaming-data-to-s3tables-with-datafirehose](./s3tables/streaming-data-to-s3tables-with-datafirehoset) | ![](./s3tables/streaming-data-to-s3tables-with-datafirehose/firehose-to-s3tables-arch.svg) | s3tables, kinesis data firehose, athena |
 
 Enjoy!
 
