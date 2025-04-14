@@ -89,6 +89,7 @@ FirehoseToS3TablesTableBucket
 FirehoseToS3TablesResourceLink
 FirehoseToS3TablesS3ErrorOutputPath
 FirehoseToS3TablesRole
+FirehoseToS3TablesGrantLFPermissionsOnFirehoseRole
 FirehoseToS3TablesDeliveryStream
 ```
 
@@ -145,19 +146,21 @@ FirehoseToS3TablesDeliveryStream
    </pre>
 6. Configure AWS Lake Formation permissions
 
-   AWS Lake Formation manages access to your table resources. For Data Firehose to ingest data into table buckets, the Data Firehose role (created in step 5) requires `DESCRIBE` permissions on the resource link (created in step 4) to discover the S3 Tables namespace through the resource link and read/write permission on the underlying table.
+   AWS Lake Formation manages access to your table resources. For Data Firehose to ingest data into table buckets, the Data Firehose role (created in step 5) requires `DESCRIBE` permissions on the resource link (created in step 4) to discover the S3 Tables namespace through the resource link and **read/write permission** on the underlying table.
+   <pre>
+   (.venv) $ cdk deploy --require-approval never FirehoseToS3TablesGrantLFPermissionsOnFirehoseRole
+   </pre>
 
-   To add describe permissions on the resource link, navigate to [Lake Formation](https://console.aws.amazon.com/lakeformation/) in the Console. Choose **Databases** on the left menu, and then choose the resource link you created in Step 4. Choose **Actions**, choose **Grant**, and then grant **Describe** permission to the Data Firehose role, as shown in the following figures.
+   :information_source: The above command is the same as manually adding LakeFormation permissions to the DataFire role as follows:
+
+   > To add describe permissions on the resource link, navigate to [Lake Formation](https://console.aws.amazon.com/lakeformation/) in the Console. Choose **Databases** on the left menu, and then choose the resource link you created in Step 4. Choose **Actions**, choose **Grant**, and then grant **Describe** permission to the Data Firehose role, as shown in the following figures.<br/>
    ![](./assets/aws_lakeformation_data_catalog_grant.png)
-
-   In this example, the Data Firehose role is named `KinesisFirehoseServiceRole-firehose-s3tables-<region>`.
-   ![](./assets/aws_lakeformation_grant_permissions_on_resource_link.png)
-
-   To provide read and write permission on specific tables, go back and choose **Databases** on the left menu, then choose the resource link you created in Step 4. First, choose **Actions**, and then choose **Grant on target**.
-   ![](./assets/aws_lakeformation_data_catalog_grant_on_target.png)
-
-   Choose the Data Firehose role, databases, and tables, then grant **Super** permission to the Data Firehose role, as shown in the following figures.
-   ![](./assets/aws_lakeformation_grant_permissions_on_s3table.png)
+   > <br/>In this example, the Data Firehose role is named `KinesisFirehoseServiceRole-firehose-s3tables-<region>`.<br/>
+   > ![](./assets/aws_lakeformation_grant_permissions_on_resource_link.png)
+   > <br/>To provide read and write permission on specific tables, go back and choose **Databases** on the left menu, then choose the resource link you created in Step 4. First, choose **Actions**, and then choose **Grant on target**.<br/>
+   > ![](./assets/aws_lakeformation_data_catalog_grant_on_target.png)
+   > <br/>Choose the Data Firehose role, databases, and tables, then grant **Super** permission to the Data Firehose role, as shown in the following figures.<br/>
+   > ![](./assets/aws_lakeformation_grant_permissions_on_s3table.png)
 7. Set up a Data Firehose stream
    <pre>
    (.venv) $ cdk deploy --require-approval never FirehoseToS3TablesDeliveryStream
@@ -210,3 +213,7 @@ Enjoy!
    * [(YouTube) Simplify data lakes at scale with Amazon S3 Tables](https://youtu.be/gXQE5LgpooY)
  * [Tutorial: Getting started with S3 Tables](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-getting-started.html)
  * [Creating an Amazon S3 table](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-create.html)
+ * [(GitHub) aws-samples/sample-for-transactional-datalake-using-s3tables](https://github.com/aws-samples/sample-for-transactional-datalake-using-s3tables.git)
+ * [AWS CLI Command Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/index.html)
+   * [aws s3tables](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3tables/index.html)
+   * [aws glue](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/glue/index.html)
